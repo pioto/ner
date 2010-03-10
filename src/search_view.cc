@@ -61,7 +61,7 @@ void SearchView::update()
     }
 
     for (uint32_t row = 0;
-        notmuch_threads_valid(threads), row < getmaxy(_window);
+        notmuch_threads_valid(threads) && row < getmaxy(_window);
         notmuch_threads_move_to_next(threads), ++row)
     {
         thread = notmuch_threads_get(threads);
