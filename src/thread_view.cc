@@ -42,8 +42,8 @@ Message::Message(notmuch_message_t * message, Message * parentMessage)
     headers["Subject"]  = notmuch_message_get_header(message, "Subject");
 
     for (notmuch_messages_t * messages = notmuch_message_get_replies(message);
-        notmuch_messages_has_more(messages);
-        notmuch_messages_advance(messages))
+        notmuch_messages_valid(messages);
+        notmuch_messages_move_to_next(messages))
     {
         replies.push_back(Message(notmuch_messages_get(messages), this));
     }

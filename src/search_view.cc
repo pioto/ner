@@ -49,9 +49,9 @@ void SearchView::update()
 
     for (uint32_t offset = 0; offset < _offset; ++offset)
     {
-        if (notmuch_threads_has_more(threads))
+        if (notmuch_threads_valid(threads))
         {
-            notmuch_threads_advance(threads);
+            notmuch_threads_move_to_next(threads);
         }
         else
         {
@@ -61,8 +61,8 @@ void SearchView::update()
     }
 
     for (uint32_t row = 0;
-        notmuch_threads_has_more(threads), row < getmaxy(_window);
-        notmuch_threads_advance(threads), ++row)
+        notmuch_threads_valid(threads), row < getmaxy(_window);
+        notmuch_threads_move_to_next(threads), ++row)
     {
         thread = notmuch_threads_get(threads);
 
@@ -129,8 +129,8 @@ void SearchView::handleKeyPress(const int key)
             notmuch_threads_t * threads;
 
             for (index = 0, threads = notmuch_query_search_threads(_query);
-                index < _selectedRow + _offset && notmuch_threads_has_more(threads);
-                ++index, notmuch_threads_advance(threads));
+                index < _selectedRow + _offset && notmuch_threads_valid(threads);
+                ++index, notmuch_threads_move_to_next(threads));
 
             _viewManager->addView(new ThreadView(
                 notmuch_thread_get_thread_id(notmuch_threads_get(threads))
