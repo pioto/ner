@@ -80,7 +80,8 @@ void SearchView::update()
         messageCounts.resize(8, ' ');
         messageCounts.replace(7, 1, 1, ' ');
 
-        if (row == _selectedRow) wattron(_window, A_REVERSE);
+        if (row == _selectedRow)
+            wattron(_window, A_REVERSE);
         wattron(_window, A_BOLD | COLOR_PAIR(NER_COLOR_YELLOW));
         mvwaddstr(_window, row, 0, dateTime.c_str());
         wattroff(_window, A_BOLD | COLOR_PAIR(NER_COLOR_YELLOW));
@@ -92,10 +93,12 @@ void SearchView::update()
             notmuch_thread_get_total_messages(thread));
         wattroff(_window, COLOR_PAIR(NER_COLOR_CYAN));
         waddch(_window, ']');
-        while (getcurx(_window) < 21) waddch(_window, ' ');
+        while (getcurx(_window) < 21)
+            waddch(_window, ' ');
 
         mvwaddstr(_window, row, 21, subject.c_str());
-        if (row == _selectedRow) wattroff(_window, A_REVERSE);
+        if (row == _selectedRow)
+            wattroff(_window, A_REVERSE);
 
         notmuch_thread_destroy(thread);
     }

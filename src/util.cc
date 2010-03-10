@@ -29,7 +29,8 @@ std::string relativeTime(time_t rawTime)
     struct tm currentLocalTime, localTime;
     char timeString[13];
 
-    if (rawTime > currentRawTime) return "the future";
+    if (rawTime > currentRawTime)
+        return "the future";
 
     localtime_r(&currentRawTime, &currentLocalTime);
     localtime_r(&rawTime, &localTime);

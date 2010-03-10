@@ -37,8 +37,10 @@ std::string ConfigFile::value(const std::string & group, const std::string & nam
 {
     std::string value = _config[group][name];
 
-    if (value.empty())  return default_value;
-    else                return value;
+    if (value.empty())
+        return default_value;
+    else
+        return value;
 }
 
 bool ConfigFile::parse()
@@ -72,7 +74,8 @@ bool ConfigFile::parse()
         keyValueMap.clear();
         while (stream.good())
         {
-            if (stream.peek() == '[' || stream.peek() < 0) break;
+            if (stream.peek() == '[' || stream.peek() < 0)
+                break;
             if (stream.peek() == '#' || stream.peek() == '\n')
             {
                 stream.ignore(256, '\n');

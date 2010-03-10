@@ -89,7 +89,8 @@ void Ner::run()
         if (!handleKeyPress(key))
             _viewManager->handleKeyPress(key);
 
-        if (!_running) break;
+        if (!_running)
+            break;
 
         _viewManager->update();
         _viewManager->refresh();
