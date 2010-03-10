@@ -45,7 +45,7 @@ Message::Message(notmuch_message_t * message, Message * parentMessage)
         notmuch_messages_has_more(messages);
         notmuch_messages_advance(messages))
     {
-        replies.push_back(Message(notmuch_messages_get(messages)));
+        replies.push_back(Message(notmuch_messages_get(messages), this));
     }
 }
 
@@ -103,7 +103,7 @@ void ThreadView::focus()
     clearok(_threadWindow, true);
 }
 
-void ThreadView::handleKeyPress(const uint32_t key)
+void ThreadView::handleKeyPress(const int key)
 {
 }
 

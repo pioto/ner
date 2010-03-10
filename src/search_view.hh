@@ -34,7 +34,7 @@ class SearchView : public WindowView
         ~SearchView();
 
         virtual void update();
-        virtual void handleKeyPress(const uint32_t key);
+        virtual void handleKeyPress(const int key);
 
         void nextThread();
         void previousThread();

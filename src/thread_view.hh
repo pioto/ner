@@ -49,7 +49,7 @@ class ThreadView : public View
         virtual void update();
         virtual void refresh();
         virtual void focus();
-        virtual void handleKeyPress(const uint32_t key);
+        virtual void handleKeyPress(const int key);
 
     private:
         uint32_t displayMessageLine(const Message & message,

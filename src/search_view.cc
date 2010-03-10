@@ -103,7 +103,7 @@ void SearchView::update()
     notmuch_threads_destroy(threads);
 }
 
-void SearchView::handleKeyPress(const uint32_t key)
+void SearchView::handleKeyPress(const int key)
 {
     switch (key)
     {

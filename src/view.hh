@@ -37,7 +37,7 @@ class View
         virtual void update() = 0;
         virtual void refresh() = 0;
         virtual void focus() = 0;
-        virtual void handleKeyPress(const uint32_t key) = 0;
+        virtual void handleKeyPress(const int key) = 0;
 
     protected:
         ViewManager * _viewManager;
