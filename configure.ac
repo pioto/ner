@@ -9,6 +9,8 @@ AC_LANG([C++])
 AC_CONFIG_SRCDIR([src/ner.cc])
 AC_CONFIG_MACRO_DIR([m4])
 
+m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
+
 AX_PROG_CXX_CXX0X(, AC_MSG_ERROR(No C++0x compiler found))
 
 dnl Check for libraries {{{
