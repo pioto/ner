@@ -25,12 +25,12 @@
 
 static const uint32_t threadViewHeight = 12;
 
-Message::Message()
+ThreadView::Message::Message()
     : date(0), matched(false), parent(0)
 {
 }
 
-Message::Message(notmuch_message_t * message, Message * parentMessage)
+ThreadView::Message::Message(notmuch_message_t * message, Message * parentMessage)
     : parent(parentMessage),
         id(notmuch_message_get_message_id(message)),
         filename(notmuch_message_get_filename(message)),

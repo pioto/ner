@@ -26,22 +26,22 @@
 
 #include "view.hh"
 
-struct Message
-{
-    Message();
-    Message(notmuch_message_t * message, Message * parentMessage = 0);
-
-    std::string id;
-    std::string filename;
-    time_t date;
-    bool matched;
-    std::unordered_map<std::string, std::string> headers;
-    std::vector<Message> replies;
-    Message * parent;
-};
-
 class ThreadView : public View
 {
+    struct Message
+    {
+        Message();
+        Message(notmuch_message_t * message, Message * parentMessage = 0);
+
+        std::string id;
+        std::string filename;
+        time_t date;
+        bool matched;
+        std::unordered_map<std::string, std::string> headers;
+        std::vector<Message> replies;
+        Message * parent;
+    };
+
     public:
         ThreadView(const std::string & id);
         ~ThreadView();
