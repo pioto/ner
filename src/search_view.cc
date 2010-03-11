@@ -26,12 +26,76 @@
 #include "view_manager.hh"
 #include "util.hh"
 
+/* Things that should be configurable */
+const uint16_t newestDateWidth = 13;
+const uint16_t messageCountWidth = 8;
+
+SearchView::Thread::Thread(notmuch_thread_t * thread)
+    : id(notmuch_thread_get_thread_id(thread)),
+        subject(notmuch_thread_get_subject(thread)),
+        authors(notmuch_thread_get_authors(thread)),
+        totalMessages(notmuch_thread_get_total_messages(thread)),
+        matchedMessages(notmuch_thread_get_matched_messages(thread)),
+        newestDate(notmuch_thread_get_newest_date(thread)),
+        oldestDate(notmuch_thread_get_oldest_date(thread))
+{
+    notmuch_tags_t * tagIterator;
+
+    for (tagIterator = notmuch_thread_get_tags(thread);
+        notmuch_tags_valid(tagIterator);
+        notmuch_tags_move_to_next(tagIterator))
+    {
+        tags.insert(notmuch_tags_get(tagIterator));
+    }
+
+    notmuch_tags_destroy(tagIterator);
+}
+
+SearchView::ThreadCollector::ThreadCollector()
+    : finished(true), _running(false)
+{
+}
+
+void SearchView::ThreadCollector::start(notmuch_query_t * query)
+{
+    finished = false;
+
+    threads.clear();
+
+    _query = query;
+    _thread = std::thread(std::bind(&ThreadCollector::collect, this));
+}
+
+void SearchView::ThreadCollector::collect()
+{
+    notmuch_threads_t * _threadIterator;
+
+    for (_threadIterator = notmuch_query_search_threads(_query);
+        notmuch_threads_valid(_threadIterator);
+        notmuch_threads_move_to_next(_threadIterator))
+    {
+        threads.push_back(notmuch_threads_get(_threadIterator));
+    }
+
+    notmuch_threads_destroy(_threadIterator);
+
+    finished = true;
+}
+
 SearchView::SearchView(const std::string & search)
     : WindowView(),
         _query(notmuch_query_create(NotMuch::database(), search.c_str())),
-        _selectedRow(0),
-        _offset(0)
+        _selectedIndex(0),
+        _offset(0),
+        _doneCollectingThreads(false)
 {
+    _collector.start(_query);
+
+    while (_collector.threads.size() < getmaxy(_window) && !_collector.finished)
+    {
+        // Sleep for 50 ms
+        usleep(50000);
+    }
 }
 
 SearchView::~SearchView()
@@ -41,69 +105,41 @@ SearchView::~SearchView()
 
 void SearchView::update()
 {
-    notmuch_threads_t * threads = notmuch_query_search_threads(_query);
-    notmuch_thread_t * thread;
-    std::string dateTime;
-    std::string messageCounts;
-    std::string subject;
+    if (_offset > _collector.threads.size())
+        return;
 
-    for (uint32_t offset = 0; offset < _offset; ++offset)
+    int row = 0;
+
+    for (auto thread = _collector.threads.begin() + _offset;
+        thread != _collector.threads.end() && row < getmaxy(_window);
+        ++thread, ++row)
     {
-        if (notmuch_threads_valid(threads))
-        {
-            notmuch_threads_move_to_next(threads);
-        }
-        else
-        {
-            _offset = offset;
-            break;
-        }
-    }
+        std::string subject = (*thread).subject;
+        std::string newestDate = relativeTime((*thread).newestDate);
 
-    for (uint32_t row = 0;
-        notmuch_threads_valid(threads) && row < getmaxy(_window);
-        notmuch_threads_move_to_next(threads), ++row)
-    {
-        thread = notmuch_threads_get(threads);
+        subject.resize(getmaxx(_window) - (newestDateWidth + messageCountWidth), ' ');
+        newestDate.resize(newestDateWidth, ' ');
 
-        subject = notmuch_thread_get_subject(thread);
-        dateTime = relativeTime(notmuch_thread_get_newest_date(thread));
-
-        std::ostringstream messageCountsStream;
-        messageCountsStream << '[' <<
-            notmuch_thread_get_matched_messages(thread) << '/' <<
-            notmuch_thread_get_total_messages(thread) << ']';
-        messageCounts = messageCountsStream.str();
-
-        subject.resize(getmaxx(_window) - 21, ' ');
-        dateTime.resize(13, ' ');
-        messageCounts.resize(8, ' ');
-        messageCounts.replace(7, 1, 1, ' ');
-
-        if (row == _selectedRow)
+        if (row + _offset == _selectedIndex)
             wattron(_window, A_REVERSE);
         wattron(_window, A_BOLD | COLOR_PAIR(NER_COLOR_YELLOW));
-        mvwaddstr(_window, row, 0, dateTime.c_str());
+        mvwaddstr(_window, row, 0, newestDate.c_str());
         wattroff(_window, A_BOLD | COLOR_PAIR(NER_COLOR_YELLOW));
 
-        mvwaddch(_window, row, 13, '[');
+        mvwaddch(_window, row, newestDateWidth, '[');
         wattron(_window, COLOR_PAIR(NER_COLOR_CYAN));
         wprintw(_window, "%u/%u",
-            notmuch_thread_get_matched_messages(thread),
-            notmuch_thread_get_total_messages(thread));
+            (*thread).matchedMessages,
+            (*thread).totalMessages);
         wattroff(_window, COLOR_PAIR(NER_COLOR_CYAN));
         waddch(_window, ']');
-        while (getcurx(_window) < 21)
+        while (getcurx(_window) < newestDateWidth + messageCountWidth)
             waddch(_window, ' ');
 
-        mvwaddstr(_window, row, 21, subject.c_str());
-        if (row == _selectedRow)
+        mvwaddstr(_window, row, newestDateWidth + messageCountWidth, subject.c_str());
+        if (row + _offset == _selectedIndex)
             wattroff(_window, A_REVERSE);
-
-        notmuch_thread_destroy(thread);
     }
-
-    notmuch_threads_destroy(threads);
 }
 
 void SearchView::handleKeyPress(const int key)
@@ -127,57 +163,53 @@ void SearchView::handleKeyPress(const int key)
             previousPage();
             break;
         case 10:
-        {
-            uint32_t index;
-            notmuch_threads_t * threads;
-
-            for (index = 0, threads = notmuch_query_search_threads(_query);
-                index < _selectedRow + _offset && notmuch_threads_valid(threads);
-                ++index, notmuch_threads_move_to_next(threads));
-
-            _viewManager->addView(new ThreadView(
-                notmuch_thread_get_thread_id(notmuch_threads_get(threads))
-            ));
-
-            notmuch_threads_destroy(threads);
+            _viewManager->addView(new ThreadView((*(_collector.threads.begin() + _selectedIndex)).id));
             break;
-        }
     }
 }
 
 void SearchView::nextThread()
 {
-    if (_selectedRow == getmaxy(_window) - 1)
-        ++_offset;
-    else
-        ++_selectedRow;
+    if (_selectedIndex < _collector.threads.size() - 1)
+        ++_selectedIndex;
+
+    makeSelectionVisible();
 }
 
 void SearchView::previousThread()
 {
-    if (_selectedRow == 0)
-    {
-        if (_offset > 0)
-            --_offset;
-    }
-    else
-        --_selectedRow;
+    if (_selectedIndex > 0)
+        --_selectedIndex;
+
+    makeSelectionVisible();
 }
 
 void SearchView::nextPage()
 {
-    _offset += getmaxy(_window);
+    if (_selectedIndex >= _collector.threads.size() - getmaxy(_window))
+        _selectedIndex = _collector.threads.size() - 1;
+    else
+        _selectedIndex += getmaxy(_window) - 1;
+
+    makeSelectionVisible();
 }
 
 void SearchView::previousPage()
 {
-    if (_offset < getmaxy(_window))
-    {
-        _offset = 0;
-        _selectedRow = 0;
-    }
+    if (getmaxy(_window) > _selectedIndex)
+        _selectedIndex = 0;
     else
-        _offset -= getmaxy(_window);
+        _selectedIndex -= getmaxy(_window) - 1;
+
+    makeSelectionVisible();
+}
+
+void SearchView::makeSelectionVisible()
+{
+    if (_selectedIndex < _offset)
+        _offset = _selectedIndex;
+    else if (_selectedIndex >= _offset + getmaxy(_window))
+        _offset = _selectedIndex - getmaxy(_window) + 1;
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

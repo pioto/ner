@@ -22,6 +22,8 @@
 
 #include <string>
 #include <map>
+#include <set>
+#include <thread>
 #include <notmuch.h>
 
 #include "window_view.hh"
@@ -29,6 +31,38 @@
 
 class SearchView : public WindowView
 {
+    struct Thread
+    {
+        Thread(notmuch_thread_t * thread);
+
+        std::string id;
+        std::string subject;
+        std::string authors;
+        uint32_t totalMessages;
+        uint32_t matchedMessages;
+        time_t newestDate;
+        time_t oldestDate;
+        std::set<std::string> tags;
+    };
+
+    class ThreadCollector
+    {
+        public:
+            ThreadCollector();
+
+            void start(notmuch_query_t * query);
+
+            std::vector<Thread> threads;
+            bool finished;
+
+        private:
+            void collect();
+
+            notmuch_query_t * _query;
+            std::thread _thread;
+            bool _running;
+    };
+
     public:
         SearchView(const std::string & search);
         ~SearchView();
@@ -42,9 +76,14 @@ class SearchView : public WindowView
         void previousPage();
 
     private:
+        void makeSelectionVisible();
+        void collectThreads();
+
         notmuch_query_t * _query;
-        uint16_t _selectedRow;
-        uint64_t _offset;
+        ThreadCollector _collector;
+        bool _doneCollectingThreads;
+        uint32_t _selectedIndex;
+        uint32_t _offset;
 };
 
 #endif
