@@ -67,6 +67,6 @@ AC_DEFUN([AX_PROG_CXX_CXX0X],
                ac_cv_prog_cxx_cxx0x=no
             fi
 
-            AS_IF([test "x$ac_cv_prog_cxx_cxx0x" != no], [$1], [$2])
+            AS_IF([test "$ac_cv_prog_cxx_cxx0x" != no], [$1], [$2])
          ])
 
