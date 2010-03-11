@@ -24,22 +24,19 @@
 ViewManager::ViewManager()
     : _activeView(0)
 {
+    addHandledSequence("q", std::bind(&ViewManager::closeActiveView, this));
 }
 
 ViewManager::~ViewManager()
 {
 }
 
-void ViewManager::handleKeyPress(const int key)
+bool ViewManager::handleKeySequence(const std::vector<int> & sequence)
 {
-    switch (key)
-    {
-        case 'q':
-            closeActiveView();
-            break;
-        default:
-            _activeView->handleKeyPress(key);
-    }
+    if (InputHandler::handleKeySequence(sequence))
+        return true;
+    else
+        return _activeView->handleKeySequence(sequence);
 }
 
 void ViewManager::addView(View * view)

@@ -68,12 +68,12 @@ class SearchView : public WindowView
         ~SearchView();
 
         virtual void update();
-        virtual void handleKeyPress(const int key);
 
         void nextThread();
         void previousThread();
         void nextPage();
         void previousPage();
+        void openSelectedThread();
 
     private:
         void makeSelectionVisible();

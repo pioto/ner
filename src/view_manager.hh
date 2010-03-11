@@ -22,15 +22,17 @@
 
 #include <vector>
 
+#include "input_handler.hh"
+
 class View;
 
-class ViewManager
+class ViewManager : public InputHandler
 {
     public:
         ViewManager();
         ~ViewManager();
 
-        void handleKeyPress(const int key);
+        virtual bool handleKeySequence(const std::vector<int> & sequence);
 
         void addView(View * view);
         void closeActiveView();

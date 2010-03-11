@@ -24,10 +24,12 @@
 #include <vector>
 #include <notmuch.h>
 
+#include "input_handler.hh"
+
 class ViewManager;
 class StatusBar;
 
-class Ner
+class Ner : public InputHandler
 {
     public:
         Ner();
@@ -40,8 +42,6 @@ class Ner
         void quit();
 
         void search();
-
-        bool handleKeyPress(const int key);
 
         inline ViewManager * viewManager() const
         {

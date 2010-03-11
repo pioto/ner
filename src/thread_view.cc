@@ -103,10 +103,6 @@ void ThreadView::focus()
     clearok(_threadWindow, true);
 }
 
-void ThreadView::handleKeyPress(const int key)
-{
-}
-
 uint32_t ThreadView::displayMessageLine(const Message & message,
     uint32_t start, std::vector<chtype> & leading, bool last, uint32_t row)
 {

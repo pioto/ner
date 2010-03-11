@@ -30,6 +30,8 @@ Ner::Ner()
     : _viewManager(new ViewManager),
         _statusBar(new StatusBar)
 {
+    addHandledSequence("Q", std::bind(&Ner::quit, this));
+    addHandledSequence("s", std::bind(&Ner::search, this));
 }
 
 Ner::~Ner()
@@ -76,7 +78,7 @@ void Ner::cleanupScreen()
 
 void Ner::run()
 {
-    uint32_t key;
+    std::vector<int> sequence;
 
     _running = true;
 
@@ -84,10 +86,19 @@ void Ner::run()
 
     while (_running)
     {
-        key = getch();
+        int key = getch();
 
-        if (!handleKeyPress(key))
-            _viewManager->handleKeyPress(key);
+        if (key == KEY_BACKSPACE && sequence.size() > 0)
+            sequence.pop_back();
+        else if (key == 3) // Ctrl-C
+            sequence.clear();
+        else
+        {
+            sequence.push_back(key);
+
+            if (handleKeySequence(sequence) || _viewManager->handleKeySequence(sequence))
+                sequence.clear();
+        }
 
         if (!_running)
             break;
@@ -105,23 +116,6 @@ void Ner::quit()
 void Ner::search()
 {
     _viewManager->addView(new SearchView(StatusBar::instance().prompt("Search: ")));
-}
-
-bool Ner::handleKeyPress(const int key)
-{
-    switch (key)
-    {
-        case 'Q':
-            quit();
-            break;
-        case 's':
-            search();
-            break;
-        default:
-            return false;
-    }
-
-    return true;
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

@@ -91,6 +91,18 @@ SearchView::SearchView(const std::string & search)
 {
     _collector.start(_query);
 
+    addHandledSequence("j", std::bind(&SearchView::nextThread, this));
+    addHandledSequence(KEY_DOWN, std::bind(&SearchView::nextThread, this));
+    addHandledSequence("k", std::bind(&SearchView::previousThread, this));
+    addHandledSequence(KEY_UP, std::bind(&SearchView::previousThread, this));
+
+    addHandledSequence(KEY_NPAGE, std::bind(&SearchView::nextPage, this));
+    addHandledSequence('d' - 96, std::bind(&SearchView::nextPage, this)); // Ctrl-D
+    addHandledSequence(KEY_PPAGE, std::bind(&SearchView::previousPage, this));
+    addHandledSequence('u' - 96, std::bind(&SearchView::previousPage, this)); // Ctrl-U
+
+    addHandledSequence("\n", std::bind(&SearchView::openSelectedThread, this));
+
     while (_collector.threads.size() < getmaxy(_window) && !_collector.finished)
     {
         // Sleep for 50 ms
@@ -142,32 +154,6 @@ void SearchView::update()
     }
 }
 
-void SearchView::handleKeyPress(const int key)
-{
-    switch (key)
-    {
-        case KEY_DOWN:
-        case 'j':
-            nextThread();
-            break;
-        case KEY_UP:
-        case 'k':
-            previousThread();
-            break;
-        case KEY_NPAGE:
-        case 'd' - 'a' + 1: // Ctrl-d
-            nextPage();
-            break;
-        case KEY_PPAGE:
-        case 'u' - 'a' + 1: // Ctrl-u
-            previousPage();
-            break;
-        case 10:
-            _viewManager->addView(new ThreadView((*(_collector.threads.begin() + _selectedIndex)).id));
-            break;
-    }
-}
-
 void SearchView::nextThread()
 {
     if (_selectedIndex < _collector.threads.size() - 1)
@@ -202,6 +188,11 @@ void SearchView::previousPage()
         _selectedIndex -= getmaxy(_window) - 1;
 
     makeSelectionVisible();
+}
+
+void SearchView::openSelectedThread()
+{
+    _viewManager->addView(new ThreadView((*(_collector.threads.begin() + _selectedIndex)).id));
 }
 
 void SearchView::makeSelectionVisible()
