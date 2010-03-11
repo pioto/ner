@@ -101,6 +101,11 @@ SearchView::SearchView(const std::string & search)
     addHandledSequence(KEY_PPAGE, std::bind(&SearchView::previousPage, this));
     addHandledSequence('u' - 96, std::bind(&SearchView::previousPage, this)); // Ctrl-U
 
+    addHandledSequence("gg", std::bind(&SearchView::moveToTop, this));
+    addHandledSequence(KEY_HOME, std::bind(&SearchView::moveToTop, this));
+    addHandledSequence("G", std::bind(&SearchView::moveToBottom, this));
+    addHandledSequence(KEY_END, std::bind(&SearchView::moveToBottom, this));
+
     addHandledSequence("\n", std::bind(&SearchView::openSelectedThread, this));
 
     while (_collector.threads.size() < getmaxy(_window) && !_collector.finished)
@@ -186,6 +191,20 @@ void SearchView::previousPage()
         _selectedIndex = 0;
     else
         _selectedIndex -= getmaxy(_window) - 1;
+
+    makeSelectionVisible();
+}
+
+void SearchView::moveToTop()
+{
+    _selectedIndex = 0;
+
+    makeSelectionVisible();
+}
+
+void SearchView::moveToBottom()
+{
+    _selectedIndex = _collector.threads.size() - 1;
 
     makeSelectionVisible();
 }

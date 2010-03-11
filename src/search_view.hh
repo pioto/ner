@@ -73,6 +73,8 @@ class SearchView : public WindowView
         void previousThread();
         void nextPage();
         void previousPage();
+        void moveToTop();
+        void moveToBottom();
         void openSelectedThread();
 
     private:
