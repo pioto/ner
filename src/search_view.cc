@@ -186,7 +186,7 @@ void SearchView::previousThread()
 
 void SearchView::nextPage()
 {
-    if (_selectedIndex >= _collector.threads.size() - getmaxy(_window))
+    if (_selectedIndex + getmaxy(_window) >= _collector.threads.size())
         _selectedIndex = _collector.threads.size() - 1;
     else
         _selectedIndex += getmaxy(_window) - 1;
