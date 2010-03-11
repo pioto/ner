@@ -1,0 +1,14 @@
+TODO
+====
+
+- Better configuration parser: right now it just barely works for the default
+  notmuch config file.
+- Configurable key bindings: allow the user to configure which bindings they
+  want to use.
+- Implement message viewing in ThreadView.
+- Configurable colors and UI.
+- Clear the input key sequence when there is no longer any matching bindings.
+- Make the statusbar better. Maybe expand it to two lines, one for input and
+  the other for actual status information.
+- Sending and replying to email.
+
