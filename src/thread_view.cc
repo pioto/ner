@@ -25,11 +25,6 @@
 
 static const uint32_t threadViewHeight = 12;
 
-ThreadView::Message::Message()
-    : date(0), matched(false), parent(0)
-{
-}
-
 ThreadView::Message::Message(notmuch_message_t * message, Message * parentMessage)
     : parent(parentMessage),
         id(notmuch_message_get_message_id(message)),
@@ -150,11 +145,11 @@ uint32_t ThreadView::displayMessageLine(const Message & message,
     else
         leading.push_back(ACS_VLINE);
 
-    for (auto iterator = message.replies.begin();
-        iterator != message.replies.end() && row < getmaxy(_threadWindow) - 1;
-        ++iterator)
+    for (auto reply = message.replies.begin(), e = message.replies.end();
+        reply != e && row < getmaxy(_threadWindow) - 1;
+        ++reply)
     {
-        row = displayMessageLine(*iterator, start, leading, (iterator + 1) == message.replies.end(), row);
+        row = displayMessageLine(*reply, start, leading, (reply + 1) == e, row);
     }
 
     leading.pop_back();

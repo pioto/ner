@@ -30,7 +30,7 @@ class ThreadView : public View
 {
     struct Message
     {
-        Message();
+        Message() = default;
         Message(notmuch_message_t * message, Message * parentMessage = 0);
 
         std::string id;
