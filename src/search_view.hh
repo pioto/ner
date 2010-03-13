@@ -45,24 +45,6 @@ class SearchView : public WindowView
         std::set<std::string> tags;
     };
 
-    class ThreadCollector
-    {
-        public:
-            ThreadCollector();
-
-            void start(notmuch_query_t * query);
-
-            std::vector<Thread> threads;
-            bool finished;
-
-        private:
-            void collect();
-
-            notmuch_query_t * _query;
-            std::thread _thread;
-            bool _running;
-    };
-
     public:
         SearchView(const std::string & search);
         ~SearchView();
@@ -82,8 +64,13 @@ class SearchView : public WindowView
         void collectThreads();
 
         notmuch_query_t * _query;
-        ThreadCollector _collector;
-        bool _doneCollectingThreads;
+
+        std::thread _thread;
+        std::mutex _mutex;
+        std::condition_variable _condition;
+        bool _doneCollecting;
+
+        std::vector<Thread> _threads;
         uint32_t _selectedIndex;
         uint32_t _offset;
 };

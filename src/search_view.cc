@@ -20,6 +20,7 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <chrono>
 
 #include "search_view.hh"
 #include "thread_view.hh"
@@ -51,45 +52,14 @@ SearchView::Thread::Thread(notmuch_thread_t * thread)
     notmuch_tags_destroy(tagIterator);
 }
 
-SearchView::ThreadCollector::ThreadCollector()
-    : finished(true), _running(false)
-{
-}
-
-void SearchView::ThreadCollector::start(notmuch_query_t * query)
-{
-    finished = false;
-
-    threads.clear();
-
-    _query = query;
-    _thread = std::thread(std::bind(&ThreadCollector::collect, this));
-}
-
-void SearchView::ThreadCollector::collect()
-{
-    notmuch_threads_t * _threadIterator;
-
-    for (_threadIterator = notmuch_query_search_threads(_query);
-        notmuch_threads_valid(_threadIterator);
-        notmuch_threads_move_to_next(_threadIterator))
-    {
-        threads.push_back(notmuch_threads_get(_threadIterator));
-    }
-
-    notmuch_threads_destroy(_threadIterator);
-
-    finished = true;
-}
-
 SearchView::SearchView(const std::string & search)
     : WindowView(),
         _query(notmuch_query_create(NotMuch::database(), search.c_str())),
         _selectedIndex(0),
-        _offset(0),
-        _doneCollectingThreads(false)
+        _offset(0)
 {
-    _collector.start(_query);
+    _doneCollecting = false;
+    _thread = std::thread(std::bind(&SearchView::collectThreads, this));
 
     addHandledSequence("j", std::bind(&SearchView::nextThread, this));
     addHandledSequence(KEY_DOWN, std::bind(&SearchView::nextThread, this));
@@ -108,27 +78,26 @@ SearchView::SearchView(const std::string & search)
 
     addHandledSequence("\n", std::bind(&SearchView::openSelectedThread, this));
 
-    while (_collector.threads.size() < getmaxy(_window) && !_collector.finished)
-    {
-        // Sleep for 50 ms
-        usleep(50000);
-    }
+    std::unique_lock<std::mutex> lock(_mutex);
+    while (_threads.size() < getmaxy(_window) && !_doneCollecting)
+        _condition.wait_for(lock, std::chrono::milliseconds(50));
 }
 
 SearchView::~SearchView()
 {
+    _thread.join();
     notmuch_query_destroy(_query);
 }
 
 void SearchView::update()
 {
-    if (_offset > _collector.threads.size())
+    if (_offset > _threads.size())
         return;
 
     int row = 0;
 
-    for (auto thread = _collector.threads.begin() + _offset;
-        thread != _collector.threads.end() && row < getmaxy(_window);
+    for (auto thread = _threads.begin() + _offset;
+        thread != _threads.end() && row < getmaxy(_window);
         ++thread, ++row)
     {
         std::string subject = (*thread).subject;
@@ -161,7 +130,7 @@ void SearchView::update()
 
 void SearchView::nextThread()
 {
-    if (_selectedIndex < _collector.threads.size() - 1)
+    if (_selectedIndex < _threads.size() - 1)
         ++_selectedIndex;
 
     makeSelectionVisible();
@@ -177,8 +146,8 @@ void SearchView::previousThread()
 
 void SearchView::nextPage()
 {
-    if (_selectedIndex + getmaxy(_window) >= _collector.threads.size())
-        _selectedIndex = _collector.threads.size() - 1;
+    if (_selectedIndex + getmaxy(_window) >= _threads.size())
+        _selectedIndex = _threads.size() - 1;
     else
         _selectedIndex += getmaxy(_window) - 1;
 
@@ -204,14 +173,14 @@ void SearchView::moveToTop()
 
 void SearchView::moveToBottom()
 {
-    _selectedIndex = _collector.threads.size() - 1;
+    _selectedIndex = _threads.size() - 1;
 
     makeSelectionVisible();
 }
 
 void SearchView::openSelectedThread()
 {
-    _viewManager->addView(new ThreadView((*(_collector.threads.begin() + _selectedIndex)).id));
+    _viewManager->addView(new ThreadView((*(_threads.begin() + _selectedIndex)).id));
 }
 
 void SearchView::makeSelectionVisible()
@@ -220,6 +189,30 @@ void SearchView::makeSelectionVisible()
         _offset = _selectedIndex;
     else if (_selectedIndex >= _offset + getmaxy(_window))
         _offset = _selectedIndex - getmaxy(_window) + 1;
+}
+
+void SearchView::collectThreads()
+{
+    std::unique_lock<std::mutex> lock(_mutex);
+    lock.unlock();
+
+    notmuch_threads_t * _threadIterator;
+
+    for (_threadIterator = notmuch_query_search_threads(_query);
+        notmuch_threads_valid(_threadIterator);
+        notmuch_threads_move_to_next(_threadIterator))
+    {
+        lock.lock();
+        _threads.push_back(notmuch_threads_get(_threadIterator));
+        _condition.notify_one();
+        lock.unlock();
+    }
+
+    _doneCollecting = true;
+    notmuch_threads_destroy(_threadIterator);
+
+    /* For cases when there are no matching threads */
+    _condition.notify_one();
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
