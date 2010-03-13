@@ -21,7 +21,7 @@
 
 #define MINUTE (60)
 #define HOUR (60 * MINUTE)
-#define DAY (60 * HOUR)
+#define DAY (24 * HOUR)
 
 std::string relativeTime(time_t rawTime)
 {
