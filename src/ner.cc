@@ -115,7 +115,10 @@ void Ner::quit()
 
 void Ner::search()
 {
-    _viewManager->addView(new SearchView(StatusBar::instance().prompt("Search: ")));
+    std::string searchTerms = StatusBar::instance().prompt("Search: ");
+
+    if (!searchTerms.empty())
+        _viewManager->addView(new SearchView(searchTerms));
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
