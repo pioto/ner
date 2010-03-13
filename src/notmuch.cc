@@ -19,7 +19,7 @@
 
 #include "notmuch.hh"
 
-notmuch_database_t * NotMuch::_database;
+notmuch_database_t * NotMuch::_database = NULL;
 
 notmuch_database_t * NotMuch::database()
 {
