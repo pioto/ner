@@ -58,6 +58,7 @@ class SearchView : public WindowView
         void moveToTop();
         void moveToBottom();
         void openSelectedThread();
+        void refreshThreads();
 
     private:
         void makeSelectionVisible();

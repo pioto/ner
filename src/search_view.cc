@@ -76,6 +76,8 @@ SearchView::SearchView(const std::string & search)
     addHandledSequence("G", std::bind(&SearchView::moveToBottom, this));
     addHandledSequence(KEY_END, std::bind(&SearchView::moveToBottom, this));
 
+    addHandledSequence("=", std::bind(&SearchView::refreshThreads, this));
+
     addHandledSequence("\n", std::bind(&SearchView::openSelectedThread, this));
 
     std::unique_lock<std::mutex> lock(_mutex);
@@ -181,6 +183,40 @@ void SearchView::moveToBottom()
 void SearchView::openSelectedThread()
 {
     _viewManager->addView(new ThreadView((*(_threads.begin() + _selectedIndex)).id));
+}
+
+void SearchView::refreshThreads()
+{
+    if (_threads.empty())
+    {
+        collectThreads();
+        return;
+    }
+
+    std::string selectedId = (*(_threads.begin() + _selectedIndex)).id;
+
+    _threads.clear();
+    collectThreads();
+
+    bool found = false;
+
+    for (auto i = _threads.begin(), e = _threads.end(); i != e; ++i)
+    {
+        if ((*i).id == selectedId)
+        {
+            _selectedIndex = i - _threads.begin();
+            found = true;
+            break;
+        }
+    }
+
+    if (!found)
+    {
+        if (_threads.size() <= _selectedIndex)
+            _selectedIndex = _threads.size() - 1;
+    }
+
+    makeSelectionVisible();
 }
 
 void SearchView::makeSelectionVisible()
