@@ -64,11 +64,12 @@ SearchView::SearchView(const std::string & search)
     _thread = std::thread(std::bind(&SearchView::collectThreads, this));
 
     /* Colors */
-    init_pair(Colors::SEARCH_VIEW_DATE,             COLOR_YELLOW,   COLOR_BLACK);
-    init_pair(Colors::SEARCH_VIEW_MESSAGE_COUNT,    COLOR_GREEN,    COLOR_BLACK);
-    init_pair(Colors::SEARCH_VIEW_AUTHORS,          COLOR_CYAN,     COLOR_BLACK);
-    init_pair(Colors::SEARCH_VIEW_SUBJECT,          COLOR_WHITE,    COLOR_BLACK);
-    init_pair(Colors::SEARCH_VIEW_TAGS,             COLOR_RED,      COLOR_BLACK);
+    init_pair(Colors::SEARCH_VIEW_DATE,                     COLOR_YELLOW,   COLOR_BLACK);
+    init_pair(Colors::SEARCH_VIEW_MESSAGE_COUNT_COMPLETE,   COLOR_GREEN,    COLOR_BLACK);
+    init_pair(Colors::SEARCH_VIEW_MESSAGE_COUNT_PARTIAL,    COLOR_MAGENTA,  COLOR_BLACK);
+    init_pair(Colors::SEARCH_VIEW_AUTHORS,                  COLOR_CYAN,     COLOR_BLACK);
+    init_pair(Colors::SEARCH_VIEW_SUBJECT,                  COLOR_WHITE,    COLOR_BLACK);
+    init_pair(Colors::SEARCH_VIEW_TAGS,                     COLOR_RED,      COLOR_BLACK);
 
     /* Key Sequences */
     addHandledSequence("j", std::bind(&SearchView::nextThread, this));
@@ -114,6 +115,7 @@ void SearchView::update()
     {
         bool selected = row + _offset == _selectedIndex;
         bool unread = (*thread).tags.find("unread") != (*thread).tags.end();
+        bool completeMatch = (*thread).matchedMessages == (*thread).totalMessages;
 
         if (selected)
             wattron(_window, A_REVERSE);
@@ -133,11 +135,17 @@ void SearchView::update()
 
         /* Message Count */
         waddch(_window, '[');
-        wattron(_window, COLOR_PAIR(Colors::SEARCH_VIEW_MESSAGE_COUNT));
+        if (completeMatch)
+            wattron(_window, COLOR_PAIR(Colors::SEARCH_VIEW_MESSAGE_COUNT_COMPLETE));
+        else
+            wattron(_window, COLOR_PAIR(Colors::SEARCH_VIEW_MESSAGE_COUNT_PARTIAL));
         wprintw(_window, "%u/%u",
             (*thread).matchedMessages,
             (*thread).totalMessages);
-        wattroff(_window, COLOR_PAIR(Colors::SEARCH_VIEW_MESSAGE_COUNT));
+        if (completeMatch)
+            wattroff(_window, COLOR_PAIR(Colors::SEARCH_VIEW_MESSAGE_COUNT_COMPLETE));
+        else
+            wattroff(_window, COLOR_PAIR(Colors::SEARCH_VIEW_MESSAGE_COUNT_PARTIAL));
         waddch(_window, ']');
 
         while (getcurx(_window) < newestDateWidth + messageCountWidth)
