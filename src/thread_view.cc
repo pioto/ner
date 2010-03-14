@@ -25,7 +25,7 @@
 #include "colors.hh"
 #include "status_bar.hh"
 
-static const uint32_t threadViewHeight = 12;
+const uint32_t threadViewHeight = 8;
 
 ThreadView::Message::Message(notmuch_message_t * message, Message * parentMessage)
     : parent(parentMessage),
