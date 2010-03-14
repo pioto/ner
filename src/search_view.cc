@@ -182,6 +182,7 @@ void SearchView::moveToBottom()
 
 void SearchView::openSelectedThread()
 {
+    std::lock_guard<std::mutex> lock(_mutex);
     _viewManager->addView(new ThreadView((*(_threads.begin() + _selectedIndex)).id));
 }
 
