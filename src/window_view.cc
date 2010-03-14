@@ -18,9 +18,10 @@
  */
 
 #include "window_view.hh"
+#include "status_bar.hh"
 
 WindowView::WindowView()
-    : View(), _window(newwin(LINES - 1, COLS, 0, 0))
+    : View(), _window(newwin(LINES - StatusBar::instance().height(), COLS, 0, 0))
 {
     werase(_window);
 }

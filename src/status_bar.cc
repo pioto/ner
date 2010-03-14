@@ -20,38 +20,110 @@
 #include <ncurses.h>
 
 #include "status_bar.hh"
+#include "colors.hh"
 
 StatusBar * StatusBar::_instance = 0;
 
+const int viewNameWidth = 15;
+
 StatusBar::StatusBar()
+    : _statusWindow(newwin(1, COLS, LINES - 2, 0)),
+        _promptWindow(newwin(1, COLS, LINES - 1, 0)),
+        _messageCleared(true)
 {
     _instance = this;
+
+    /* Colors */
+    init_pair(Colors::STATUS_BAR_STATUS,            COLOR_WHITE,    COLOR_BLUE);
+    init_pair(Colors::STATUS_BAR_MESSAGE,           COLOR_BLACK,    COLOR_WHITE);
+    init_pair(Colors::STATUS_BAR_PROMPT,            COLOR_WHITE,    COLOR_BLACK);
+
+    wbkgd(_statusWindow, COLOR_PAIR(Colors::STATUS_BAR_STATUS));
+
+    wrefresh(_statusWindow);
+    wrefresh(_promptWindow);
 }
 
 StatusBar::~StatusBar()
 {
     _instance = 0;
+
+    if (_messageClearThread.joinable())
+        _messageClearThread.join();
 }
 
 void StatusBar::displayMessage(const std::string & message)
 {
-    mvaddnstr(LINES - 1, 0, message.c_str(), 50);
+    werase(_promptWindow);
+    wbkgd(_promptWindow, COLOR_PAIR(Colors::STATUS_BAR_MESSAGE));
+
+    wmove(_promptWindow, 0, (getmaxx(_promptWindow) - message.size()) / 2);
+    wattron(_promptWindow, A_BOLD);
+    waddstr(_promptWindow, message.c_str());
+    wattroff(_promptWindow, A_BOLD);
+
+    wrefresh(_promptWindow);
+
+    _messageCleared = false;
+
+    if (_messageClearThread.joinable())
+        _messageClearThread.detach();
+
+    _messageClearThread = std::thread(std::bind(&StatusBar::delayedClearMessage, this, 1500));
 }
 
 std::string StatusBar::prompt(const std::string & message)
 {
     char response[256];
 
-    displayMessage(message);
+    if (!_messageCleared)
+        clearMessage();
+
+    wmove(_promptWindow, 0, 0);
+    wattron(_promptWindow, COLOR_PAIR(Colors::STATUS_BAR_PROMPT));
+    waddstr(_promptWindow, message.c_str());
     echo();
     curs_set(1);
-    getnstr(response, sizeof(response));
+    wgetnstr(_promptWindow, response, sizeof(response));
     curs_set(0);
     noecho();
+    wattroff(_promptWindow, COLOR_PAIR(Colors::STATUS_BAR_PROMPT));
     move(LINES - 1, 0);
     clrtoeol();
 
     return std::string(response);
+}
+
+void StatusBar::setViewName(const std::string & name)
+{
+    wmove(_statusWindow, 0, 0);
+
+    /* View Name */
+    wattron(_statusWindow, A_BOLD);
+    waddch(_statusWindow, '[');
+    waddnstr(_statusWindow, name.c_str(), viewNameWidth - 2 - 1);
+    waddch(_statusWindow, ']');
+    wattroff(_statusWindow, A_BOLD);
+
+    wrefresh(_statusWindow);
+}
+
+void StatusBar::delayedClearMessage(int delay)
+{
+    usleep(delay * 1000);
+
+    if (_messageCleared)
+        return;
+
+    clearMessage();
+}
+
+void StatusBar::clearMessage()
+{
+    werase(_promptWindow);
+    wbkgd(_promptWindow, COLOR_PAIR(Colors::STATUS_BAR_PROMPT));
+    wrefresh(_promptWindow);
+    _messageCleared = true;
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

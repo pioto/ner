@@ -46,6 +46,7 @@ void ViewManager::addView(View * view)
     _views.push_back(view);
 
     _activeView = view;
+    StatusBar::instance().setViewName(_activeView->name());
 
     _activeView->update();
     _activeView->refresh();
@@ -62,7 +63,10 @@ void ViewManager::closeActiveView()
     {
         delete _views.back();
         _views.pop_back();
+
         _activeView = _views.back();
+        StatusBar::instance().setViewName(_activeView->name());
+
         _activeView->focus();
         _activeView->update();
         _activeView->refresh();
@@ -80,5 +84,4 @@ void ViewManager::refresh()
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
-
 

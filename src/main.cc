@@ -40,10 +40,8 @@ int main(int argc, char * argv[])
 
     Ner ner;
 
-    ner.initializeScreen();
     ner.viewManager()->addView(new SearchView("tag:inbox"));
     ner.run();
-    ner.cleanupScreen();
 
     return EXIT_SUCCESS;
 }

@@ -39,6 +39,7 @@ class View : public InputHandler
         virtual void update() = 0;
         virtual void refresh() = 0;
         virtual void focus() = 0;
+        virtual std::string name() const = 0;
 
     protected:
         ViewManager * _viewManager;

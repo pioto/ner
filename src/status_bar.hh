@@ -21,6 +21,7 @@
 #define NER_STATUS_BAR_H 1
 
 #include <string>
+#include <thread>
 
 class StatusBar
 {
@@ -28,8 +29,11 @@ class StatusBar
         StatusBar();
         ~StatusBar();
 
+        int height() const { return 2; }
+
         void displayMessage(const std::string & message);
         std::string prompt(const std::string & message);
+        void setViewName(const std::string & message);
 
         static StatusBar & instance()
         {
@@ -37,7 +41,16 @@ class StatusBar
         }
 
     private:
+        void delayedClearMessage(int delay);
+        void clearMessage();
+
         static StatusBar * _instance;
+
+        WINDOW * _statusWindow;
+        WINDOW * _promptWindow;
+
+        bool _messageCleared;
+        std::thread _messageClearThread;
 };
 
 #endif

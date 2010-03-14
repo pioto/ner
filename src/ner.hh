@@ -35,9 +35,6 @@ class Ner : public InputHandler
         Ner();
         ~Ner();
 
-        void initializeScreen();
-        void cleanupScreen();
-
         void run();
         void quit();
 
@@ -49,6 +46,9 @@ class Ner : public InputHandler
         }
 
     private:
+        void initializeScreen();
+        void cleanupScreen();
+
         bool _running;
         ViewManager * _viewManager;
         StatusBar * _statusBar;

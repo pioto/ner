@@ -27,9 +27,12 @@
 #include "search_view.hh"
 
 Ner::Ner()
-    : _viewManager(new ViewManager),
-        _statusBar(new StatusBar)
+    : _viewManager(new ViewManager)
 {
+    initializeScreen();
+
+    _statusBar = new StatusBar;
+
     addHandledSequence("Q", std::bind(&Ner::quit, this));
     addHandledSequence("s", std::bind(&Ner::search, this));
 }
@@ -37,6 +40,8 @@ Ner::Ner()
 Ner::~Ner()
 {
     delete _viewManager;
+    delete _statusBar;
+    cleanupScreen();
 }
 
 void Ner::initializeScreen()

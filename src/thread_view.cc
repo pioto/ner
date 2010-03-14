@@ -23,6 +23,7 @@
 #include "notmuch.hh"
 #include "util.hh"
 #include "colors.hh"
+#include "status_bar.hh"
 
 static const uint32_t threadViewHeight = 12;
 
@@ -49,7 +50,8 @@ ThreadView::ThreadView(const std::string & id)
     : View(),
         _selectedMessage(&_topMessage),
         _threadWindow(newwin(threadViewHeight, COLS, 0, 0)),
-        _messageWindow(newwin(LINES - threadViewHeight - 1, COLS, threadViewHeight, 0))
+        _messageWindow(newwin(LINES - threadViewHeight - StatusBar::instance().height(),
+            COLS, threadViewHeight, 0))
 {
     _query = notmuch_query_create(NotMuch::database(), std::string("thread:").append(id).c_str());
     _thread = notmuch_threads_get(notmuch_query_search_threads(_query));
