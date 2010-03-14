@@ -12,4 +12,6 @@ TODO
   the other for actual status information.
 - Sending and replying to email.
 - Deal with terminal resizes.
+- Convert subject and authors from UTF-8 to UTF-32 and use ncursesw to display
+  the result.
 
