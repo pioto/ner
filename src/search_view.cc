@@ -26,6 +26,7 @@
 #include "thread_view.hh"
 #include "view_manager.hh"
 #include "util.hh"
+#include "colors.hh"
 
 /* Things that should be configurable */
 const uint16_t newestDateWidth = 13;
@@ -61,6 +62,14 @@ SearchView::SearchView(const std::string & search)
     _doneCollecting = false;
     _thread = std::thread(std::bind(&SearchView::collectThreads, this));
 
+    /* Colors */
+    init_pair(Colors::SEARCH_VIEW_DATE,             COLOR_YELLOW,   COLOR_BLACK);
+    init_pair(Colors::SEARCH_VIEW_MESSAGE_COUNT,    COLOR_GREEN,    COLOR_BLACK);
+    init_pair(Colors::SEARCH_VIEW_AUTHORS,          COLOR_CYAN,     COLOR_BLACK);
+    init_pair(Colors::SEARCH_VIEW_SUBJECT,          COLOR_WHITE,    COLOR_BLACK);
+    init_pair(Colors::SEARCH_VIEW_TAGS,             COLOR_RED,      COLOR_BLACK);
+
+    /* Key Sequences */
     addHandledSequence("j", std::bind(&SearchView::nextThread, this));
     addHandledSequence(KEY_DOWN, std::bind(&SearchView::nextThread, this));
     addHandledSequence("k", std::bind(&SearchView::previousThread, this));
@@ -110,17 +119,18 @@ void SearchView::update()
 
         if (row + _offset == _selectedIndex)
             wattron(_window, A_REVERSE);
-        wattron(_window, A_BOLD | COLOR_PAIR(NER_COLOR_YELLOW));
+        wattron(_window, COLOR_PAIR(Colors::SEARCH_VIEW_DATE));
         mvwaddstr(_window, row, 0, newestDate.c_str());
-        wattroff(_window, A_BOLD | COLOR_PAIR(NER_COLOR_YELLOW));
+        wattroff(_window, COLOR_PAIR(Colors::SEARCH_VIEW_DATE));
 
         mvwaddch(_window, row, newestDateWidth, '[');
-        wattron(_window, COLOR_PAIR(NER_COLOR_CYAN));
+        wattron(_window, COLOR_PAIR(Colors::SEARCH_VIEW_MESSAGE_COUNT));
         wprintw(_window, "%u/%u",
             (*thread).matchedMessages,
             (*thread).totalMessages);
-        wattroff(_window, COLOR_PAIR(NER_COLOR_CYAN));
+        wattroff(_window, COLOR_PAIR(Colors::SEARCH_VIEW_MESSAGE_COUNT));
         waddch(_window, ']');
+
         while (getcurx(_window) < newestDateWidth + messageCountWidth)
             waddch(_window, ' ');
 

@@ -1,4 +1,4 @@
-/* ner: src/util.hh
+/* ner: src/colors.hh
  *
  * Copyright (c) 2010 Michael Forney
  *
@@ -17,13 +17,30 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NER_UTIL_H
-#define NER_UTIL_H 1
+#ifndef NER_COLORS_H
+#define NER_COLORS_H 1
 
-#include <string>
-#include <time.h>
+namespace Colors
+{
+    enum Color
+    {
+        /* Status Bar */
+        STATUS_BAR_STATUS = 1,
+        STATUS_BAR_MESSAGE,
+        STATUS_BAR_PROMPT,
 
-std::string relativeTime(time_t rawTime);
+        /* Search View */
+        SEARCH_VIEW_DATE,
+        SEARCH_VIEW_MESSAGE_COUNT,
+        SEARCH_VIEW_AUTHORS,
+        SEARCH_VIEW_SUBJECT,
+        SEARCH_VIEW_TAGS,
+
+        /* Thread View */
+        THREAD_VIEW_ARROW,
+        THREAD_VIEW_SEPARATOR
+    };
+};
 
 #endif
 

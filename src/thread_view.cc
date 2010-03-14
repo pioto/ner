@@ -22,6 +22,7 @@
 #include "thread_view.hh"
 #include "notmuch.hh"
 #include "util.hh"
+#include "colors.hh"
 
 static const uint32_t threadViewHeight = 12;
 
@@ -50,9 +51,13 @@ ThreadView::ThreadView(const std::string & id)
         _threadWindow(newwin(threadViewHeight, COLS, 0, 0)),
         _messageWindow(newwin(LINES - threadViewHeight - 1, COLS, threadViewHeight, 0))
 {
-        _query = notmuch_query_create(NotMuch::database(), std::string("thread:").append(id).c_str());
-        _thread = notmuch_threads_get(notmuch_query_search_threads(_query));
-        _topMessage = notmuch_messages_get(notmuch_thread_get_toplevel_messages(_thread));
+    _query = notmuch_query_create(NotMuch::database(), std::string("thread:").append(id).c_str());
+    _thread = notmuch_threads_get(notmuch_query_search_threads(_query));
+    _topMessage = notmuch_messages_get(notmuch_thread_get_toplevel_messages(_thread));
+
+    /* Colors */
+    init_pair(Colors::THREAD_VIEW_ARROW,        COLOR_GREEN,    COLOR_BLACK);
+    init_pair(Colors::THREAD_VIEW_SEPARATOR,    COLOR_CYAN,     COLOR_BLACK);
 }
 
 ThreadView::~ThreadView()
@@ -67,9 +72,9 @@ void ThreadView::update()
 
     displayMessageLine(_topMessage, 0, leading, true, 0);
 
-    wattron(_threadWindow, COLOR_PAIR(NER_COLOR_BLUE));
+    wattron(_threadWindow, COLOR_PAIR(Colors::THREAD_VIEW_SEPARATOR));
     mvwhline(_threadWindow, threadViewHeight - 1, 0, 0, COLS);
-    wattroff(_threadWindow, COLOR_PAIR(NER_COLOR_BLUE));
+    wattroff(_threadWindow, COLOR_PAIR(Colors::THREAD_VIEW_SEPARATOR));
 
     std::ifstream messageFile;
     messageFile.open(_selectedMessage->filename, std::ifstream::in);
@@ -108,7 +113,7 @@ uint32_t ThreadView::displayMessageLine(const Message & message,
         if (&message == _selectedMessage)
             wattron(_threadWindow, A_REVERSE);
 
-        wattron(_threadWindow, COLOR_PAIR(NER_COLOR_GREEN));
+        wattron(_threadWindow, COLOR_PAIR(Colors::THREAD_VIEW_ARROW));
 
         for (auto character = leading.begin();
             character != leading.end();
@@ -125,7 +130,7 @@ uint32_t ThreadView::displayMessageLine(const Message & message,
         waddch(_threadWindow, '>');
         waddch(_threadWindow, ' ');
 
-        wattroff(_threadWindow, COLOR_PAIR(NER_COLOR_GREEN));
+        wattroff(_threadWindow, COLOR_PAIR(Colors::THREAD_VIEW_ARROW));
 
         std::string messageLabel((*message.headers.find("From")).second);
         messageLabel.resize(getmaxx(_threadWindow) - getcurx(_threadWindow), ' ');
@@ -135,7 +140,6 @@ uint32_t ThreadView::displayMessageLine(const Message & message,
         {
             wattroff(_threadWindow, A_REVERSE);
         }
-
     }
 
     ++row;
