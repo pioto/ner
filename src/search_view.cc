@@ -263,6 +263,14 @@ void SearchView::openSelectedThread()
 
 void SearchView::refreshThreads()
 {
+    if (_thread.joinable())
+    {
+        _collecting = false;
+        _thread.join();
+    }
+
+    _collecting = true;
+
     if (_threads.empty())
     {
         collectThreads();
