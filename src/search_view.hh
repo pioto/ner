@@ -71,7 +71,7 @@ class SearchView : public WindowView
         std::thread _thread;
         std::mutex _mutex;
         std::condition_variable _condition;
-        bool _doneCollecting;
+        bool _collecting;
 
         std::vector<Thread> _threads;
         uint32_t _selectedIndex;

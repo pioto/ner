@@ -60,7 +60,7 @@ SearchView::SearchView(const std::string & search)
         _selectedIndex(0),
         _offset(0)
 {
-    _doneCollecting = false;
+    _collecting = true;
     _thread = std::thread(std::bind(&SearchView::collectThreads, this));
 
     /* Colors */
@@ -92,14 +92,17 @@ SearchView::SearchView(const std::string & search)
     addHandledSequence("\n", std::bind(&SearchView::openSelectedThread, this));
 
     std::unique_lock<std::mutex> lock(_mutex);
-    while (_threads.size() < getmaxy(_window) && !_doneCollecting)
+    while (_threads.size() < getmaxy(_window) && _collecting)
         _condition.wait_for(lock, std::chrono::milliseconds(50));
 }
 
 SearchView::~SearchView()
 {
     if (_thread.joinable())
+    {
+        _collecting = false;
         _thread.join();
+    }
 
     notmuch_query_destroy(_query);
 }
@@ -310,7 +313,7 @@ void SearchView::collectThreads()
     int count = 0;
 
     for (_threadIterator = notmuch_query_search_threads(_query);
-        notmuch_threads_valid(_threadIterator);
+        notmuch_threads_valid(_threadIterator) && _collecting;
         notmuch_threads_move_to_next(_threadIterator), ++count)
     {
         lock.lock();
@@ -322,7 +325,7 @@ void SearchView::collectThreads()
         lock.unlock();
     }
 
-    _doneCollecting = true;
+    _collecting = false;
     notmuch_threads_destroy(_threadIterator);
 
     /* For cases when there are no matching threads */
