@@ -28,8 +28,7 @@
 class InputHandler
 {
     public:
-        InputHandler() = default;
-        ~InputHandler() = default;
+        virtual ~InputHandler() = default;
 
         virtual bool handleKeySequence(const std::vector<int> & sequence);
 

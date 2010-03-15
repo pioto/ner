@@ -44,7 +44,7 @@ class ThreadView : public View
 
     public:
         ThreadView(const std::string & id);
-        ~ThreadView();
+        virtual ~ThreadView();
 
         virtual void update();
         virtual void refresh();

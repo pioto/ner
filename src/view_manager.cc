@@ -29,6 +29,8 @@ ViewManager::ViewManager()
 
 ViewManager::~ViewManager()
 {
+    for (auto view = _views.begin(), e = _views.end(); view != e; ++view)
+        delete *view;
 }
 
 bool ViewManager::handleKeySequence(const std::vector<int> & sequence)

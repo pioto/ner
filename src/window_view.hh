@@ -26,7 +26,7 @@ class WindowView : public View
 {
     public:
         WindowView();
-        ~WindowView();
+        virtual ~WindowView();
 
         virtual void refresh();
         virtual void focus();

@@ -32,6 +32,8 @@ class ViewManager;
 class View : public InputHandler
 {
     public:
+        virtual ~View() = default;
+
         /* Abstract methods */
         virtual void update() = 0;
         virtual void refresh() = 0;

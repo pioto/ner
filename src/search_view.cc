@@ -98,7 +98,9 @@ SearchView::SearchView(const std::string & search)
 
 SearchView::~SearchView()
 {
-    _thread.join();
+    if (_thread.joinable())
+        _thread.join();
+
     notmuch_query_destroy(_query);
 }
 

@@ -47,7 +47,7 @@ class SearchView : public WindowView
 
     public:
         SearchView(const std::string & search);
-        ~SearchView();
+        virtual ~SearchView();
 
         virtual void update();
         virtual void resize();
