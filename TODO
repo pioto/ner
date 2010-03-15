@@ -14,4 +14,6 @@ TODO
 - Convert subject and authors from UTF-8 to UTF-32 and use ncursesw to display
   the result.
 - Handle Xapian errors rather than crashing.
+- Add ViewView or something to navigate around the open views
+- Add SearchListView to browse a list of saved searches
 
