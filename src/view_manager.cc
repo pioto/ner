@@ -83,5 +83,13 @@ void ViewManager::refresh()
     _activeView->refresh();
 }
 
+void ViewManager::resize()
+{
+    for (auto view = _views.begin(), e = _views.end(); view != e; ++view)
+    {
+        (*view)->resize();
+    }
+}
+
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
 

@@ -90,6 +90,24 @@ void Ner::run()
             sequence.pop_back();
         else if (key == 3) // Ctrl-C
             sequence.clear();
+        else if (key == KEY_RESIZE)
+        {
+            endwin();
+            refresh();
+
+            _viewManager->resize();
+            _statusBar->resize();
+
+            _viewManager->update();
+
+            _viewManager->refresh();
+            _statusBar->refresh();
+
+            /* Clear the -1 character */
+            getch();
+
+            continue;
+        }
         else
         {
             sequence.push_back(key);

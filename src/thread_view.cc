@@ -25,7 +25,7 @@
 #include "colors.hh"
 #include "status_bar.hh"
 
-const uint32_t threadViewHeight = 8;
+const uint32_t messageListHeight = 8;
 
 ThreadView::Message::Message(notmuch_message_t * message, Message * parentMessage)
     : parent(parentMessage),
@@ -49,9 +49,9 @@ ThreadView::Message::Message(notmuch_message_t * message, Message * parentMessag
 ThreadView::ThreadView(const std::string & id)
     : View(),
         _selectedMessage(&_topMessage),
-        _threadWindow(newwin(threadViewHeight, COLS, 0, 0)),
-        _messageWindow(newwin(LINES - threadViewHeight - StatusBar::instance().height(),
-            COLS, threadViewHeight, 0))
+        _threadWindow(newwin(messageListHeight, COLS, 0, 0)),
+        _messageWindow(newwin(LINES - messageListHeight - StatusBar::instance().height(),
+            COLS, messageListHeight, 0))
 {
     _query = notmuch_query_create(NotMuch::database(), std::string("thread:").append(id).c_str());
     _thread = notmuch_threads_get(notmuch_query_search_threads(_query));
@@ -75,7 +75,7 @@ void ThreadView::update()
     displayMessageLine(_topMessage, 0, leading, true, 0);
 
     wattron(_threadWindow, COLOR_PAIR(Colors::THREAD_VIEW_SEPARATOR));
-    mvwhline(_threadWindow, threadViewHeight - 1, 0, 0, COLS);
+    mvwhline(_threadWindow, messageListHeight - 1, 0, 0, COLS);
     wattroff(_threadWindow, COLOR_PAIR(Colors::THREAD_VIEW_SEPARATOR));
 
     std::ifstream messageFile;
@@ -103,6 +103,14 @@ void ThreadView::focus()
 {
     wclear(_threadWindow);
     clearok(_threadWindow, true);
+}
+
+void ThreadView::resize()
+{
+    wresize(_messageWindow, messageListHeight, COLS);
+    wresize(_threadWindow, LINES - messageListHeight - StatusBar::instance().height(), COLS);
+
+    mvwin(_threadWindow, messageListHeight, 0);
 }
 
 uint32_t ThreadView::displayMessageLine(const Message & message,

@@ -50,6 +50,7 @@ class SearchView : public WindowView
         ~SearchView();
 
         virtual void update();
+        virtual void resize();
         virtual std::string name() const { return "search-view"; }
 
         void nextThread();

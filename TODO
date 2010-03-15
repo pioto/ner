@@ -11,7 +11,6 @@ TODO
 - Make the statusbar better. Maybe expand it to two lines, one for input and
   the other for actual status information.
 - Sending and replying to email.
-- Deal with terminal resizes.
 - Convert subject and authors from UTF-8 to UTF-32 and use ncursesw to display
   the result.
 

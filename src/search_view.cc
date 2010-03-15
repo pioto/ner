@@ -193,6 +193,13 @@ void SearchView::update()
     }
 }
 
+void SearchView::resize()
+{
+    WindowView::resize();
+
+    makeSelectionVisible();
+}
+
 void SearchView::nextThread()
 {
     if (_selectedIndex < _threads.size() - 1)

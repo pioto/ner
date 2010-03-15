@@ -30,6 +30,7 @@ class WindowView : public View
 
         virtual void refresh();
         virtual void focus();
+        virtual void resize();
 
     protected:
         WINDOW * _window;

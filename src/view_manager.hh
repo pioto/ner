@@ -38,6 +38,7 @@ class ViewManager : public InputHandler
         void closeActiveView();
         void update();
         void refresh();
+        void resize();
 
     private:
         View * _activeView;

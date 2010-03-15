@@ -52,6 +52,21 @@ StatusBar::~StatusBar()
         _messageClearThread.join();
 }
 
+void StatusBar::refresh()
+{
+    wrefresh(_statusWindow);
+    wrefresh(_promptWindow);
+}
+
+void StatusBar::resize()
+{
+    wresize(_statusWindow, 1, COLS);
+    wresize(_promptWindow, 1, COLS);
+
+    mvwin(_statusWindow, LINES - 2, 0);
+    mvwin(_promptWindow, LINES - 1, 0);
+}
+
 void StatusBar::displayMessage(const std::string & message)
 {
     werase(_promptWindow);
@@ -127,5 +142,4 @@ void StatusBar::clearMessage()
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
-
 

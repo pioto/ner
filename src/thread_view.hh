@@ -49,6 +49,7 @@ class ThreadView : public View
         virtual void update();
         virtual void refresh();
         virtual void focus();
+        virtual void resize();
         virtual std::string name() const { return "thread-view"; }
 
     private:
