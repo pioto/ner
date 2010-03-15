@@ -305,13 +305,18 @@ void SearchView::collectThreads()
 
     notmuch_threads_t * _threadIterator;
 
+    int count = 0;
+
     for (_threadIterator = notmuch_query_search_threads(_query);
         notmuch_threads_valid(_threadIterator);
-        notmuch_threads_move_to_next(_threadIterator))
+        notmuch_threads_move_to_next(_threadIterator), ++count)
     {
         lock.lock();
         _threads.push_back(notmuch_threads_get(_threadIterator));
-        _condition.notify_one();
+
+        if (count % 50 == 0)
+            _condition.notify_one();
+
         lock.unlock();
     }
 
