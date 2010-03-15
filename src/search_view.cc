@@ -153,7 +153,7 @@ void SearchView::update()
 
         /* Authors */
         wattron(_window, COLOR_PAIR(Colors::SEARCH_VIEW_AUTHORS));
-        waddnstr(_window, (*thread).authors.c_str(), authorsWidth - 1);
+        waddnstr(_window, (*thread).authors, authorsWidth - 1);
         wattroff(_window, COLOR_PAIR(Colors::SEARCH_VIEW_AUTHORS));
 
         while (getcurx(_window) < newestDateWidth + messageCountWidth + authorsWidth)
@@ -161,7 +161,7 @@ void SearchView::update()
 
         /* Subject */
         wattron(_window, COLOR_PAIR(Colors::SEARCH_VIEW_SUBJECT));
-        waddnstr(_window, (*thread).subject.c_str(), getmaxx(_window) - getcurx(_window));
+        waddnstr(_window, (*thread).subject, getmaxx(_window) - getcurx(_window));
         wattroff(_window, COLOR_PAIR(Colors::SEARCH_VIEW_SUBJECT));
 
         waddch(_window, ' ');

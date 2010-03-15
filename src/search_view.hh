@@ -35,9 +35,9 @@ class SearchView : public WindowView
     {
         Thread(notmuch_thread_t * thread);
 
-        std::string id;
-        std::string subject;
-        std::string authors;
+        const char * id;
+        const char * subject;
+        const char * authors;
         uint32_t totalMessages;
         uint32_t matchedMessages;
         time_t newestDate;
