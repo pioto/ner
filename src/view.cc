@@ -17,18 +17,7 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
-
 #include "view.hh"
-#include "view_manager.hh"
-
-View::View()
-{
-}
-
-View::~View()
-{
-}
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
 
