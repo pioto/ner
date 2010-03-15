@@ -13,4 +13,5 @@ TODO
 - Sending and replying to email.
 - Convert subject and authors from UTF-8 to UTF-32 and use ncursesw to display
   the result.
+- Handle Xapian errors rather than crashing.
 
