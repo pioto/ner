@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <chrono>
 #include <iterator>
+#include <sched.h>
 
 #include "search_view.hh"
 #include "thread_view.hh"
@@ -331,6 +332,8 @@ void SearchView::collectThreads()
             _condition.notify_one();
 
         lock.unlock();
+
+        sched_yield();
     }
 
     _collecting = false;
