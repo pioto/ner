@@ -19,21 +19,16 @@
 
 #include "notmuch.hh"
 
-notmuch_database_t * NotMuch::_database = NULL;
+std::string NotMuch::_path;
 
-notmuch_database_t * NotMuch::database()
+void NotMuch::setDatabasePath(const std::string & path)
 {
-    return _database;
+    _path = path;
 }
 
-void NotMuch::openDatabase(const std::string & path)
+notmuch_database_t * NotMuch::openDatabase()
 {
-    _database = notmuch_database_open(path.c_str(), NOTMUCH_DATABASE_MODE_READ_ONLY);
-}
-
-void NotMuch::closeDatabase()
-{
-    notmuch_database_close(_database);
+    return notmuch_database_open(_path.c_str(), NOTMUCH_DATABASE_MODE_READ_ONLY);
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

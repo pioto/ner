@@ -26,15 +26,14 @@
 class NotMuch
 {
     public:
-        static notmuch_database_t * database();
-        static void openDatabase(const std::string & path);
-        static void closeDatabase();
+        NotMuch() = delete;
+        ~NotMuch() = delete;
+
+        static void setDatabasePath(const std::string & path);
+        static notmuch_database_t * openDatabase();
 
     private:
-        NotMuch();
-        ~NotMuch();
-
-        static notmuch_database_t * _database;
+        static std::string _path;
 };
 
 #endif

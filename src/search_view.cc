@@ -56,7 +56,7 @@ SearchView::Thread::Thread(notmuch_thread_t * thread)
 
 SearchView::SearchView(const std::string & search)
     : WindowView(),
-        _query(notmuch_query_create(NotMuch::database(), search.c_str())),
+        _searchTerms(search),
         _selectedIndex(0),
         _offset(0)
 {
@@ -103,8 +103,6 @@ SearchView::~SearchView()
         _collecting = false;
         _thread.join();
     }
-
-    notmuch_query_destroy(_query);
 }
 
 void SearchView::update()
@@ -158,7 +156,7 @@ void SearchView::update()
 
         /* Authors */
         wattron(_window, COLOR_PAIR(Colors::SEARCH_VIEW_AUTHORS));
-        waddnstr(_window, (*thread).authors, authorsWidth - 1);
+        waddnstr(_window, (*thread).authors.c_str(), authorsWidth - 1);
         wattroff(_window, COLOR_PAIR(Colors::SEARCH_VIEW_AUTHORS));
 
         while (getcurx(_window) < newestDateWidth + messageCountWidth + authorsWidth)
@@ -166,7 +164,7 @@ void SearchView::update()
 
         /* Subject */
         wattron(_window, COLOR_PAIR(Colors::SEARCH_VIEW_SUBJECT));
-        waddnstr(_window, (*thread).subject, getmaxx(_window) - getcurx(_window));
+        waddnstr(_window, (*thread).subject.c_str(), getmaxx(_window) - getcurx(_window));
         wattroff(_window, COLOR_PAIR(Colors::SEARCH_VIEW_SUBJECT));
 
         waddch(_window, ' ');
@@ -316,16 +314,18 @@ void SearchView::collectThreads()
     std::unique_lock<std::mutex> lock(_mutex);
     lock.unlock();
 
-    notmuch_threads_t * _threadIterator;
+    notmuch_database_t * database = NotMuch::openDatabase();
+    notmuch_query_t * query = notmuch_query_create(database, _searchTerms.c_str());
+    notmuch_threads_t * threadIterator;
 
     int count = 0;
 
-    for (_threadIterator = notmuch_query_search_threads(_query);
-        notmuch_threads_valid(_threadIterator) && _collecting;
-        notmuch_threads_move_to_next(_threadIterator), ++count)
+    for (threadIterator = notmuch_query_search_threads(query);
+        notmuch_threads_valid(threadIterator) && _collecting;
+        notmuch_threads_move_to_next(threadIterator), ++count)
     {
         lock.lock();
-        _threads.push_back(notmuch_threads_get(_threadIterator));
+        _threads.push_back(notmuch_threads_get(threadIterator));
 
         if (count % 50 == 0)
             _condition.notify_one();
@@ -334,7 +334,9 @@ void SearchView::collectThreads()
     }
 
     _collecting = false;
-    notmuch_threads_destroy(_threadIterator);
+    notmuch_threads_destroy(threadIterator);
+    notmuch_query_destroy(query);
+    notmuch_database_close(database);
 
     /* For cases when there are no matching threads */
     _condition.notify_one();

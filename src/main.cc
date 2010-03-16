@@ -36,7 +36,7 @@ int main(int argc, char * argv[])
     ConfigFile configFile(configPath);
     configFile.parse();
 
-    NotMuch::openDatabase(configFile.value("database", "path"));
+    NotMuch::setDatabasePath(configFile.value("database", "path"));
 
     Ner ner;
 

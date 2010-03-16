@@ -35,9 +35,9 @@ class SearchView : public WindowView
     {
         Thread(notmuch_thread_t * thread);
 
-        const char * id;
-        const char * subject;
-        const char * authors;
+        std::string id;
+        std::string subject;
+        std::string authors;
         uint32_t totalMessages;
         uint32_t matchedMessages;
         time_t newestDate;
@@ -66,7 +66,7 @@ class SearchView : public WindowView
         void makeSelectionVisible();
         void collectThreads();
 
-        notmuch_query_t * _query;
+        std::string _searchTerms;
 
         std::thread _thread;
         std::mutex _mutex;
