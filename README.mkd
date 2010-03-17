@@ -1,0 +1,26 @@
+ner: Notmuch Email Reader
+=========================
+
+Key bindings
+------------
+These are not configurable at the moment but here are the currently accepted
+key bindings:
+
+### Global
+- **Q**: Quit
+- **q**: Close the current view
+- **s**: Start a new search
+
+### Search
+- **j** or **Down**:            Move to the next thread
+- **k** or **Up**:              Move to the previous thread
+- **Ctrl-D** or **Page Down**:  Move to the next page
+- **Ctrl-U** or **Page Up**:    Move to the previous page
+- **gg** or **Home**:           Move to the first thread
+- **G** or **End**:             Move to the last thread
+- **=**:                        Refresh the search
+- **Enter**:                    Open the selected thread
+
+Currently, unmatched key sequences just keep building up, so to clear the input
+sequence, press **Ctrl-C**.
+
