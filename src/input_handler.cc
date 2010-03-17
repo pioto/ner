@@ -48,23 +48,12 @@ void InputHandler::addHandledSequence(const std::vector<int> & sequence, const s
 
 void InputHandler::addHandledSequence(const std::string & string, const std::function<void ()> & function)
 {
-    std::vector<int> sequence;
-
-    for (auto i = string.begin(), e = string.end(); i != e; ++i)
-    {
-        sequence.push_back(*i);
-    }
-
-    addHandledSequence(sequence, function);
+    addHandledSequence(std::vector<int>(string.begin(), string.end()), function);
 }
 
 void InputHandler::addHandledSequence(const int key, const std::function<void ()> & function)
 {
-    std::vector<int> sequence;
-
-    sequence.push_back(key);
-
-    addHandledSequence(sequence, function);
+    addHandledSequence(std::vector<int>{ key }, function);
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
