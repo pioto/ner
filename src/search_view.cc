@@ -38,8 +38,8 @@ const auto conditionWaitTime = std::chrono::milliseconds(50);
 
 SearchView::Thread::Thread(notmuch_thread_t * thread)
     : id(notmuch_thread_get_thread_id(thread)),
-        subject(notmuch_thread_get_subject(thread)),
-        authors(notmuch_thread_get_authors(thread)),
+        subject(notmuch_thread_get_subject(thread) ? : "(null)"),
+        authors(notmuch_thread_get_authors(thread) ? : "(null)"),
         totalMessages(notmuch_thread_get_total_messages(thread)),
         matchedMessages(notmuch_thread_get_matched_messages(thread)),
         newestDate(notmuch_thread_get_newest_date(thread)),
@@ -348,7 +348,10 @@ void SearchView::collectThreads()
         notmuch_threads_move_to_next(threadIterator), ++count)
     {
         lock.lock();
-        _threads.push_back(notmuch_threads_get(threadIterator));
+
+        notmuch_thread_t * thread = notmuch_threads_get(threadIterator);
+        _threads.push_back(thread);
+        notmuch_thread_destroy(thread);
 
         if (count % 50 == 0)
             _condition.notify_one();

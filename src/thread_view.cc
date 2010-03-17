@@ -34,9 +34,9 @@ ThreadView::Message::Message(notmuch_message_t * message, Message * parentMessag
         date(notmuch_message_get_date(message)),
         matched(notmuch_message_get_flag(message, NOTMUCH_MESSAGE_FLAG_MATCH))
 {
-    headers["From"]     = notmuch_message_get_header(message, "From");
-    headers["To"]       = notmuch_message_get_header(message, "To");
-    headers["Subject"]  = notmuch_message_get_header(message, "Subject");
+    headers["From"]     = notmuch_message_get_header(message, "From") ? : "(null)";
+    headers["To"]       = notmuch_message_get_header(message, "To") ? : "(null)";
+    headers["Subject"]  = notmuch_message_get_header(message, "Subject") ? : "(null)";
 
     for (notmuch_messages_t * messages = notmuch_message_get_replies(message);
         notmuch_messages_valid(messages);
