@@ -7,9 +7,10 @@ These are not configurable at the moment but here are the currently accepted
 key bindings:
 
 ### Global
-- **Q**: Quit
-- **q**: Close the current view
-- **s**: Start a new search
+- **Q**:        Quit
+- **q**:        Close the current view
+- **s**:        Start a new search
+- **Ctrl-C**:   Clear the current input sequence
 
 ### Search
 - **j** or **Down**:            Move to the next thread
@@ -20,7 +21,4 @@ key bindings:
 - **G** or **End**:             Move to the last thread
 - **=**:                        Refresh the search
 - **Enter**:                    Open the selected thread
-
-Currently, unmatched key sequences just keep building up, so to clear the input
-sequence, press **Ctrl-C**.
 

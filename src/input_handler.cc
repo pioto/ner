@@ -19,18 +19,26 @@
 
 #include "input_handler.hh"
 
-bool InputHandler::handleKeySequence(const std::vector<int> & sequence)
+InputHandler::HandleResult InputHandler::handleKeySequence(const std::vector<int> & sequence)
 {
-    auto function = _handledSequences.find(sequence);
+    auto lowerBound = _handledSequences.lower_bound(sequence);
 
-    if (function != _handledSequences.end())
+    /* If there are no keys greater than or equal to sequence */
+    if (lowerBound == _handledSequences.end())
+        return NO_MATCH;
+    /* If there is an exact match */
+    else if (sequence == (*lowerBound).first)
     {
-        (*function).second();
+        (*lowerBound).second();
 
-        return true;
+        return HANDLED;
     }
+    /* If there is a partial match */
+    else if (std::equal(sequence.begin(), sequence.end(), (*lowerBound).first.begin()))
+        return PARTIAL_MATCH;
+    /* Otherwise there is no match */
     else
-        return false;
+        return NO_MATCH;
 }
 
 void InputHandler::addHandledSequence(const std::vector<int> & sequence, const std::function<void ()> & function)

@@ -28,9 +28,16 @@
 class InputHandler
 {
     public:
+        enum HandleResult
+        {
+            NO_MATCH,
+            PARTIAL_MATCH,
+            HANDLED
+        };
+
         virtual ~InputHandler() = default;
 
-        virtual bool handleKeySequence(const std::vector<int> & sequence);
+        virtual HandleResult handleKeySequence(const std::vector<int> & sequence);
 
         void addHandledSequence(const std::vector<int> & sequence, const std::function<void ()> & function);
         void addHandledSequence(const std::string & string, const std::function<void ()> & function);

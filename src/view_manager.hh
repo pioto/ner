@@ -32,7 +32,7 @@ class ViewManager : public InputHandler
         ViewManager();
         ~ViewManager();
 
-        virtual bool handleKeySequence(const std::vector<int> & sequence);
+        virtual InputHandler::HandleResult handleKeySequence(const std::vector<int> & sequence);
 
         void addView(View * view);
         void closeActiveView();

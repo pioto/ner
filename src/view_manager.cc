@@ -33,12 +33,24 @@ ViewManager::~ViewManager()
         delete *view;
 }
 
-bool ViewManager::handleKeySequence(const std::vector<int> & sequence)
+InputHandler::HandleResult ViewManager::handleKeySequence(const std::vector<int> & sequence)
 {
-    if (InputHandler::handleKeySequence(sequence))
-        return true;
+    auto handleResult = InputHandler::handleKeySequence(sequence);
+
+    if (handleResult == InputHandler::HANDLED)
+        return InputHandler::HANDLED;
     else
-        return _activeView->handleKeySequence(sequence);
+    {
+        auto activeViewHandleResult = _activeView->handleKeySequence(sequence);
+
+        if (activeViewHandleResult == InputHandler::HANDLED)
+            return InputHandler::HANDLED;
+        else if (handleResult == InputHandler::NO_MATCH &&
+            activeViewHandleResult == InputHandler::NO_MATCH)
+            return InputHandler::NO_MATCH;
+        else
+            return InputHandler::PARTIAL_MATCH;
+    }
 }
 
 void ViewManager::addView(View * view)

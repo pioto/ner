@@ -7,7 +7,6 @@ TODO
   want to use.
 - Implement message viewing in ThreadView.
 - Configurable colors and UI.
-- Clear the input key sequence when there is no longer any matching bindings.
 - Make the statusbar better. Maybe expand it to two lines, one for input and
   the other for actual status information.
 - Sending and replying to email.
