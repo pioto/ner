@@ -34,6 +34,8 @@ const int newestDateWidth = 13;
 const int messageCountWidth = 8;
 const int authorsWidth = 20;
 
+const auto conditionWaitTime = std::chrono::milliseconds(50);
+
 SearchView::Thread::Thread(notmuch_thread_t * thread)
     : id(notmuch_thread_get_thread_id(thread)),
         subject(notmuch_thread_get_subject(thread)),
@@ -94,7 +96,7 @@ SearchView::SearchView(const std::string & search)
 
     std::unique_lock<std::mutex> lock(_mutex);
     while (_threads.size() < getmaxy(_window) && _collecting)
-        _condition.wait_for(lock, std::chrono::milliseconds(50));
+        _condition.wait_for(lock, conditionWaitTime);
 }
 
 SearchView::~SearchView()
@@ -262,37 +264,57 @@ void SearchView::openSelectedThread()
 
 void SearchView::refreshThreads()
 {
+    /* If the thread is still going, stop it, and wait for it to return */
     if (_thread.joinable())
     {
         _collecting = false;
         _thread.join();
     }
 
-    _collecting = true;
+    bool empty = _threads.empty();
+    std::string selectedId;
 
-    if (_threads.empty())
-    {
-        collectThreads();
-        return;
-    }
-
-    std::string selectedId = (*(_threads.begin() + _selectedIndex)).id;
+    if (!empty)
+        selectedId = (*(_threads.begin() + _selectedIndex)).id;
 
     _threads.clear();
-    collectThreads();
 
+    /* Start collecting threads in the background */
+    _collecting = true;
+    _thread = std::thread(std::bind(&SearchView::collectThreads, this));
+
+    /* Locate the previously selected thread ID */
     bool found = false;
+    std::unique_lock<std::mutex> lock(_mutex);
 
-    for (auto i = _threads.begin(), e = _threads.end(); i != e; ++i)
+    if (empty)
+        found = true;
+    else
     {
-        if ((*i).id == selectedId)
+        int index = 0;
+
+        while (!found && _collecting)
         {
-            _selectedIndex = i - _threads.begin();
-            found = true;
-            break;
+            for (; index < _threads.size(); ++index)
+            {
+                /* Stop if we found the thread ID */
+                if (_threads.at(index).id == selectedId)
+                {
+                    found = true;
+                    _selectedIndex = index;
+                    break;
+                }
+            }
+
+            _condition.wait_for(lock, conditionWaitTime);
         }
     }
 
+    /* Wait until we have enough threads to fill the screen */
+    while (_threads.size() - _offset < getmaxy(_window) && _collecting)
+        _condition.wait_for(lock, conditionWaitTime);
+
+    /* If we didn't find it, make sure the selected index is valid */
     if (!found)
     {
         if (_threads.size() <= _selectedIndex)
