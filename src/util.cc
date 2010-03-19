@@ -18,6 +18,7 @@
  */
 
 #include "util.hh"
+#include <stdio.h>
 
 #define MINUTE (60)
 #define HOUR (60 * MINUTE)
