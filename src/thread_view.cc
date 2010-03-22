@@ -55,10 +55,10 @@ ThreadView::ThreadView(const std::string & id)
             COLS, messageListHeight, 0))
 {
     notmuch_database_t * database = NotMuch::openDatabase();
+    notmuch_query_t * query = notmuch_query_create(database, std::string("thread:").append(id).c_str());
+    notmuch_thread_t * thread = notmuch_threads_get(notmuch_query_search_threads(query));
 
-    _query = notmuch_query_create(database, std::string("thread:").append(id).c_str());
-    _thread = notmuch_threads_get(notmuch_query_search_threads(_query));
-    _topMessage = notmuch_messages_get(notmuch_thread_get_toplevel_messages(_thread));
+    _topMessage = notmuch_messages_get(notmuch_thread_get_toplevel_messages(thread));
 
     notmuch_database_close(database);
 

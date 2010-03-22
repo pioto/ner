@@ -58,8 +58,6 @@ class ThreadView : public View
 
         Message _topMessage;
         Message * _selectedMessage;
-        notmuch_query_t * _query;
-        notmuch_thread_t * _thread;
         WINDOW * _threadWindow;
         WINDOW * _messageWindow;
 };
