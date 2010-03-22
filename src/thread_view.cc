@@ -32,12 +32,13 @@ ThreadView::Message::Message(notmuch_message_t * message, Message * parentMessag
         id(notmuch_message_get_message_id(message)),
         filename(notmuch_message_get_filename(message)),
         date(notmuch_message_get_date(message)),
-        matched(notmuch_message_get_flag(message, NOTMUCH_MESSAGE_FLAG_MATCH))
+        matched(notmuch_message_get_flag(message, NOTMUCH_MESSAGE_FLAG_MATCH)),
+        headers{
+            {"From",    notmuch_message_get_header(message, "From")     ? : "(null)"},
+            {"To",      notmuch_message_get_header(message, "To")       ? : "(null)"},
+            {"Subject", notmuch_message_get_header(message, "Subject")  ? : "(null)"},
+        }
 {
-    headers["From"]     = notmuch_message_get_header(message, "From") ? : "(null)";
-    headers["To"]       = notmuch_message_get_header(message, "To") ? : "(null)";
-    headers["Subject"]  = notmuch_message_get_header(message, "Subject") ? : "(null)";
-
     for (notmuch_messages_t * messages = notmuch_message_get_replies(message);
         notmuch_messages_valid(messages);
         notmuch_messages_move_to_next(messages))
