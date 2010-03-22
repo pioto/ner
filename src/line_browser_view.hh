@@ -1,4 +1,4 @@
-/* ner: src/colors.hh
+/* ner: src/line_browser_view.hh
  *
  * Copyright (c) 2010 Michael Forney
  *
@@ -17,29 +17,32 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NER_COLORS_H
-#define NER_COLORS_H 1
+#ifndef NER_LINE_BROWSER_VIEW_H
+#define NER_LINE_BROWSER_VIEW_H 1
 
-namespace Colors
+#include "window_view.hh"
+
+class LineBrowserView : public WindowView
 {
-    enum Color
-    {
-        /* Status Bar */
-        STATUS_BAR_STATUS = 1,
-        STATUS_BAR_MESSAGE,
-        STATUS_BAR_PROMPT,
+    public:
+        LineBrowserView();
 
-        /* Search View */
-        SEARCH_VIEW_DATE,
-        SEARCH_VIEW_MESSAGE_COUNT_COMPLETE,
-        SEARCH_VIEW_MESSAGE_COUNT_PARTIAL,
-        SEARCH_VIEW_AUTHORS,
-        SEARCH_VIEW_SUBJECT,
-        SEARCH_VIEW_TAGS,
+        virtual void resize();
 
-        /* Thread View */
-        THREAD_VIEW_ARROW
-    };
+        virtual void next();
+        virtual void previous();
+        virtual void nextPage();
+        virtual void previousPage();
+        virtual void moveToTop();
+        virtual void moveToBottom();
+
+    protected:
+        virtual int visibleLines() const;
+        virtual int lineCount() const = 0;
+        virtual void makeSelectionVisible();
+
+        int _offset;
+        int _selectedIndex;
 };
 
 #endif

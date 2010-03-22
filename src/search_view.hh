@@ -26,10 +26,9 @@
 #include <thread>
 #include <notmuch.h>
 
-#include "window_view.hh"
-#include "notmuch.hh"
+#include "line_browser_view.hh"
 
-class SearchView : public WindowView
+class SearchView : public LineBrowserView
 {
     struct Thread
     {
@@ -50,20 +49,15 @@ class SearchView : public WindowView
         virtual ~SearchView();
 
         virtual void update();
-        virtual void resize();
         virtual std::string name() const { return "search-view"; }
 
-        void nextThread();
-        void previousThread();
-        void nextPage();
-        void previousPage();
-        void moveToTop();
-        void moveToBottom();
         void openSelectedThread();
         void refreshThreads();
 
+    protected:
+        virtual int lineCount() const;
+
     private:
-        void makeSelectionVisible();
         void collectThreads();
 
         std::string _searchTerms;
@@ -74,8 +68,6 @@ class SearchView : public WindowView
         bool _collecting;
 
         std::vector<Thread> _threads;
-        uint32_t _selectedIndex;
-        uint32_t _offset;
 };
 
 #endif

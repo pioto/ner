@@ -13,6 +13,7 @@ ner_SOURCES = \
 	input_handler.cc input_handler.hh \
 	view.cc view.hh \
 	window_view.cc window_view.hh \
+	line_browser_view.cc line_browser_view.hh \
 	search_view.cc search_view.hh \
 	thread_view.cc thread_view.hh
 

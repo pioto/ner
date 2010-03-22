@@ -24,22 +24,21 @@
 #include <vector>
 #include <unordered_map>
 
-#include "view.hh"
+#include "line_browser_view.hh"
 
-class ThreadView : public View
+class ThreadView : public LineBrowserView
 {
     struct Message
     {
         Message() = default;
-        Message(notmuch_message_t * message, Message * parentMessage = 0);
+        Message(notmuch_message_t * message);
 
         std::string id;
         std::string filename;
         time_t date;
         bool matched;
-        std::unordered_map<std::string, std::string> headers;
+        std::map<std::string, std::string> headers;
         std::vector<Message> replies;
-        Message * parent;
     };
 
     public:
@@ -47,19 +46,17 @@ class ThreadView : public View
         virtual ~ThreadView();
 
         virtual void update();
-        virtual void refresh();
-        virtual void focus();
-        virtual void resize();
         virtual std::string name() const { return "thread-view"; }
+
+    protected:
+        virtual int lineCount() const;
 
     private:
         uint32_t displayMessageLine(const Message & message,
-            uint32_t start, std::vector<chtype> & leading, bool last, uint32_t row);
+            std::vector<chtype> & leading, bool last, int index);
 
         Message _topMessage;
-        Message * _selectedMessage;
-        WINDOW * _threadWindow;
-        WINDOW * _messageWindow;
+        int _messageCount;
 };
 
 #endif

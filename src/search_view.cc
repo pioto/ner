@@ -29,6 +29,7 @@
 #include "view_manager.hh"
 #include "util.hh"
 #include "colors.hh"
+#include "notmuch.hh"
 
 const int newestDateWidth = 13;
 const int messageCountWidth = 8;
@@ -58,10 +59,8 @@ SearchView::Thread::Thread(notmuch_thread_t * thread)
 }
 
 SearchView::SearchView(const std::string & search)
-    : WindowView(),
-        _searchTerms(search),
-        _selectedIndex(0),
-        _offset(0)
+    : LineBrowserView(),
+        _searchTerms(search)
 {
     _collecting = true;
     _thread = std::thread(std::bind(&SearchView::collectThreads, this));
@@ -75,23 +74,7 @@ SearchView::SearchView(const std::string & search)
     init_pair(Colors::SEARCH_VIEW_TAGS,                     COLOR_RED,      COLOR_BLACK);
 
     /* Key Sequences */
-    addHandledSequence("j", std::bind(&SearchView::nextThread, this));
-    addHandledSequence(KEY_DOWN, std::bind(&SearchView::nextThread, this));
-    addHandledSequence("k", std::bind(&SearchView::previousThread, this));
-    addHandledSequence(KEY_UP, std::bind(&SearchView::previousThread, this));
-
-    addHandledSequence(KEY_NPAGE, std::bind(&SearchView::nextPage, this));
-    addHandledSequence('d' - 96, std::bind(&SearchView::nextPage, this)); // Ctrl-D
-    addHandledSequence(KEY_PPAGE, std::bind(&SearchView::previousPage, this));
-    addHandledSequence('u' - 96, std::bind(&SearchView::previousPage, this)); // Ctrl-U
-
-    addHandledSequence("gg", std::bind(&SearchView::moveToTop, this));
-    addHandledSequence(KEY_HOME, std::bind(&SearchView::moveToTop, this));
-    addHandledSequence("G", std::bind(&SearchView::moveToBottom, this));
-    addHandledSequence(KEY_END, std::bind(&SearchView::moveToBottom, this));
-
     addHandledSequence("=", std::bind(&SearchView::refreshThreads, this));
-
     addHandledSequence("\n", std::bind(&SearchView::openSelectedThread, this));
 
     std::unique_lock<std::mutex> lock(_mutex);
@@ -199,63 +182,6 @@ void SearchView::update()
     }
 }
 
-void SearchView::resize()
-{
-    WindowView::resize();
-
-    makeSelectionVisible();
-}
-
-void SearchView::nextThread()
-{
-    if (_selectedIndex < _threads.size() - 1)
-        ++_selectedIndex;
-
-    makeSelectionVisible();
-}
-
-void SearchView::previousThread()
-{
-    if (_selectedIndex > 0)
-        --_selectedIndex;
-
-    makeSelectionVisible();
-}
-
-void SearchView::nextPage()
-{
-    if (_selectedIndex + getmaxy(_window) >= _threads.size())
-        _selectedIndex = _threads.size() - 1;
-    else
-        _selectedIndex += getmaxy(_window) - 1;
-
-    makeSelectionVisible();
-}
-
-void SearchView::previousPage()
-{
-    if (getmaxy(_window) > _selectedIndex)
-        _selectedIndex = 0;
-    else
-        _selectedIndex -= getmaxy(_window) - 1;
-
-    makeSelectionVisible();
-}
-
-void SearchView::moveToTop()
-{
-    _selectedIndex = 0;
-
-    makeSelectionVisible();
-}
-
-void SearchView::moveToBottom()
-{
-    _selectedIndex = _threads.size() - 1;
-
-    makeSelectionVisible();
-}
-
 void SearchView::openSelectedThread()
 {
     std::lock_guard<std::mutex> lock(_mutex);
@@ -324,12 +250,9 @@ void SearchView::refreshThreads()
     makeSelectionVisible();
 }
 
-void SearchView::makeSelectionVisible()
+int SearchView::lineCount() const
 {
-    if (_selectedIndex < _offset)
-        _offset = _selectedIndex;
-    else if (_selectedIndex >= _offset + getmaxy(_window))
-        _offset = _selectedIndex - getmaxy(_window) + 1;
+    return _threads.size();
 }
 
 void SearchView::collectThreads()
