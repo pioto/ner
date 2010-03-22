@@ -19,5 +19,9 @@
 
 #include "view.hh"
 
+View::~View()
+{
+}
+
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
 

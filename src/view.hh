@@ -32,7 +32,7 @@ class ViewManager;
 class View : public InputHandler
 {
     public:
-        virtual ~View() = default;
+        virtual ~View();
 
         /* Abstract methods */
         virtual void update() = 0;
