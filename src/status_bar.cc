@@ -127,8 +127,9 @@ std::string StatusBar::prompt(const std::string & message)
     curs_set(0);
     noecho();
     wattroff(_promptWindow, COLOR_PAIR(Colors::STATUS_BAR_PROMPT));
-    move(LINES - 1, 0);
-    clrtoeol();
+
+    /* Clear the prompt window after we're done */
+    werase(_promptWindow);
 
     return std::string(response);
 }
