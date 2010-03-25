@@ -3,7 +3,7 @@ dnl ner: configure.ac
 AC_PREREQ(2.59)
 
 AC_INIT([ner], [0.0.1], [michael@obberon.com])
-AM_INIT_AUTOMAKE([-Wall -Werror])
+AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 AC_LANG([C++])
 
 AC_CONFIG_SRCDIR([src/ner.cc])
