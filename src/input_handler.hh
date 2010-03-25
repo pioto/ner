@@ -35,7 +35,7 @@ class InputHandler
             HANDLED
         };
 
-        virtual ~InputHandler() = default;
+        virtual ~InputHandler();
 
         virtual HandleResult handleKeySequence(const std::vector<int> & sequence);
 

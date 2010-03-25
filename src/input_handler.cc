@@ -19,6 +19,10 @@
 
 #include "input_handler.hh"
 
+InputHandler::~InputHandler()
+{
+}
+
 InputHandler::HandleResult InputHandler::handleKeySequence(const std::vector<int> & sequence)
 {
     auto lowerBound = _handledSequences.lower_bound(sequence);
