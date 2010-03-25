@@ -20,7 +20,7 @@ PKG_CHECK_MODULES([gmime], [gmime-2.4],,
     [AC_MSG_ERROR([ner requires gmime])])
 AC_CHECK_LIB(notmuch, notmuch_database_open,,
     [AC_MSG_ERROR([ner requires libnotmuch])])
-AC_CHECK_LIB(ncurses, initscr,,
+AC_CHECK_LIB(ncursesw, initscr,,
     [AC_MSG_ERROR([ner requires ncurses])])
 dnl }}}
 

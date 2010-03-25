@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <locale.h>
 #include <gmime/gmime.h>
 
 #include "notmuch.hh"
@@ -31,6 +32,8 @@
 
 int main(int argc, char * argv[])
 {
+    setlocale(LC_ALL, "");
+
     g_mime_init(0);
 
     std::string configPath(getenv("HOME"));
