@@ -31,12 +31,14 @@ class StatusBar
 
         int height() const { return 2; }
 
+        void update();
         void refresh();
         void resize();
 
         void displayMessage(const std::string & message);
         std::string prompt(const std::string & message);
         void setViewName(const std::string & name);
+        void setStatus(const std::string & status);
 
         static StatusBar & instance()
         {
@@ -51,6 +53,9 @@ class StatusBar
 
         WINDOW * _statusWindow;
         WINDOW * _promptWindow;
+
+        std::string _viewName;
+        std::string _status;
 
         bool _messageCleared;
         std::thread _messageClearThread;

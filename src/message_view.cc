@@ -18,11 +18,13 @@
  */
 
 #include <fstream>
+#include <sstream>
 #include <cstring>
 
 #include "message_view.hh"
 #include "notmuch.hh"
 #include "colors.hh"
+#include "status_bar.hh"
 
 const std::vector<std::string> headers{ "To", "From", "Subject" };
 
@@ -109,6 +111,15 @@ void MessageView::update()
         if (selected)
             wattroff(_window, A_REVERSE);
     }
+}
+
+void MessageView::updateStatus()
+{
+    std::ostringstream status;
+
+    status << "line " << (_selectedIndex + 1) << " of " << _lines.size();
+
+    StatusBar::instance().setStatus(status.str());
 }
 
 int MessageView::visibleLines() const

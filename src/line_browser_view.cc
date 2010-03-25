@@ -53,6 +53,7 @@ void LineBrowserView::next()
         ++_selectedIndex;
 
     makeSelectionVisible();
+    updateStatus();
 }
 
 void LineBrowserView::previous()
@@ -61,6 +62,7 @@ void LineBrowserView::previous()
         --_selectedIndex;
 
     makeSelectionVisible();
+    updateStatus();
 }
 
 void LineBrowserView::nextPage()
@@ -71,6 +73,7 @@ void LineBrowserView::nextPage()
         _selectedIndex += visibleLines() - 1;
 
     makeSelectionVisible();
+    updateStatus();
 }
 
 void LineBrowserView::previousPage()
@@ -81,6 +84,7 @@ void LineBrowserView::previousPage()
         _selectedIndex -= visibleLines() - 1;
 
     makeSelectionVisible();
+    updateStatus();
 }
 
 void LineBrowserView::moveToTop()
@@ -88,6 +92,7 @@ void LineBrowserView::moveToTop()
     _selectedIndex = 0;
 
     makeSelectionVisible();
+    updateStatus();
 }
 
 void LineBrowserView::moveToBottom()
@@ -95,6 +100,7 @@ void LineBrowserView::moveToBottom()
     _selectedIndex = lineCount() - 1;
 
     makeSelectionVisible();
+    updateStatus();
 }
 
 void LineBrowserView::makeSelectionVisible()

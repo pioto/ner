@@ -29,7 +29,6 @@ class WindowView : public View
         virtual ~WindowView();
 
         virtual void refresh();
-        virtual void focus();
         virtual void resize();
 
     protected:

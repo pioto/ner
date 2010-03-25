@@ -30,6 +30,7 @@
 #include "util.hh"
 #include "colors.hh"
 #include "notmuch.hh"
+#include "status_bar.hh"
 
 const int newestDateWidth = 13;
 const int messageCountWidth = 8;
@@ -247,6 +248,7 @@ void SearchView::refreshThreads()
             _selectedIndex = _threads.size() - 1;
     }
 
+    updateStatus();
     makeSelectionVisible();
 }
 
@@ -291,6 +293,21 @@ void SearchView::collectThreads()
 
     /* For cases when there are no matching threads */
     _condition.notify_one();
+}
+
+void SearchView::updateStatus()
+{
+    std::ostringstream status;
+    status << "search-terms: \"" << _searchTerms << "\"";
+
+    status << " | ";
+
+    if (_threads.size() > 0)
+        status << "thread " << (_selectedIndex + 1) << " of " << _threads.size();
+    else
+        status << "no matching threads";
+
+    StatusBar::instance().setStatus(status.str());
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

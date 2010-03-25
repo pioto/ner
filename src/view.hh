@@ -37,11 +37,13 @@ class View : public InputHandler
         /* Abstract methods */
         virtual void update() = 0;
         virtual void refresh() = 0;
-        virtual void focus() = 0;
         virtual void resize() = 0;
+        virtual void focus();
         virtual std::string name() const = 0;
 
     protected:
+        virtual void updateStatus();
+
         ViewManager * _viewManager;
 
     friend class ViewManager;

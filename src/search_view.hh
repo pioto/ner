@@ -55,6 +55,7 @@ class SearchView : public LineBrowserView
         void refreshThreads();
 
     protected:
+        virtual void updateStatus();
         virtual int lineCount() const;
 
     private:

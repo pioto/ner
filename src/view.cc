@@ -18,9 +18,20 @@
  */
 
 #include "view.hh"
+#include "status_bar.hh"
 
 View::~View()
 {
+}
+
+void View::focus()
+{
+    updateStatus();
+}
+
+void View::updateStatus()
+{
+    StatusBar::instance().setStatus(std::string());
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

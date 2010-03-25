@@ -25,6 +25,7 @@
 StatusBar * StatusBar::_instance = 0;
 
 const int viewNameWidth = 15;
+const int dividerWidth = 3;
 
 StatusBar::StatusBar()
     : _statusWindow(newwin(1, COLS, LINES - 2, 0)),
@@ -50,6 +51,29 @@ StatusBar::~StatusBar()
 
     if (_messageClearThread.joinable())
         _messageClearThread.join();
+}
+
+void StatusBar::update()
+{
+    werase(_statusWindow);
+    wmove(_statusWindow, 0, 0);
+
+    /* View Name */
+    wattron(_statusWindow, A_BOLD);
+    waddch(_statusWindow, '[');
+    waddnstr(_statusWindow, _viewName.c_str(), viewNameWidth - 2 - 1);
+    waddch(_statusWindow, ']');
+
+    /* Divider */
+    wmove(_statusWindow, 0, viewNameWidth);
+    waddstr(_statusWindow, " | ");
+    wattroff(_statusWindow, A_BOLD);
+
+    /* Status */
+    wmove(_statusWindow, 0, viewNameWidth + dividerWidth);
+    waddstr(_statusWindow, _status.c_str());
+
+    wrefresh(_statusWindow);
 }
 
 void StatusBar::refresh()
@@ -111,16 +135,16 @@ std::string StatusBar::prompt(const std::string & message)
 
 void StatusBar::setViewName(const std::string & name)
 {
-    wmove(_statusWindow, 0, 0);
+    _viewName = name;
 
-    /* View Name */
-    wattron(_statusWindow, A_BOLD);
-    waddch(_statusWindow, '[');
-    waddnstr(_statusWindow, name.c_str(), viewNameWidth - 2 - 1);
-    waddch(_statusWindow, ']');
-    wattroff(_statusWindow, A_BOLD);
+    update();
+}
 
-    wrefresh(_statusWindow);
+void StatusBar::setStatus(const std::string & status)
+{
+    _status = status;
+
+    update();
 }
 
 void StatusBar::delayedClearMessage(int delay)

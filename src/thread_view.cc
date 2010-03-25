@@ -17,12 +17,15 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <sstream>
+
 #include "thread_view.hh"
 #include "notmuch.hh"
 #include "util.hh"
 #include "colors.hh"
 #include "view_manager.hh"
 #include "message_view.hh"
+#include "status_bar.hh"
 
 ThreadView::Message::Message(notmuch_message_t * message)
     : id(notmuch_message_get_message_id(message)),
@@ -70,12 +73,23 @@ void ThreadView::update()
 {
     std::vector<chtype> leading;
 
+    werase(_window);
+
     displayMessageLine(_topMessage, leading, true, 0);
 }
 
 void ThreadView::openSelectedMessage()
 {
     _viewManager->addView(new MessageView(selectedMessage().id));
+}
+
+void ThreadView::updateStatus()
+{
+    std::ostringstream status;
+
+    status << "message " << (_selectedIndex + 1) << " of " << _messageCount;
+
+    StatusBar::instance().setStatus(status.str());
 }
 
 uint32_t ThreadView::displayMessageLine(const Message & message,

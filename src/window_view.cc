@@ -36,17 +36,10 @@ void WindowView::refresh()
     wrefresh(_window);
 }
 
-void WindowView::focus()
-{
-    wclear(_window);
-    clearok(_window, true);
-}
-
 void WindowView::resize()
 {
     wresize(_window, LINES - StatusBar::instance().height(), COLS);
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
-
 

@@ -62,6 +62,7 @@ void ViewManager::addView(View * view)
     _activeView = view;
     StatusBar::instance().setViewName(_activeView->name());
 
+    _activeView->focus();
     _activeView->update();
     _activeView->refresh();
 }

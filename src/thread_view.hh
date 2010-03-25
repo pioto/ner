@@ -51,6 +51,7 @@ class ThreadView : public LineBrowserView
         virtual void openSelectedMessage();
 
     protected:
+        virtual void updateStatus();
         virtual int lineCount() const;
         const Message & selectedMessage() const;
 
