@@ -35,6 +35,7 @@ Ner::Ner()
 
     addHandledSequence("Q", std::bind(&Ner::quit, this));
     addHandledSequence("s", std::bind(&Ner::search, this));
+    addHandledSequence('l' - 96, std::bind(&Ner::redraw, this)); // Ctrl-L
 }
 
 Ner::~Ner()
@@ -88,7 +89,7 @@ void Ner::run()
 
         if (key == KEY_BACKSPACE && sequence.size() > 0)
             sequence.pop_back();
-        else if (key == 3) // Ctrl-C
+        else if (key == 'c' - 96) // Ctrl-C
             sequence.clear();
         else if (key == KEY_RESIZE)
         {
@@ -150,6 +151,15 @@ void Ner::search()
 
     if (!searchTerms.empty())
         _viewManager->addView(new SearchView(searchTerms));
+}
+
+void Ner::redraw()
+{
+    clear();
+    refresh();
+
+    _statusBar->update();
+    _statusBar->refresh();
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

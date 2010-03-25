@@ -11,6 +11,7 @@ key bindings:
 - **q**:        Close the current view
 - **s**:        Start a new search
 - **Ctrl-C**:   Clear the current input sequence
+- **Ctrl-L**:   Redraw the screen
 
 ### Search
 - **j** or **Down**:            Move to the next thread
