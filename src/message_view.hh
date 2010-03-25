@@ -1,4 +1,4 @@
-/* ner: src/colors.hh
+/* ner: src/message_view.hh
  *
  * Copyright (c) 2010 Michael Forney
  *
@@ -17,32 +17,32 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NER_COLORS_H
-#define NER_COLORS_H 1
+#ifndef NER_MESSAGE_VIEW_H
+#define NER_MESSAGE_VIEW_H 1
 
-namespace Colors
+#include <string>
+#include <vector>
+#include <gmime/gmime.h>
+
+#include "line_browser_view.hh"
+
+class MessageView : public LineBrowserView
 {
-    enum Color
-    {
-        /* Status Bar */
-        STATUS_BAR_STATUS = 1,
-        STATUS_BAR_MESSAGE,
-        STATUS_BAR_PROMPT,
+    public:
+        MessageView(const std::string & messageId);
+        virtual ~MessageView();
 
-        /* Search View */
-        SEARCH_VIEW_DATE,
-        SEARCH_VIEW_MESSAGE_COUNT_COMPLETE,
-        SEARCH_VIEW_MESSAGE_COUNT_PARTIAL,
-        SEARCH_VIEW_AUTHORS,
-        SEARCH_VIEW_SUBJECT,
-        SEARCH_VIEW_TAGS,
+        virtual void update();
+        virtual std::string name() const { return "message-view"; }
 
-        /* Thread View */
-        THREAD_VIEW_ARROW,
+    protected:
+        virtual int visibleLines() const;
+        virtual int lineCount() const;
 
-        /* Message View */
-        MESSAGE_VIEW_HEADER
-    };
+        void processMimePart(GMimeObject * part);
+
+        std::map<std::string, std::string> _headers;
+        std::vector<std::string> _lines;
 };
 
 #endif

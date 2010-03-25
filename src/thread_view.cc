@@ -22,6 +22,7 @@
 #include "util.hh"
 #include "colors.hh"
 #include "view_manager.hh"
+#include "message_view.hh"
 
 ThreadView::Message::Message(notmuch_message_t * message)
     : id(notmuch_message_get_message_id(message)),
@@ -54,6 +55,9 @@ ThreadView::ThreadView(const std::string & id)
 
     notmuch_database_close(database);
 
+    /* Key Sequences */
+    addHandledSequence("\n", std::bind(&ThreadView::openSelectedMessage, this));
+
     /* Colors */
     init_pair(Colors::THREAD_VIEW_ARROW,        COLOR_GREEN,    COLOR_BLACK);
 }
@@ -67,6 +71,11 @@ void ThreadView::update()
     std::vector<chtype> leading;
 
     displayMessageLine(_topMessage, leading, true, 0);
+}
+
+void ThreadView::openSelectedMessage()
+{
+    _viewManager->addView(new MessageView(selectedMessage().id));
 }
 
 uint32_t ThreadView::displayMessageLine(const Message & message,
@@ -132,6 +141,32 @@ uint32_t ThreadView::displayMessageLine(const Message & message,
 int ThreadView::lineCount() const
 {
     return _messageCount;
+}
+
+const ThreadView::Message & ThreadView::selectedMessage() const
+{
+    std::vector<const Message *> messages{ &_topMessage };
+
+    const Message * message = messages.back();
+
+    for (int index = 0; index < _selectedIndex; ++index)
+    {
+        messages.pop_back();
+
+        if (!message->replies.empty())
+        {
+            for (auto reply = message->replies.rbegin(), e = message->replies.rend();
+                reply != e;
+                ++reply)
+            {
+                messages.push_back(&(*reply));
+            }
+        }
+
+        message = messages.back();
+    }
+
+    return *message;
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <gmime/gmime.h>
 
 #include "notmuch.hh"
 #include "ner.hh"
@@ -30,6 +31,8 @@
 
 int main(int argc, char * argv[])
 {
+    g_mime_init(0);
+
     std::string configPath(getenv("HOME"));
     configPath.append("/" NOTMUCH_CONFIG_FILE);
 
@@ -42,6 +45,8 @@ int main(int argc, char * argv[])
 
     ner.viewManager()->addView(new SearchView("tag:inbox"));
     ner.run();
+
+    g_mime_shutdown();
 
     return EXIT_SUCCESS;
 }

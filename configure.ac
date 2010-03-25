@@ -13,7 +13,11 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AX_PROG_CXX_CXX0X(, AC_MSG_ERROR(No C++0x compiler found))
 
+PKG_PROG_PKG_CONFIG([0.9.0])
+
 dnl Check for libraries {{{
+PKG_CHECK_MODULES([gmime], [gmime-2.4],,
+    [AC_MSG_ERROR([ner requires gmime])])
 AC_CHECK_LIB(notmuch, notmuch_database_open,,
     [AC_MSG_ERROR([ner requires libnotmuch])])
 AC_CHECK_LIB(ncurses, initscr,,

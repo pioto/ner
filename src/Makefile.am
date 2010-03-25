@@ -1,6 +1,10 @@
 # ner: src/Makefile.am
 
 bin_PROGRAMS = ner
+
+AM_CXXFLAGS = $(gmime_CFLAGS)
+
+ner_LDADD = $(gmime_LIBS)
 ner_SOURCES = \
 	main.cc \
 	ner.cc ner.hh \
@@ -15,5 +19,6 @@ ner_SOURCES = \
 	window_view.cc window_view.hh \
 	line_browser_view.cc line_browser_view.hh \
 	search_view.cc search_view.hh \
-	thread_view.cc thread_view.hh
+	thread_view.cc thread_view.hh \
+	message_view.cc message_view.hh
 
