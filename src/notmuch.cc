@@ -26,9 +26,9 @@ void NotMuch::setDatabasePath(const std::string & path)
     _path = path;
 }
 
-notmuch_database_t * NotMuch::openDatabase()
+notmuch_database_t * NotMuch::openDatabase(notmuch_database_mode_t mode)
 {
-    return notmuch_database_open(_path.c_str(), NOTMUCH_DATABASE_MODE_READ_ONLY);
+    return notmuch_database_open(_path.c_str(), mode);
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

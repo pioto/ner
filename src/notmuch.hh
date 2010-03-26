@@ -30,7 +30,7 @@ class NotMuch
         ~NotMuch() = delete;
 
         static void setDatabasePath(const std::string & path);
-        static notmuch_database_t * openDatabase();
+        static notmuch_database_t * openDatabase(notmuch_database_mode_t mode = NOTMUCH_DATABASE_MODE_READ_ONLY);
 
     private:
         static std::string _path;
