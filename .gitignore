@@ -27,4 +27,5 @@ Makefile.in
 /tags
 
 /src/ner
+ner-*.tar.??
 
