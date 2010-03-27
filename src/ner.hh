@@ -39,6 +39,8 @@ class Ner : public InputHandler
         void quit();
 
         void search();
+        void openMessage();
+        void openThread();
         void redraw();
 
         inline ViewManager * viewManager() const

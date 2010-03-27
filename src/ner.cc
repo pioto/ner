@@ -25,6 +25,8 @@
 #include "status_bar.hh"
 #include "view_manager.hh"
 #include "search_view.hh"
+#include "message_view.hh"
+#include "thread_view.hh"
 
 Ner::Ner()
     : _viewManager(new ViewManager)
@@ -35,6 +37,8 @@ Ner::Ner()
 
     addHandledSequence("Q", std::bind(&Ner::quit, this));
     addHandledSequence("s", std::bind(&Ner::search, this));
+    addHandledSequence("m", std::bind(&Ner::openMessage, this));
+    addHandledSequence("t", std::bind(&Ner::openThread, this));
     addHandledSequence('l' - 96, std::bind(&Ner::redraw, this)); // Ctrl-L
 }
 
@@ -151,6 +155,32 @@ void Ner::search()
 
     if (!searchTerms.empty())
         _viewManager->addView(new SearchView(searchTerms));
+}
+
+void Ner::openMessage()
+{
+    std::string messageId = StatusBar::instance().prompt("Message ID: ");
+
+    if (!messageId.empty())
+    {
+        MessageView * messageView = MessageView::fromId(messageId);
+
+        if (messageView)
+            _viewManager->addView(messageView);
+    }
+}
+
+void Ner::openThread()
+{
+    std::string threadId = StatusBar::instance().prompt("Thread ID: ");
+
+    if (!threadId.empty())
+    {
+        ThreadView * threadView = ThreadView::fromId(threadId);
+
+        if (threadView)
+            _viewManager->addView(threadView);
+    }
 }
 
 void Ner::redraw()
