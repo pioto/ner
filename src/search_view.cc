@@ -266,11 +266,9 @@ void SearchView::collectThreads()
     notmuch_query_t * query = notmuch_query_create(database, _searchTerms.c_str());
     notmuch_threads_t * threadIterator;
 
-    int count = 0;
-
     for (threadIterator = notmuch_query_search_threads(query);
         notmuch_threads_valid(threadIterator) && _collecting;
-        notmuch_threads_move_to_next(threadIterator), ++count)
+        notmuch_threads_move_to_next(threadIterator))
     {
         lock.lock();
 
@@ -278,8 +276,7 @@ void SearchView::collectThreads()
         _threads.push_back(thread);
         notmuch_thread_destroy(thread);
 
-        if (count % 50 == 0)
-            _condition.notify_one();
+        _condition.notify_one();
 
         lock.unlock();
 
