@@ -130,6 +130,7 @@ std::string StatusBar::prompt(const std::string & message)
 
     /* Clear the prompt window after we're done */
     werase(_promptWindow);
+    wrefresh(_promptWindow);
 
     return std::string(response);
 }
