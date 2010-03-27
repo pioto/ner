@@ -23,14 +23,17 @@
 #include <string>
 #include <vector>
 #include <gmime/gmime.h>
+#include <notmuch.h>
 
 #include "line_browser_view.hh"
 
 class MessageView : public LineBrowserView
 {
     public:
-        MessageView(const std::string & messageId);
+        MessageView(notmuch_message_t * message);
         virtual ~MessageView();
+
+        static MessageView * fromId(const std::string & messageId);
 
         virtual void update();
         virtual std::string name() const { return "message-view"; }

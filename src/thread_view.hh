@@ -42,8 +42,10 @@ class ThreadView : public LineBrowserView
     };
 
     public:
-        ThreadView(const std::string & id);
+        ThreadView(notmuch_thread_t * thread);
         virtual ~ThreadView();
+
+        static ThreadView * fromId(const std::string & threadId);
 
         virtual void update();
         virtual std::string name() const { return "thread-view"; }

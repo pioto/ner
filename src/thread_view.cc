@@ -46,17 +46,11 @@ ThreadView::Message::Message(notmuch_message_t * message)
     }
 }
 
-ThreadView::ThreadView(const std::string & id)
+ThreadView::ThreadView(notmuch_thread_t * thread)
     : LineBrowserView()
 {
-    notmuch_database_t * database = NotMuch::openDatabase();
-    notmuch_query_t * query = notmuch_query_create(database, std::string("thread:").append(id).c_str());
-    notmuch_thread_t * thread = notmuch_threads_get(notmuch_query_search_threads(query));
-
     _topMessage = notmuch_messages_get(notmuch_thread_get_toplevel_messages(thread));
     _messageCount = notmuch_thread_get_total_messages(thread);
-
-    notmuch_database_close(database);
 
     /* Key Sequences */
     addHandledSequence("\n", std::bind(&ThreadView::openSelectedMessage, this));
@@ -67,6 +61,30 @@ ThreadView::ThreadView(const std::string & id)
 
 ThreadView::~ThreadView()
 {
+}
+
+ThreadView * ThreadView::fromId(const std::string & threadId)
+{
+    ThreadView * threadView;
+
+    notmuch_database_t * database = NotMuch::openDatabase();
+    notmuch_query_t * query = notmuch_query_create(database, ("thread:" + threadId).c_str());
+    notmuch_threads_t * threads = notmuch_query_search_threads(query);
+
+    if (notmuch_threads_valid(threads))
+        threadView = new ThreadView(notmuch_threads_get(threads));
+    else
+    {
+        threadView = 0;
+        StatusBar::instance().displayMessage("Cannot find thread with ID: " + threadId);
+    }
+
+    notmuch_threads_destroy(threads);
+    notmuch_query_destroy(query);
+
+    notmuch_database_close(database);
+
+    return threadView;
 }
 
 void ThreadView::update()
@@ -80,7 +98,10 @@ void ThreadView::update()
 
 void ThreadView::openSelectedMessage()
 {
-    _viewManager->addView(new MessageView(selectedMessage().id));
+    MessageView * messageView = MessageView::fromId(selectedMessage().id);
+
+    if (messageView)
+        _viewManager->addView(messageView);
 }
 
 void ThreadView::updateStatus()

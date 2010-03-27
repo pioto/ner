@@ -28,12 +28,9 @@
 
 const std::vector<std::string> headers{ "To", "From", "Subject" };
 
-MessageView::MessageView(const std::string & messageId)
+MessageView::MessageView(notmuch_message_t * message)
     : LineBrowserView()
 {
-    notmuch_database_t * database = NotMuch::openDatabase();
-    notmuch_message_t * message = notmuch_database_find_message(database, messageId.c_str());
-
     std::string filename = notmuch_message_get_filename(message);
 
     FILE * file = fopen(filename.c_str(), "r");
@@ -62,14 +59,32 @@ MessageView::MessageView(const std::string & messageId)
         _headers["Subject"] = "(null)";
     }
 
-    notmuch_database_close(database);
-
     /* Colors */
     init_pair(Colors::MESSAGE_VIEW_HEADER,  COLOR_CYAN, COLOR_BLACK);
 }
 
 MessageView::~MessageView()
 {
+}
+
+MessageView * MessageView::fromId(const std::string & messageId)
+{
+    MessageView * messageView;
+
+    notmuch_database_t * database = NotMuch::openDatabase();
+    notmuch_message_t * message = notmuch_database_find_message(database, messageId.c_str());
+
+    if (message != NULL)
+        messageView = new MessageView(message);
+    else
+    {
+        messageView = 0;
+        StatusBar::instance().displayMessage("Cannot find message with ID: " + messageId);
+    }
+
+    notmuch_database_close(database);
+
+    return messageView;
 }
 
 void MessageView::update()

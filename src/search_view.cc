@@ -186,7 +186,14 @@ void SearchView::update()
 void SearchView::openSelectedThread()
 {
     std::lock_guard<std::mutex> lock(_mutex);
-    _viewManager->addView(new ThreadView((*(_threads.begin() + _selectedIndex)).id));
+
+    if (_selectedIndex < _threads.size())
+    {
+        ThreadView * threadView = ThreadView::fromId(_threads.at(_selectedIndex).id);
+
+        if (threadView)
+            _viewManager->addView(threadView);
+    }
 }
 
 void SearchView::refreshThreads()
