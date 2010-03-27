@@ -18,7 +18,7 @@
  */
 
 #include <iostream>
-#include <ncurses.h>
+#include <ncursesw/ncurses.h>
 
 #include "ner.hh"
 #include "util.hh"
@@ -27,6 +27,7 @@
 #include "search_view.hh"
 #include "message_view.hh"
 #include "thread_view.hh"
+#include "colors.hh"
 
 Ner::Ner()
     : _viewManager(new ViewManager)
@@ -35,11 +36,15 @@ Ner::Ner()
 
     _statusBar = new StatusBar;
 
+    /* Key Sequences */
     addHandledSequence("Q", std::bind(&Ner::quit, this));
     addHandledSequence("s", std::bind(&Ner::search, this));
     addHandledSequence("m", std::bind(&Ner::openMessage, this));
     addHandledSequence("t", std::bind(&Ner::openThread, this));
     addHandledSequence('l' - 96, std::bind(&Ner::redraw, this)); // Ctrl-L
+
+    /* Colors */
+    init_pair(Colors::CUT_OFF_INDICATOR, COLOR_GREEN, COLOR_BLACK);
 }
 
 Ner::~Ner()

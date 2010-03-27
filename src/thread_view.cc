@@ -23,6 +23,7 @@
 #include "notmuch.hh"
 #include "util.hh"
 #include "colors.hh"
+#include "ncurses.hh"
 #include "view_manager.hh"
 #include "message_view.hh"
 #include "status_bar.hh"
@@ -118,39 +119,57 @@ uint32_t ThreadView::displayMessageLine(const Message & message,
 {
     if (index >= _offset)
     {
-        bool selected = index == _selectedIndex;
-
-        wmove(_window, index - _offset, 0);
-
-        if (selected)
-            wattron(_window, A_REVERSE);
-
-        wattron(_window, COLOR_PAIR(Colors::THREAD_VIEW_ARROW));
-
-        for (auto character = leading.begin();
-            character != leading.end();
-            ++character)
+        for (;;) // So that we can break when needed
         {
-            waddch(_window, *character);
-        }
+#define CHECK_BREAK(amount) \
+    if ((amount) >= getmaxx(_window)) \
+    { \
+        NCurses::addCutOffIndicator(_window, attributes); \
+        break; \
+    }
 
-        if (last)
-            waddch(_window, ACS_LLCORNER);
-        else
-            waddch(_window, ACS_LTEE);
+            bool selected = index == _selectedIndex;
 
-        waddch(_window, '>');
-        waddch(_window, ' ');
+            int x = 0;
+            int row = index - _offset;
 
-        wattroff(_window, COLOR_PAIR(Colors::THREAD_VIEW_ARROW));
+            wmove(_window, row, x);
 
-        std::string messageLabel((*message.headers.find("From")).second);
-        messageLabel.resize(getmaxx(_window) - getcurx(_window), ' ');
-        waddstr(_window, messageLabel.c_str());
+            attr_t attributes = 0;
 
-        if (selected)
-        {
-            wattroff(_window, A_REVERSE);
+            if (selected)
+            {
+                attributes |= A_REVERSE;
+                wchgat(_window, -1, A_REVERSE, 0, NULL);
+            }
+
+            x += NCurses::addPlainString(_window, leading.begin(), leading.end(),
+                attributes, Colors::THREAD_VIEW_ARROW);
+
+            CHECK_BREAK(x)
+            wmove(_window, row, x);
+
+            x += NCurses::addChar(_window, last ? ACS_LLCORNER : ACS_LTEE,
+                attributes, Colors::THREAD_VIEW_ARROW);
+
+            CHECK_BREAK(x)
+            wmove(_window, row, x);
+
+            x += NCurses::addChar(_window, '>', attributes, Colors::THREAD_VIEW_ARROW);
+
+            CHECK_BREAK(++x)
+            wmove(_window, row, x);
+
+            /* Sender */
+            x += NCurses::addUtf8String(_window, (*message.headers.find("From")).second.c_str(),
+                attributes);
+
+            if (x > getmaxx(_window))
+                NCurses::addCutOffIndicator(_window, attributes);
+
+            break;
+
+#undef CHECK_BREAK
         }
     }
 

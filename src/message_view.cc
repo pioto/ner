@@ -24,6 +24,7 @@
 #include "message_view.hh"
 #include "notmuch.hh"
 #include "colors.hh"
+#include "ncurses.hh"
 #include "status_bar.hh"
 
 const std::vector<std::string> headers{ "To", "From", "Subject" };
@@ -95,11 +96,25 @@ void MessageView::update()
 
     for (auto header = headers.begin(), e = headers.end(); header != e; ++header, ++row)
     {
-        wmove(_window, row, 0);
-        wattron(_window, COLOR_PAIR(Colors::MESSAGE_VIEW_HEADER));
-        wprintw(_window, "%s: ", (*header).c_str());
-        wattroff(_window, COLOR_PAIR(Colors::MESSAGE_VIEW_HEADER));
-        waddnstr(_window, _headers[*header].c_str(), getmaxx(_window) - getcurx(_window));
+        int x = 0;
+
+        wmove(_window, row, x);
+
+        x += NCurses::addPlainString(_window, (*header) + ": ",
+            0, Colors::MESSAGE_VIEW_HEADER);
+
+        if (x >= getmaxx(_window))
+        {
+            NCurses::addCutOffIndicator(_window, 0);
+            continue;
+        }
+
+        wmove(_window, row, x);
+
+        x += NCurses::addUtf8String(_window, _headers[*header].c_str());
+
+        if (x > getmaxx(_window))
+            NCurses::addCutOffIndicator(_window, 0);
     }
 
     wmove(_window, row, 0);
@@ -112,19 +127,18 @@ void MessageView::update()
     {
         bool selected = _selectedIndex == row - (headers.size() + 1) + _offset;
 
-        if (selected)
-            wattron(_window, A_REVERSE);
-
         wmove(_window, row, 0);
-        waddnstr(_window, (*line).c_str(), getmaxx(_window) - 1);
 
-        if (getcurx(_window) == getmaxx(_window) - 1)
-            waddch(_window, '$');
-        else
-            whline(_window, ' ', getmaxx(_window) - getcurx(_window));
+        attr_t attributes = 0;
 
         if (selected)
-            wattroff(_window, A_REVERSE);
+        {
+            attributes |= A_REVERSE;
+            wchgat(_window, -1, A_REVERSE, 0, NULL);
+        }
+
+        if (NCurses::addUtf8String(_window, (*line).c_str(), attributes) > getmaxx(_window))
+            NCurses::addCutOffIndicator(_window, attributes);
     }
 }
 

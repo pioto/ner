@@ -24,8 +24,11 @@ namespace Colors
 {
     enum Color
     {
+        /* General */
+        CUT_OFF_INDICATOR = 1,
+
         /* Status Bar */
-        STATUS_BAR_STATUS = 1,
+        STATUS_BAR_STATUS,
         STATUS_BAR_MESSAGE,
         STATUS_BAR_PROMPT,
 

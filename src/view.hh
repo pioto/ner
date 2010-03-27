@@ -21,7 +21,7 @@
 #define NER_VIEW_H 1
 
 #include <stdint.h>
-#include <ncurses.h>
+#include <ncursesw/ncurses.h>
 #include <vector>
 #include <string>
 

@@ -17,7 +17,7 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ncurses.h>
+#include <ncursesw/ncurses.h>
 
 #include "status_bar.hh"
 #include "colors.hh"

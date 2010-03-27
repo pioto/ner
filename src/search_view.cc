@@ -29,6 +29,7 @@
 #include "view_manager.hh"
 #include "util.hh"
 #include "colors.hh"
+#include "ncurses.hh"
 #include "notmuch.hh"
 #include "status_bar.hh"
 
@@ -94,6 +95,8 @@ SearchView::~SearchView()
 
 void SearchView::update()
 {
+    werase(_window);
+
     if (_offset > _threads.size())
         return;
 
@@ -103,58 +106,73 @@ void SearchView::update()
         thread != _threads.end() && row < getmaxy(_window);
         ++thread, ++row)
     {
+#define CHECK_CONTINUE(amount) \
+    if ((amount) >= getmaxx(_window)) \
+    { \
+        NCurses::addCutOffIndicator(_window, attributes); \
+        continue; \
+    }
+
         bool selected = row + _offset == _selectedIndex;
         bool unread = (*thread).tags.find("unread") != (*thread).tags.end();
         bool completeMatch = (*thread).matchedMessages == (*thread).totalMessages;
 
-        if (selected)
-            wattron(_window, A_REVERSE);
+        int x = 0;
+
+        wmove(_window, row, x);
+
+        attr_t attributes = 0;
 
         if (unread)
-            wattron(_window, A_BOLD);
+            attributes |= A_BOLD;
 
-        wmove(_window, row, 0);
+        if (selected)
+        {
+            attributes |= A_REVERSE;
+            wchgat(_window, -1, A_REVERSE, 0, NULL);
+        }
 
         /* Date */
-        wattron(_window, COLOR_PAIR(Colors::SEARCH_VIEW_DATE));
-        waddstr(_window, relativeTime((*thread).newestDate).c_str());
-        wattroff(_window, COLOR_PAIR(Colors::SEARCH_VIEW_DATE));
+        NCurses::addPlainString(_window, relativeTime((*thread).newestDate),
+            attributes, Colors::SEARCH_VIEW_DATE, newestDateWidth - 1);
 
-        while (getcurx(_window) < newestDateWidth)
-            waddch(_window, ' ');
+        CHECK_CONTINUE(x += newestDateWidth)
+        wmove(_window, row, x);
 
         /* Message Count */
-        waddch(_window, '[');
-        if (completeMatch)
-            wattron(_window, COLOR_PAIR(Colors::SEARCH_VIEW_MESSAGE_COUNT_COMPLETE));
-        else
-            wattron(_window, COLOR_PAIR(Colors::SEARCH_VIEW_MESSAGE_COUNT_PARTIAL));
-        wprintw(_window, "%u/%u",
-            (*thread).matchedMessages,
-            (*thread).totalMessages);
-        if (completeMatch)
-            wattroff(_window, COLOR_PAIR(Colors::SEARCH_VIEW_MESSAGE_COUNT_COMPLETE));
-        else
-            wattroff(_window, COLOR_PAIR(Colors::SEARCH_VIEW_MESSAGE_COUNT_PARTIAL));
-        waddch(_window, ']');
+        std::ostringstream messageCountStream;
+        messageCountStream << (*thread).matchedMessages << '/' << (*thread).totalMessages;
 
-        while (getcurx(_window) < newestDateWidth + messageCountWidth)
-            waddch(_window, ' ');
+        x += NCurses::addChar(_window, '[', attributes);
+
+        CHECK_CONTINUE(x)
+
+        x += NCurses::addPlainString(_window, messageCountStream.str(),
+            attributes, completeMatch ? Colors::SEARCH_VIEW_MESSAGE_COUNT_COMPLETE :
+                                        Colors::SEARCH_VIEW_MESSAGE_COUNT_PARTIAL,
+            messageCountWidth - 1);
+
+        CHECK_CONTINUE(x)
+        wmove(_window, row, x);
+
+        NCurses::addChar(_window, ']', attributes);
+
+        CHECK_CONTINUE(x = newestDateWidth + messageCountWidth)
+        wmove(_window, row, x);
 
         /* Authors */
-        wattron(_window, COLOR_PAIR(Colors::SEARCH_VIEW_AUTHORS));
-        waddnstr(_window, (*thread).authors.c_str(), authorsWidth - 1);
-        wattroff(_window, COLOR_PAIR(Colors::SEARCH_VIEW_AUTHORS));
+        NCurses::addUtf8String(_window, (*thread).authors.c_str(),
+            attributes, Colors::SEARCH_VIEW_AUTHORS, authorsWidth - 1);
 
-        while (getcurx(_window) < newestDateWidth + messageCountWidth + authorsWidth)
-            waddch(_window, ' ');
+        CHECK_CONTINUE(x += authorsWidth)
+        wmove(_window, row, x);
 
         /* Subject */
-        wattron(_window, COLOR_PAIR(Colors::SEARCH_VIEW_SUBJECT));
-        waddnstr(_window, (*thread).subject.c_str(), getmaxx(_window) - getcurx(_window));
-        wattroff(_window, COLOR_PAIR(Colors::SEARCH_VIEW_SUBJECT));
+        x += NCurses::addUtf8String(_window, (*thread).subject.c_str(),
+            attributes, Colors::SEARCH_VIEW_SUBJECT);
 
-        waddch(_window, ' ');
+        CHECK_CONTINUE(++x)
+        wmove(_window, row, x);
 
         /* Tags */
         std::ostringstream tagStream;
@@ -166,20 +184,12 @@ void SearchView::update()
             /* Get rid of the trailing space */
             tags.resize(tags.size() - 1);
 
-        wattron(_window, COLOR_PAIR(Colors::SEARCH_VIEW_TAGS));
-        waddnstr(_window, tags.c_str(), getmaxx(_window) - getcurx(_window));
-        wattroff(_window, COLOR_PAIR(Colors::SEARCH_VIEW_TAGS));
+        x += NCurses::addPlainString(_window, tags, attributes, Colors::SEARCH_VIEW_TAGS);
 
-        if (selected)
-        {
-            whline(_window, ' ', getmaxx(_window));
-            wattroff(_window, A_REVERSE);
-        }
-        else
-            wclrtoeol(_window);
+        if (x > getmaxx(_window))
+            NCurses::addCutOffIndicator(_window, attributes);
 
-        if (unread)
-            wattroff(_window, A_BOLD);
+#undef CHECK_CONTINUE
     }
 }
 
