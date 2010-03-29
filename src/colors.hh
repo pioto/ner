@@ -42,6 +42,8 @@ namespace Colors
 
         /* Thread View */
         THREAD_VIEW_ARROW,
+        THREAD_VIEW_DATE,
+        THREAD_VIEW_TAGS,
 
         /* Message View */
         MESSAGE_VIEW_HEADER

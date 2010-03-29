@@ -18,6 +18,7 @@
  */
 
 #include <sstream>
+#include <iterator>
 
 #include "thread_view.hh"
 #include "notmuch.hh"
@@ -39,12 +40,29 @@ ThreadView::Message::Message(notmuch_message_t * message)
             {"Subject", notmuch_message_get_header(message, "Subject")  ? : "(null)"},
         }
 {
-    for (notmuch_messages_t * messages = notmuch_message_get_replies(message);
+    /* Tags */
+    notmuch_tags_t * tagIterator;
+
+    for (tagIterator = notmuch_message_get_tags(message);
+        notmuch_tags_valid(tagIterator);
+        notmuch_tags_move_to_next(tagIterator))
+    {
+        tags.insert(notmuch_tags_get(tagIterator));
+    }
+
+    notmuch_tags_destroy(tagIterator);
+
+    /* Replies */
+    notmuch_messages_t * messages;
+
+    for (messages = notmuch_message_get_replies(message);
         notmuch_messages_valid(messages);
         notmuch_messages_move_to_next(messages))
     {
         replies.push_back(Message(notmuch_messages_get(messages)));
     }
+
+    notmuch_messages_destroy(messages);
 }
 
 ThreadView::ThreadView(notmuch_thread_t * thread)
@@ -58,6 +76,8 @@ ThreadView::ThreadView(notmuch_thread_t * thread)
 
     /* Colors */
     init_pair(Colors::THREAD_VIEW_ARROW,        COLOR_GREEN,    COLOR_BLACK);
+    init_pair(Colors::THREAD_VIEW_DATE,         COLOR_CYAN,     COLOR_BLACK);
+    init_pair(Colors::THREAD_VIEW_TAGS,         COLOR_RED,      COLOR_BLACK);
 }
 
 ThreadView::~ThreadView()
@@ -163,6 +183,28 @@ uint32_t ThreadView::displayMessageLine(const Message & message,
             /* Sender */
             x += NCurses::addUtf8String(_window, (*message.headers.find("From")).second.c_str(),
                 attributes);
+
+            CHECK_BREAK(++x)
+            wmove(_window, row, x);
+
+            /* Date */
+            x += NCurses::addPlainString(_window, relativeTime(message.date),
+                attributes, Colors::THREAD_VIEW_DATE);
+
+            CHECK_BREAK(++x)
+            wmove(_window, row, x);
+
+            /* Tags */
+            std::ostringstream tagStream;
+            std::copy(message.tags.begin(), message.tags.end(),
+                std::ostream_iterator<std::string>(tagStream, " "));
+            std::string tags(tagStream.str());
+
+            if (tags.size() > 0)
+                /* Get rid of the trailing space */
+                tags.resize(tags.size() - 1);
+
+            x += NCurses::addPlainString(_window, tags, attributes, Colors::THREAD_VIEW_TAGS);
 
             if (x > getmaxx(_window))
                 NCurses::addCutOffIndicator(_window, attributes);

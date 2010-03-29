@@ -22,7 +22,8 @@
 
 #include <notmuch.h>
 #include <vector>
-#include <unordered_map>
+#include <map>
+#include <set>
 
 #include "line_browser_view.hh"
 
@@ -38,6 +39,7 @@ class ThreadView : public LineBrowserView
         time_t date;
         bool matched;
         std::map<std::string, std::string> headers;
+        std::set<std::string> tags;
         std::vector<Message> replies;
     };
 
