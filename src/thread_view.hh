@@ -63,7 +63,7 @@ class ThreadView : public LineBrowserView
         uint32_t displayMessageLine(const Message & message,
             std::vector<chtype> & leading, bool last, int index);
 
-        Message _topMessage;
+        std::vector<Message> _topMessages;
         int _messageCount;
 };
 

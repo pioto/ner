@@ -68,7 +68,17 @@ ThreadView::Message::Message(notmuch_message_t * message)
 ThreadView::ThreadView(notmuch_thread_t * thread)
     : LineBrowserView()
 {
-    _topMessage = notmuch_messages_get(notmuch_thread_get_toplevel_messages(thread));
+    notmuch_messages_t * messages;
+
+    for (messages = notmuch_thread_get_toplevel_messages(thread);
+        notmuch_messages_valid(messages);
+        notmuch_messages_move_to_next(messages))
+    {
+        _topMessages.push_back(Message(notmuch_messages_get(messages)));
+    }
+
+    notmuch_messages_destroy(messages);
+
     _messageCount = notmuch_thread_get_total_messages(thread);
 
     /* Key Sequences */
@@ -114,7 +124,14 @@ void ThreadView::update()
 
     werase(_window);
 
-    displayMessageLine(_topMessage, leading, true, 0);
+    int index = 0;
+
+    for (auto message = _topMessages.begin(), e = _topMessages.end();
+        message != e && index < getmaxy(_window) + _offset;
+        ++message)
+    {
+        index = displayMessageLine(*message, leading, (message + 1) == e, index);
+    }
 }
 
 void ThreadView::openSelectedMessage()
@@ -241,7 +258,10 @@ int ThreadView::lineCount() const
 
 const ThreadView::Message & ThreadView::selectedMessage() const
 {
-    std::vector<const Message *> messages{ &_topMessage };
+    std::vector<const Message *> messages;
+
+    std::transform(_topMessages.begin(), _topMessages.end(),
+        std::back_inserter(messages), addressOf<Message>());
 
     const Message * message = messages.back();
 

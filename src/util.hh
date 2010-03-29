@@ -25,6 +25,15 @@
 
 std::string relativeTime(time_t rawTime);
 
+template <typename Type>
+    struct addressOf : public std::unary_function<Type, Type *>
+    {
+        const Type * operator()(const Type & x) const
+        {
+            return &x;
+        }
+    };
+
 #endif
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
