@@ -19,7 +19,7 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <locale.h>
+#include <clocale>
 #include <unistd.h>
 #include <gmime/gmime.h>
 
@@ -33,7 +33,7 @@
 
 int main(int argc, char * argv[])
 {
-    setlocale(LC_ALL, "");
+    std::setlocale(LC_ALL, "");
 
     g_mime_init(0);
 
