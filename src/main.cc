@@ -17,9 +17,10 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <locale.h>
+#include <unistd.h>
 #include <gmime/gmime.h>
 
 #include "notmuch.hh"
@@ -36,8 +37,11 @@ int main(int argc, char * argv[])
 
     g_mime_init(0);
 
-    std::string configPath(getenv("HOME"));
-    configPath.append("/" NOTMUCH_CONFIG_FILE);
+    const char * environmentConfigPath = std::getenv("NOTMUCH_CONFIG");
+    std::string defaultConfigPath(std::string(std::getenv("HOME")) + "/" NOTMUCH_CONFIG_FILE);
+
+    const std::string & configPath = (environmentConfigPath != NULL &&
+        access(environmentConfigPath, R_OK) == 0) ? environmentConfigPath : defaultConfigPath;
 
     ConfigFile configFile(configPath);
     configFile.parse();
