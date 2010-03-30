@@ -260,7 +260,7 @@ const ThreadView::Message & ThreadView::selectedMessage() const
 {
     std::vector<const Message *> messages;
 
-    std::transform(_topMessages.begin(), _topMessages.end(),
+    std::transform(_topMessages.rbegin(), _topMessages.rend(),
         std::back_inserter(messages), addressOf<Message>());
 
     const Message * message = messages.back();
