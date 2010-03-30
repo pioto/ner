@@ -175,8 +175,9 @@ void MessageView::processMimePart(GMimeObject * part)
         GMimeStream * stream = g_mime_stream_mem_new_with_byte_array(buffer);
         GMimeStream * filter = g_mime_stream_filter_new(stream);
 
-        g_mime_stream_filter_add(GMIME_STREAM_FILTER(filter),
-            g_mime_filter_charset_new(charset, "UTF-8"));
+        if (charset)
+            g_mime_stream_filter_add(GMIME_STREAM_FILTER(filter),
+                g_mime_filter_charset_new(charset, "UTF-8"));
 
         g_mime_data_wrapper_write_to_stream(content, filter);
 
