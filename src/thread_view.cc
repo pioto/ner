@@ -166,6 +166,7 @@ uint32_t ThreadView::displayMessageLine(const Message & message,
     }
 
             bool selected = index == _selectedIndex;
+            bool unread = message.tags.find("unread") != message.tags.end();
 
             int x = 0;
             int row = index - _offset;
@@ -179,6 +180,9 @@ uint32_t ThreadView::displayMessageLine(const Message & message,
                 attributes |= A_REVERSE;
                 wchgat(_window, -1, A_REVERSE, 0, NULL);
             }
+
+            if (unread)
+                attributes |= A_BOLD;
 
             x += NCurses::addPlainString(_window, leading.begin(), leading.end(),
                 attributes, Colors::THREAD_VIEW_ARROW);
