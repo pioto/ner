@@ -66,7 +66,8 @@ ThreadView::Message::Message(notmuch_message_t * message)
 }
 
 ThreadView::ThreadView(notmuch_thread_t * thread)
-    : LineBrowserView()
+    : LineBrowserView(),
+        _id(notmuch_thread_get_thread_id(thread))
 {
     notmuch_messages_t * messages;
 
@@ -140,7 +141,10 @@ std::vector<std::string> ThreadView::status() const
 
     messagePosition << "message " << (_selectedIndex + 1) << " of " << _messageCount;
 
-    return std::vector<std::string>{ messagePosition.str() };
+    return std::vector<std::string>{
+        "thread-id: " + _id,
+        messagePosition.str()
+    };
 }
 
 void ThreadView::openSelectedMessage()

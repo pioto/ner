@@ -59,6 +59,8 @@ class ThreadView : public LineBrowserView
         virtual int lineCount() const;
         const Message & selectedMessage() const;
 
+        std::string _id;
+
     private:
         uint32_t displayMessageLine(const Message & message,
             std::vector<chtype> & leading, bool last, int index);
