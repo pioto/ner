@@ -31,6 +31,7 @@ namespace Colors
 
         /* Status Bar */
         STATUS_BAR_STATUS,
+        STATUS_BAR_STATUS_DIVIDER,
         STATUS_BAR_MESSAGE,
         STATUS_BAR_PROMPT,
 

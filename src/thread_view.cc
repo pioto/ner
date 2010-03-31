@@ -134,21 +134,21 @@ void ThreadView::update()
     }
 }
 
+std::vector<std::string> ThreadView::status() const
+{
+    std::ostringstream messagePosition;
+
+    messagePosition << "message " << (_selectedIndex + 1) << " of " << _messageCount;
+
+    return std::vector<std::string>{ messagePosition.str() };
+}
+
 void ThreadView::openSelectedMessage()
 {
     MessageView * messageView = MessageView::fromId(selectedMessage().id);
 
     if (messageView)
         ViewManager::instance().addView(messageView);
-}
-
-void ThreadView::updateStatus()
-{
-    std::ostringstream status;
-
-    status << "message " << (_selectedIndex + 1) << " of " << _messageCount;
-
-    StatusBar::instance().setStatus(status.str());
 }
 
 uint32_t ThreadView::displayMessageLine(const Message & message,

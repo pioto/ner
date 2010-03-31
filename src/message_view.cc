@@ -157,13 +157,13 @@ void MessageView::update()
     wattroff(_window, COLOR_PAIR(Colors::MORE_LESS_INDICATOR));
 }
 
-void MessageView::updateStatus()
+std::vector<std::string> MessageView::status() const
 {
-    std::ostringstream status;
+    std::ostringstream linePosition;
 
-    status << "line " << (_selectedIndex + 1) << " of " << _lines.size();
+    linePosition << "line " << (_selectedIndex + 1) << " of " << _lines.size();
 
-    StatusBar::instance().setStatus(status.str());
+    return std::vector<std::string>{ linePosition.str() };
 }
 
 int MessageView::visibleLines() const

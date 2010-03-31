@@ -51,11 +51,11 @@ class ThreadView : public LineBrowserView
 
         virtual void update();
         virtual std::string name() const { return "thread-view"; }
+        virtual std::vector<std::string> status() const;
 
         virtual void openSelectedMessage();
 
     protected:
-        virtual void updateStatus();
         virtual int lineCount() const;
         const Message & selectedMessage() const;
 

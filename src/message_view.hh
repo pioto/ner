@@ -37,9 +37,9 @@ class MessageView : public LineBrowserView
 
         virtual void update();
         virtual std::string name() const { return "message-view"; }
+        virtual std::vector<std::string> status() const;
 
     protected:
-        virtual void updateStatus();
         virtual int visibleLines() const;
         virtual int lineCount() const;
 

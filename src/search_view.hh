@@ -50,12 +50,12 @@ class SearchView : public LineBrowserView
 
         virtual void update();
         virtual std::string name() const { return "search-view"; }
+        virtual std::vector<std::string> status() const;
 
         void openSelectedThread();
         void refreshThreads();
 
     protected:
-        virtual void updateStatus();
         virtual int lineCount() const;
 
     private:

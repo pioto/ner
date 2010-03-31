@@ -40,6 +40,7 @@ class View : public InputHandler
         virtual void resize() = 0;
         virtual void focus();
         virtual std::string name() const = 0;
+        virtual std::vector<std::string> status() const;
 
     protected:
         virtual void updateStatus();

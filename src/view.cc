@@ -19,6 +19,7 @@
 
 #include "view.hh"
 #include "status_bar.hh"
+#include "view_manager.hh"
 
 View::~View()
 {
@@ -29,9 +30,17 @@ void View::focus()
     updateStatus();
 }
 
+std::vector<std::string> View::status() const
+{
+    return std::vector<std::string>();
+}
+
 void View::updateStatus()
 {
-    StatusBar::instance().setStatus(std::string());
+    if (ViewManager::instance().activeView() == this)
+        StatusBar::instance().setStatus(status());
+    else
+        ViewManager::instance().activeView()->updateStatus();
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

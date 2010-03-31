@@ -21,11 +21,9 @@
 
 #include "status_bar.hh"
 #include "colors.hh"
+#include "ncurses.hh"
 
 StatusBar * StatusBar::_instance = 0;
-
-const int viewNameWidth = 15;
-const int dividerWidth = 3;
 
 StatusBar::StatusBar()
     : _statusWindow(newwin(1, COLS, LINES - 2, 0)),
@@ -36,6 +34,7 @@ StatusBar::StatusBar()
 
     /* Colors */
     init_pair(Colors::STATUS_BAR_STATUS,            COLOR_WHITE,    COLOR_BLUE);
+    init_pair(Colors::STATUS_BAR_STATUS_DIVIDER,    COLOR_WHITE,    COLOR_BLUE);
     init_pair(Colors::STATUS_BAR_MESSAGE,           COLOR_BLACK,    COLOR_WHITE);
     init_pair(Colors::STATUS_BAR_PROMPT,            COLOR_WHITE,    COLOR_BLACK);
 
@@ -55,23 +54,31 @@ StatusBar::~StatusBar()
 
 void StatusBar::update()
 {
+    int x = 0;
+
     werase(_statusWindow);
-    wmove(_statusWindow, 0, 0);
+    wmove(_statusWindow, 0, x);
 
     /* View Name */
-    wattron(_statusWindow, A_BOLD);
-    waddch(_statusWindow, '[');
-    waddnstr(_statusWindow, _viewName.c_str(), viewNameWidth - 2 - 1);
-    waddch(_statusWindow, ']');
-
-    /* Divider */
-    wmove(_statusWindow, 0, viewNameWidth);
-    waddstr(_statusWindow, " | ");
-    wattroff(_statusWindow, A_BOLD);
+    x += NCurses::addPlainString(_statusWindow, "[" + _viewName + "]",
+        A_BOLD, Colors::STATUS_BAR_STATUS);
 
     /* Status */
-    wmove(_statusWindow, 0, viewNameWidth + dividerWidth);
-    waddstr(_statusWindow, _status.c_str());
+    for (auto statusItem = _status.begin(), e = _status.end(); statusItem != e; ++statusItem)
+    {
+        /* Divider */
+        if (++x >= getmaxx(_statusWindow))
+            break;
+        wmove(_statusWindow, 0, x);
+
+        x += NCurses::addChar(_statusWindow, '|', A_BOLD, Colors::STATUS_BAR_STATUS_DIVIDER);
+
+        if (++x >= getmaxx(_statusWindow))
+            break;
+        wmove(_statusWindow, 0, x);
+
+        x += NCurses::addPlainString(_statusWindow, *statusItem, 0, Colors::STATUS_BAR_STATUS);
+    }
 
     wrefresh(_statusWindow);
 }
@@ -142,7 +149,7 @@ void StatusBar::setViewName(const std::string & name)
     update();
 }
 
-void StatusBar::setStatus(const std::string & status)
+void StatusBar::setStatus(const std::vector<std::string> & status)
 {
     _status = status;
 

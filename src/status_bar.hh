@@ -21,6 +21,7 @@
 #define NER_STATUS_BAR_H 1
 
 #include <string>
+#include <vector>
 #include <thread>
 
 class StatusBar
@@ -43,7 +44,7 @@ class StatusBar
         void displayMessage(const std::string & message);
         std::string prompt(const std::string & message);
         void setViewName(const std::string & name);
-        void setStatus(const std::string & status);
+        void setStatus(const std::vector<std::string> & status);
 
     private:
         static StatusBar * _instance;
@@ -55,7 +56,7 @@ class StatusBar
         WINDOW * _promptWindow;
 
         std::string _viewName;
-        std::string _status;
+        std::vector<std::string> _status;
 
         bool _messageCleared;
         std::thread _messageClearThread;

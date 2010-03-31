@@ -193,6 +193,21 @@ void SearchView::update()
     }
 }
 
+std::vector<std::string> SearchView::status() const
+{
+    std::ostringstream threadPosition;
+
+    if (_threads.size() > 0)
+        threadPosition << "thread " << (_selectedIndex + 1) << " of " << _threads.size();
+    else
+        threadPosition << "no matching threads";
+
+    return std::vector<std::string>{
+        "search-terms: \"" + _searchTerms + '"',
+        threadPosition.str()
+    };
+}
+
 void SearchView::openSelectedThread()
 {
     std::lock_guard<std::mutex> lock(_mutex);
@@ -307,21 +322,6 @@ void SearchView::collectThreads()
 
     /* For cases when there are no matching threads */
     _condition.notify_one();
-}
-
-void SearchView::updateStatus()
-{
-    std::ostringstream status;
-    status << "search-terms: \"" << _searchTerms << "\"";
-
-    status << " | ";
-
-    if (_threads.size() > 0)
-        status << "thread " << (_selectedIndex + 1) << " of " << _threads.size();
-    else
-        status << "no matching threads";
-
-    StatusBar::instance().setStatus(status.str());
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
