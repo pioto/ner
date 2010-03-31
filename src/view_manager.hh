@@ -29,6 +29,11 @@ class View;
 class ViewManager : public InputHandler
 {
     public:
+        static ViewManager & instance()
+        {
+            return *_instance;
+        }
+
         ViewManager();
         ~ViewManager();
 
@@ -40,7 +45,11 @@ class ViewManager : public InputHandler
         void refresh();
         void resize();
 
+        View * activeView() const;
+
     private:
+        static ViewManager * _instance;
+
         View * _activeView;
         std::vector<View *> _views;
 };

@@ -139,7 +139,7 @@ void ThreadView::openSelectedMessage()
     MessageView * messageView = MessageView::fromId(selectedMessage().id);
 
     if (messageView)
-        _viewManager->addView(messageView);
+        ViewManager::instance().addView(messageView);
 }
 
 void ThreadView::updateStatus()

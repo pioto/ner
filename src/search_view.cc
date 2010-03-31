@@ -202,7 +202,7 @@ void SearchView::openSelectedThread()
         ThreadView * threadView = ThreadView::fromId(_threads.at(_selectedIndex).id);
 
         if (threadView)
-            _viewManager->addView(threadView);
+            ViewManager::instance().addView(threadView);
     }
 }
 

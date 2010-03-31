@@ -21,9 +21,13 @@
 #include "view.hh"
 #include "status_bar.hh"
 
+ViewManager * ViewManager::_instance = 0;
+
 ViewManager::ViewManager()
     : _activeView(0)
 {
+    _instance = this;
+
     addHandledSequence("q", std::bind(&ViewManager::closeActiveView, this));
 }
 
@@ -55,8 +59,6 @@ InputHandler::HandleResult ViewManager::handleKeySequence(const std::vector<int>
 
 void ViewManager::addView(View * view)
 {
-    view->_viewManager = this;
-
     _views.push_back(view);
 
     _activeView = view;
@@ -104,6 +106,11 @@ void ViewManager::resize()
     {
         (*view)->resize();
     }
+}
+
+View * ViewManager::activeView() const
+{
+    return _activeView;
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

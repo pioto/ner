@@ -26,6 +26,11 @@
 class StatusBar
 {
     public:
+        static StatusBar & instance()
+        {
+            return *_instance;
+        }
+
         StatusBar();
         ~StatusBar();
 
@@ -40,16 +45,11 @@ class StatusBar
         void setViewName(const std::string & name);
         void setStatus(const std::string & status);
 
-        static StatusBar & instance()
-        {
-            return *_instance;
-        }
-
     private:
+        static StatusBar * _instance;
+
         void delayedClearMessage(int delay);
         void clearMessage();
-
-        static StatusBar * _instance;
 
         WINDOW * _statusWindow;
         WINDOW * _promptWindow;
