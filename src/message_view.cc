@@ -28,6 +28,8 @@
 #include "status_bar.hh"
 
 const std::vector<std::string> headers{ "To", "From", "Subject" };
+const std::string lessMessage("[less]");
+const std::string moreMessage("[more]");
 
 MessageView::MessageView(notmuch_message_t * message)
     : LineBrowserView()
@@ -140,6 +142,19 @@ void MessageView::update()
         if (NCurses::addUtf8String(_window, (*line).c_str(), attributes) > getmaxx(_window))
             NCurses::addCutOffIndicator(_window, attributes);
     }
+
+    for (; row < getmaxy(_window); ++row)
+        mvwaddch(_window, row, 0, '~' | A_BOLD | COLOR_PAIR(Colors::EMPTY_SPACE_INDICATOR));
+
+    wattron(_window, COLOR_PAIR(Colors::MORE_LESS_INDICATOR));
+
+    if (_offset > 0)
+        mvwaddstr(_window, headers.size() + 1, getmaxx(_window) - lessMessage.size(), lessMessage.c_str());
+
+    if (_offset + visibleLines() < lineCount())
+        mvwaddstr(_window, getmaxy(_window) - 1, getmaxx(_window) - moreMessage.size(), moreMessage.c_str());
+
+    wattroff(_window, COLOR_PAIR(Colors::MORE_LESS_INDICATOR));
 }
 
 void MessageView::updateStatus()

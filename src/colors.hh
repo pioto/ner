@@ -26,6 +26,8 @@ namespace Colors
     {
         /* General */
         CUT_OFF_INDICATOR = 1,
+        MORE_LESS_INDICATOR,
+        EMPTY_SPACE_INDICATOR,
 
         /* Status Bar */
         STATUS_BAR_STATUS,

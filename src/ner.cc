@@ -44,7 +44,9 @@ Ner::Ner()
     addHandledSequence('l' - 96, std::bind(&Ner::redraw, this)); // Ctrl-L
 
     /* Colors */
-    init_pair(Colors::CUT_OFF_INDICATOR, COLOR_GREEN, COLOR_BLACK);
+    init_pair(Colors::CUT_OFF_INDICATOR,        COLOR_GREEN,    COLOR_BLACK);
+    init_pair(Colors::MORE_LESS_INDICATOR,      COLOR_BLACK,    COLOR_GREEN);
+    init_pair(Colors::EMPTY_SPACE_INDICATOR,    COLOR_CYAN,     COLOR_BLACK);
 }
 
 Ner::~Ner()
