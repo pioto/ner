@@ -111,6 +111,7 @@ void Ner::run()
             _statusBar->resize();
 
             _viewManager->update();
+            _statusBar->update();
 
             _viewManager->refresh();
             _statusBar->refresh();
