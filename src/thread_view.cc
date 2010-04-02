@@ -39,7 +39,7 @@ ThreadView::ThreadView(notmuch_thread_t * thread)
         notmuch_messages_valid(messages);
         notmuch_messages_move_to_next(messages))
     {
-        _topMessages.push_back(Message(notmuch_messages_get(messages)));
+        _topMessages.push_back(NotMuch::Message(notmuch_messages_get(messages)));
     }
 
     notmuch_messages_destroy(messages);
