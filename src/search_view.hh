@@ -21,29 +21,13 @@
 #define NER_SEARCH_VIEW 1
 
 #include <string>
-#include <map>
-#include <set>
 #include <thread>
-#include <notmuch.h>
 
 #include "line_browser_view.hh"
+#include "notmuch.hh"
 
 class SearchView : public LineBrowserView
 {
-    struct Thread
-    {
-        Thread(notmuch_thread_t * thread);
-
-        std::string id;
-        std::string subject;
-        std::string authors;
-        uint32_t totalMessages;
-        uint32_t matchedMessages;
-        time_t newestDate;
-        time_t oldestDate;
-        std::set<std::string> tags;
-    };
-
     public:
         SearchView(const std::string & search);
         virtual ~SearchView();
@@ -68,7 +52,7 @@ class SearchView : public LineBrowserView
         std::condition_variable _condition;
         bool _collecting;
 
-        std::vector<Thread> _threads;
+        std::vector<NotMuch::Thread> _threads;
 };
 
 #endif

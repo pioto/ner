@@ -19,16 +19,80 @@
 
 #include "notmuch.hh"
 
-std::string NotMuch::_path;
+using namespace NotMuch;
 
-void NotMuch::setDatabasePath(const std::string & path)
+std::string _databasePath;
+
+Thread::Thread(notmuch_thread_t * thread)
+    : id(notmuch_thread_get_thread_id(thread)),
+        subject(notmuch_thread_get_subject(thread) ? : "(null)"),
+        authors(notmuch_thread_get_authors(thread) ? : "(null)"),
+        totalMessages(notmuch_thread_get_total_messages(thread)),
+        matchedMessages(notmuch_thread_get_matched_messages(thread)),
+        newestDate(notmuch_thread_get_newest_date(thread)),
+        oldestDate(notmuch_thread_get_oldest_date(thread))
 {
-    _path = path;
+    notmuch_tags_t * tagIterator;
+
+    for (tagIterator = notmuch_thread_get_tags(thread);
+        notmuch_tags_valid(tagIterator);
+        notmuch_tags_move_to_next(tagIterator))
+    {
+        tags.insert(notmuch_tags_get(tagIterator));
+    }
+
+    notmuch_tags_destroy(tagIterator);
+}
+
+Message::Message(notmuch_message_t * message)
+    : id(notmuch_message_get_message_id(message)),
+        filename(notmuch_message_get_filename(message)),
+        date(notmuch_message_get_date(message)),
+        matched(notmuch_message_get_flag(message, NOTMUCH_MESSAGE_FLAG_MATCH)),
+        headers{
+            {"From",    notmuch_message_get_header(message, "From")     ? : "(null)"},
+            {"To",      notmuch_message_get_header(message, "To")       ? : "(null)"},
+            {"Subject", notmuch_message_get_header(message, "Subject")  ? : "(null)"},
+        }
+{
+    /* Tags */
+    notmuch_tags_t * tagIterator;
+
+    for (tagIterator = notmuch_message_get_tags(message);
+        notmuch_tags_valid(tagIterator);
+        notmuch_tags_move_to_next(tagIterator))
+    {
+        tags.insert(notmuch_tags_get(tagIterator));
+    }
+
+    notmuch_tags_destroy(tagIterator);
+
+    /* Replies */
+    notmuch_messages_t * messages;
+
+    for (messages = notmuch_message_get_replies(message);
+        notmuch_messages_valid(messages);
+        notmuch_messages_move_to_next(messages))
+    {
+        replies.push_back(Message(notmuch_messages_get(messages)));
+    }
+
+    notmuch_messages_destroy(messages);
 }
 
 notmuch_database_t * NotMuch::openDatabase(notmuch_database_mode_t mode)
 {
-    return notmuch_database_open(_path.c_str(), mode);
+    return notmuch_database_open(_databasePath.c_str(), mode);
+}
+
+const std::string & NotMuch::databasePath()
+{
+    return _databasePath;
+}
+
+void NotMuch::setDatabasePath(const std::string & path)
+{
+    _databasePath = path;
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

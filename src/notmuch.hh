@@ -21,19 +21,45 @@
 #define NER_NOTMUCH_H 1
 
 #include <string>
+#include <set>
+#include <map>
+#include <vector>
 #include <notmuch.h>
 
-class NotMuch
+namespace NotMuch
 {
-    public:
-        NotMuch() = delete;
-        ~NotMuch() = delete;
+    struct Thread
+    {
+        Thread(notmuch_thread_t * thread);
 
-        static void setDatabasePath(const std::string & path);
-        static notmuch_database_t * openDatabase(notmuch_database_mode_t mode = NOTMUCH_DATABASE_MODE_READ_ONLY);
+        std::string id;
+        std::string subject;
+        std::string authors;
+        uint32_t totalMessages;
+        uint32_t matchedMessages;
+        time_t newestDate;
+        time_t oldestDate;
+        std::set<std::string> tags;
+    };
 
-    private:
-        static std::string _path;
+    struct Message
+    {
+        Message() = default;
+        Message(notmuch_message_t * message);
+
+        std::string id;
+        std::string filename;
+        time_t date;
+        bool matched;
+        std::map<std::string, std::string> headers;
+        std::set<std::string> tags;
+        std::vector<Message> replies;
+    };
+
+    notmuch_database_t * openDatabase(notmuch_database_mode_t mode = NOTMUCH_DATABASE_MODE_READ_ONLY);
+
+    const std::string & databasePath();
+    void setDatabasePath(const std::string & path);
 };
 
 #endif

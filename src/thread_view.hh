@@ -20,29 +20,13 @@
 #ifndef NER_THREAD_VIEW_H
 #define NER_THREAD_VIEW_H 1
 
-#include <notmuch.h>
 #include <vector>
-#include <map>
-#include <set>
 
 #include "line_browser_view.hh"
+#include "notmuch.hh"
 
 class ThreadView : public LineBrowserView
 {
-    struct Message
-    {
-        Message() = default;
-        Message(notmuch_message_t * message);
-
-        std::string id;
-        std::string filename;
-        time_t date;
-        bool matched;
-        std::map<std::string, std::string> headers;
-        std::set<std::string> tags;
-        std::vector<Message> replies;
-    };
-
     public:
         ThreadView(notmuch_thread_t * thread);
         virtual ~ThreadView();
@@ -53,19 +37,19 @@ class ThreadView : public LineBrowserView
         virtual std::string name() const { return "thread-view"; }
         virtual std::vector<std::string> status() const;
 
+        const NotMuch::Message & selectedMessage() const;
         virtual void openSelectedMessage();
 
     protected:
         virtual int lineCount() const;
-        const Message & selectedMessage() const;
 
         std::string _id;
 
     private:
-        uint32_t displayMessageLine(const Message & message,
+        uint32_t displayMessageLine(const NotMuch::Message & message,
             std::vector<chtype> & leading, bool last, int index);
 
-        std::vector<Message> _topMessages;
+        std::vector<NotMuch::Message> _topMessages;
         int _messageCount;
 };
 

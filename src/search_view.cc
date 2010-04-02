@@ -39,27 +39,6 @@ const int authorsWidth = 20;
 
 const auto conditionWaitTime = std::chrono::milliseconds(50);
 
-SearchView::Thread::Thread(notmuch_thread_t * thread)
-    : id(notmuch_thread_get_thread_id(thread)),
-        subject(notmuch_thread_get_subject(thread) ? : "(null)"),
-        authors(notmuch_thread_get_authors(thread) ? : "(null)"),
-        totalMessages(notmuch_thread_get_total_messages(thread)),
-        matchedMessages(notmuch_thread_get_matched_messages(thread)),
-        newestDate(notmuch_thread_get_newest_date(thread)),
-        oldestDate(notmuch_thread_get_oldest_date(thread))
-{
-    notmuch_tags_t * tagIterator;
-
-    for (tagIterator = notmuch_thread_get_tags(thread);
-        notmuch_tags_valid(tagIterator);
-        notmuch_tags_move_to_next(tagIterator))
-    {
-        tags.insert(notmuch_tags_get(tagIterator));
-    }
-
-    notmuch_tags_destroy(tagIterator);
-}
-
 SearchView::SearchView(const std::string & search)
     : LineBrowserView(),
         _searchTerms(search)

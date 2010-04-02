@@ -29,42 +29,6 @@
 #include "message_view.hh"
 #include "status_bar.hh"
 
-ThreadView::Message::Message(notmuch_message_t * message)
-    : id(notmuch_message_get_message_id(message)),
-        filename(notmuch_message_get_filename(message)),
-        date(notmuch_message_get_date(message)),
-        matched(notmuch_message_get_flag(message, NOTMUCH_MESSAGE_FLAG_MATCH)),
-        headers{
-            {"From",    notmuch_message_get_header(message, "From")     ? : "(null)"},
-            {"To",      notmuch_message_get_header(message, "To")       ? : "(null)"},
-            {"Subject", notmuch_message_get_header(message, "Subject")  ? : "(null)"},
-        }
-{
-    /* Tags */
-    notmuch_tags_t * tagIterator;
-
-    for (tagIterator = notmuch_message_get_tags(message);
-        notmuch_tags_valid(tagIterator);
-        notmuch_tags_move_to_next(tagIterator))
-    {
-        tags.insert(notmuch_tags_get(tagIterator));
-    }
-
-    notmuch_tags_destroy(tagIterator);
-
-    /* Replies */
-    notmuch_messages_t * messages;
-
-    for (messages = notmuch_message_get_replies(message);
-        notmuch_messages_valid(messages);
-        notmuch_messages_move_to_next(messages))
-    {
-        replies.push_back(Message(notmuch_messages_get(messages)));
-    }
-
-    notmuch_messages_destroy(messages);
-}
-
 ThreadView::ThreadView(notmuch_thread_t * thread)
     : LineBrowserView(),
         _id(notmuch_thread_get_thread_id(thread))
@@ -155,7 +119,7 @@ void ThreadView::openSelectedMessage()
         ViewManager::instance().addView(messageView);
 }
 
-uint32_t ThreadView::displayMessageLine(const Message & message,
+uint32_t ThreadView::displayMessageLine(const NotMuch::Message & message,
     std::vector<chtype> & leading, bool last, int index)
 {
     if (index >= _offset)
@@ -264,14 +228,14 @@ int ThreadView::lineCount() const
     return _messageCount;
 }
 
-const ThreadView::Message & ThreadView::selectedMessage() const
+const NotMuch::Message & ThreadView::selectedMessage() const
 {
-    std::vector<const Message *> messages;
+    std::vector<const NotMuch::Message *> messages;
 
     std::transform(_topMessages.rbegin(), _topMessages.rend(),
-        std::back_inserter(messages), addressOf<Message>());
+        std::back_inserter(messages), addressOf<NotMuch::Message>());
 
-    const Message * message = messages.back();
+    const NotMuch::Message * message = messages.back();
 
     for (int index = 0; index < _selectedIndex; ++index)
     {
