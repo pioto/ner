@@ -45,8 +45,6 @@ class View : public InputHandler
     protected:
         virtual void updateStatus();
 
-        ViewManager * _viewManager;
-
     friend class ViewManager;
 };
 
