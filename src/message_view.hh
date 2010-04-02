@@ -30,7 +30,8 @@
 class MessageView : public LineBrowserView
 {
     public:
-        MessageView(notmuch_message_t * message);
+        MessageView(notmuch_message_t * message, int x = defaultX(), int y = defaultY(),
+            int width = defaultWidth(), int height = defaultHeight());
         virtual ~MessageView();
 
         static MessageView * fromId(const std::string & messageId);

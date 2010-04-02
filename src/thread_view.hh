@@ -28,7 +28,9 @@
 class ThreadView : public LineBrowserView
 {
     public:
-        ThreadView(notmuch_thread_t * thread);
+        ThreadView(notmuch_thread_t * thread,
+            int x = defaultX(), int y = defaultY(),
+            int width = defaultWidth(), int height = defaultHeight());
         virtual ~ThreadView();
 
         static ThreadView * fromId(const std::string & threadId);

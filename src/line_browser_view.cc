@@ -19,8 +19,9 @@
 
 #include "line_browser_view.hh"
 
-LineBrowserView::LineBrowserView()
-    : _selectedIndex(0),
+LineBrowserView::LineBrowserView(int x, int y, int width, int height)
+    : WindowView(x, y, width, height),
+        _selectedIndex(0),
         _offset(0)
 {
     /* Key Sequences */
@@ -40,9 +41,9 @@ LineBrowserView::LineBrowserView()
     addHandledSequence(KEY_END,     std::bind(&LineBrowserView::moveToBottom, this));
 }
 
-void LineBrowserView::resize()
+void LineBrowserView::resize(int x, int y, int width, int height)
 {
-    WindowView::resize();
+    WindowView::resize(x, y, width, height);
 
     makeSelectionVisible();
 }

@@ -39,8 +39,8 @@ const int authorsWidth = 20;
 
 const auto conditionWaitTime = std::chrono::milliseconds(50);
 
-SearchView::SearchView(const std::string & search)
-    : LineBrowserView(),
+SearchView::SearchView(const std::string & search, int x, int y, int width, int height)
+    : LineBrowserView(x, y, width, height),
         _searchTerms(search)
 {
     _collecting = true;

@@ -20,8 +20,8 @@
 #include "window_view.hh"
 #include "status_bar.hh"
 
-WindowView::WindowView()
-    : View(), _window(newwin(LINES - StatusBar::instance().height(), COLS, 0, 0))
+WindowView::WindowView(int x, int y, int width, int height)
+    : View(), _window(newwin(height, width, y, x))
 {
     werase(_window);
 }
@@ -36,9 +36,10 @@ void WindowView::refresh()
     wrefresh(_window);
 }
 
-void WindowView::resize()
+void WindowView::resize(int x, int y, int width, int height)
 {
-    wresize(_window, LINES - StatusBar::instance().height(), COLS);
+    mvwin(_window, y, x);
+    wresize(_window, height, width);
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

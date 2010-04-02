@@ -29,7 +29,9 @@
 class SearchView : public LineBrowserView
 {
     public:
-        SearchView(const std::string & search);
+        SearchView(const std::string & search,
+            int x = defaultX(), int y = defaultY(),
+            int width = defaultWidth(), int height = defaultHeight());
         virtual ~SearchView();
 
         virtual void update();

@@ -31,8 +31,8 @@ const std::vector<std::string> headers{ "To", "From", "Subject" };
 const std::string lessMessage("[less]");
 const std::string moreMessage("[more]");
 
-MessageView::MessageView(notmuch_message_t * message)
-    : LineBrowserView()
+MessageView::MessageView(notmuch_message_t * message, int x, int y, int width, int height)
+    : LineBrowserView(x, y, width, height)
 {
     std::string filename = notmuch_message_get_filename(message);
 

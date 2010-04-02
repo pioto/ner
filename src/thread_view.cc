@@ -29,8 +29,8 @@
 #include "message_view.hh"
 #include "status_bar.hh"
 
-ThreadView::ThreadView(notmuch_thread_t * thread)
-    : LineBrowserView(),
+ThreadView::ThreadView(notmuch_thread_t * thread, int x, int y, int width, int height)
+    : LineBrowserView(x, y, width, height),
         _id(notmuch_thread_get_thread_id(thread))
 {
     notmuch_messages_t * messages;
@@ -39,7 +39,7 @@ ThreadView::ThreadView(notmuch_thread_t * thread)
         notmuch_messages_valid(messages);
         notmuch_messages_move_to_next(messages))
     {
-        _topMessages.push_back(NotMuch::Message(notmuch_messages_get(messages)));
+        _topMessages.push_back(notmuch_messages_get(messages));
     }
 
     notmuch_messages_destroy(messages);

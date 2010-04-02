@@ -25,11 +25,11 @@
 class WindowView : public View
 {
     public:
-        WindowView();
+        WindowView(int x, int y, int width, int height);
         virtual ~WindowView();
 
         virtual void refresh();
-        virtual void resize();
+        virtual void resize(int width, int height, int x, int y);
 
     protected:
         WINDOW * _window;

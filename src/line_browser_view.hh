@@ -25,9 +25,9 @@
 class LineBrowserView : public WindowView
 {
     public:
-        LineBrowserView();
+        LineBrowserView(int x, int y, int width, int height);
 
-        virtual void resize();
+        virtual void resize(int x, int y, int width, int height);
 
         virtual void next();
         virtual void previous();

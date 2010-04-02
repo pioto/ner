@@ -26,6 +26,7 @@
 #include <string>
 
 #include "input_handler.hh"
+#include "status_bar.hh"
 
 class ViewManager;
 
@@ -37,12 +38,19 @@ class View : public InputHandler
         /* Abstract methods */
         virtual void update() = 0;
         virtual void refresh() = 0;
-        virtual void resize() = 0;
+        virtual void resize(int width = defaultWidth(), int height = defaultHeight(),
+            int x = defaultX(), int y = defaultY()) = 0;
         virtual void focus();
+
         virtual std::string name() const = 0;
         virtual std::vector<std::string> status() const;
 
     protected:
+        static inline int defaultX() { return 0; }
+        static inline int defaultY() { return 0; }
+        static inline int defaultWidth() { return COLS; }
+        static inline int defaultHeight() { return LINES - StatusBar::instance().height(); }
+
         virtual void updateStatus();
 
     friend class ViewManager;
