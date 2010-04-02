@@ -31,37 +31,9 @@ const std::vector<std::string> headers{ "To", "From", "Subject" };
 const std::string lessMessage("[less]");
 const std::string moreMessage("[more]");
 
-MessageView::MessageView(notmuch_message_t * message, int x, int y, int width, int height)
+MessageView::MessageView(int x, int y, int width, int height)
     : LineBrowserView(x, y, width, height)
 {
-    std::string filename = notmuch_message_get_filename(message);
-
-    FILE * file = fopen(filename.c_str(), "r");
-
-    if (file != NULL)
-    {
-        GMimeStream * stream = g_mime_stream_file_new(file);
-        GMimeParser * parser = g_mime_parser_new_with_stream(stream);
-        GMimeMessage * message = g_mime_parser_construct_message(parser);
-
-        /* Read relavant headers */
-        _headers["To"] = internet_address_list_to_string(g_mime_message_get_recipients(message,
-            GMIME_RECIPIENT_TYPE_TO), true) ? : "(null)";
-        _headers["From"] = g_mime_message_get_sender(message) ? : "(null)";
-        _headers["Subject"] = g_mime_message_get_subject(message) ? : "(null)";
-
-        GMimeObject * mimePart = g_mime_message_get_mime_part(message);
-
-        /* Locate plain text parts */
-        processMimePart(mimePart);
-    }
-    else
-    {
-        _headers["To"]      = "(null)";
-        _headers["From"]    = "(null)";
-        _headers["Subject"] = "(null)";
-    }
-
     /* Colors */
     init_pair(Colors::MESSAGE_VIEW_HEADER,  COLOR_CYAN, COLOR_BLACK);
 }
@@ -78,7 +50,10 @@ MessageView * MessageView::fromId(const std::string & messageId)
     notmuch_message_t * message = notmuch_database_find_message(database, messageId.c_str());
 
     if (message != NULL)
-        messageView = new MessageView(message);
+    {
+        messageView = new MessageView();
+        messageView->setMessage(message);
+    }
     else
     {
         messageView = 0;
@@ -88,6 +63,43 @@ MessageView * MessageView::fromId(const std::string & messageId)
     notmuch_database_close(database);
 
     return messageView;
+}
+
+void MessageView::setMessage(notmuch_message_t * message)
+{
+    _lines.clear();
+
+    std::string filename = notmuch_message_get_filename(message);
+
+    FILE * file = fopen(filename.c_str(), "r");
+
+    if (file != NULL)
+    {
+        GMimeStream * stream = g_mime_stream_file_new(file);
+        GMimeParser * parser = g_mime_parser_new_with_stream(stream);
+        GMimeMessage * message = g_mime_parser_construct_message(parser);
+
+        /* Read relavant headers */
+        _headers = {
+            { "To",         internet_address_list_to_string(g_mime_message_get_recipients(message,
+                GMIME_RECIPIENT_TYPE_TO), true) ? : "(null)" },
+            { "From",       g_mime_message_get_sender(message) ? : "(null)" },
+            { "Subject",    g_mime_message_get_subject(message) ? : "(null)" }
+        };
+
+        GMimeObject * mimePart = g_mime_message_get_mime_part(message);
+
+        /* Locate plain text parts */
+        processMimePart(mimePart);
+    }
+    else
+    {
+        _headers = {
+            { "To",         "(null)" },
+            { "From",       "(null)" },
+            { "Subject",    "(null)" },
+        };
+    }
 }
 
 void MessageView::update()

@@ -15,13 +15,13 @@ key bindings:
 - **Ctrl-C**:   Clear the current input sequence
 - **Ctrl-L**:   Redraw the screen
 
-### Search, Thread, and Message
-- **j** or **Down**:            Move to the next thread
-- **k** or **Up**:              Move to the previous thread
+### Search, Thread, Message, and ThreadMessage
+- **j** or **Down**:            Move to the next line
+- **k** or **Up**:              Move to the previous line
 - **Ctrl-D** or **Page Down**:  Move to the next page
 - **Ctrl-U** or **Page Up**:    Move to the previous page
-- **gg** or **Home**:           Move to the first thread
-- **G** or **End**:             Move to the last thread
+- **gg** or **Home**:           Move to the first line
+- **G** or **End**:             Move to the last line
 
 ### Search
 - **=**:                        Refresh the search
@@ -29,4 +29,8 @@ key bindings:
 
 ### Thread
 - **Enter**:    Open the selected message
+
+### ThreadMessage
+- **Ctrl-N**:   Open the next message
+- **Ctrl-P**:   Open the previous message
 

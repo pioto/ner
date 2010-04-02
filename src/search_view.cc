@@ -25,7 +25,7 @@
 #include <sched.h>
 
 #include "search_view.hh"
-#include "thread_view.hh"
+#include "thread_message_view.hh"
 #include "view_manager.hh"
 #include "util.hh"
 #include "colors.hh"
@@ -193,10 +193,10 @@ void SearchView::openSelectedThread()
 
     if (_selectedIndex < _threads.size())
     {
-        ThreadView * threadView = ThreadView::fromId(_threads.at(_selectedIndex).id);
+        ThreadMessageView * threadMessageView = ThreadMessageView::fromId(_threads.at(_selectedIndex).id);
 
-        if (threadView)
-            ViewManager::instance().addView(threadView);
+        if (threadMessageView)
+            ViewManager::instance().addView(threadMessageView);
     }
 }
 
