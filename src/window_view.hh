@@ -29,7 +29,7 @@ class WindowView : public View
         virtual ~WindowView();
 
         virtual void refresh();
-        virtual void resize(int width, int height, int x, int y);
+        virtual void resize(int x, int y, int width, int height);
 
     protected:
         WINDOW * _window;

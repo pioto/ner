@@ -38,8 +38,8 @@ class View : public InputHandler
         /* Abstract methods */
         virtual void update() = 0;
         virtual void refresh() = 0;
-        virtual void resize(int width = defaultWidth(), int height = defaultHeight(),
-            int x = defaultX(), int y = defaultY()) = 0;
+        virtual void resize(int x = defaultX(), int y = defaultY(),
+            int width = defaultWidth(), int height = defaultHeight()) = 0;
         virtual void focus();
 
         virtual std::string name() const = 0;
