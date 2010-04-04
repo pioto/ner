@@ -36,6 +36,7 @@ class ThreadMessageView : public View
         virtual void resize(int x, int y, int width, int height);
 
         virtual std::string name() const { return "thread-message-view"; }
+        virtual Type type() const { return Type::ThreadMessageView; }
         virtual std::vector<std::string> status() const;
 
         void nextMessage();

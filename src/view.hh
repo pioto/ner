@@ -34,6 +34,15 @@
 class View : public InputHandler
 {
     public:
+        enum class Type
+        {
+            SearchView,
+            ThreadView,
+            MessageView,
+            ThreadMessageView,
+            ViewView
+        };
+
         virtual ~View() = 0;
 
         /* Abstract methods */
@@ -71,6 +80,7 @@ class View : public InputHandler
         virtual void unfocus();
 
         virtual std::string name() const = 0;
+        virtual Type type() const = 0;
         virtual std::vector<std::string> status() const;
 
     protected:

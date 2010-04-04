@@ -47,6 +47,7 @@ class ThreadView : public LineBrowserView
 
         virtual void update();
         virtual std::string name() const { return "thread-view"; }
+        virtual Type type() const { return Type::ThreadView; }
         virtual std::vector<std::string> status() const;
 
         const NotMuch::Message & selectedMessage() const;

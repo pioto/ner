@@ -50,6 +50,7 @@ class MessageView : public LineBrowserView
 
         virtual void update();
         virtual std::string name() const { return "message-view"; }
+        virtual Type type() const { return Type::MessageView; }
         virtual std::vector<std::string> status() const;
 
     protected:
