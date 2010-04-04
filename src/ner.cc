@@ -171,10 +171,16 @@ void Ner::openMessage()
 
     if (!messageId.empty())
     {
-        std::shared_ptr<MessageView> messageView(MessageView::fromId(messageId));
-
-        if (messageView.get())
-            _viewManager->addView(messageView);
+        try
+        {
+            std::shared_ptr<MessageView> messageView(new MessageView());
+            messageView->setMessage(messageId);
+            _viewManager->addView(std::move(messageView));
+        }
+        catch (const MessageView::InvalidMessageException & e)
+        {
+            StatusBar::instance().displayMessage(e.what());
+        }
     }
 }
 
@@ -184,10 +190,14 @@ void Ner::openThread()
 
     if (!threadId.empty())
     {
-        std::shared_ptr<ThreadView> threadView(ThreadView::fromId(threadId));
-
-        if (threadView.get())
-            _viewManager->addView(threadView);
+        try
+        {
+            _viewManager->addView(std::shared_ptr<ThreadView>(new ThreadView(threadId)));
+        }
+        catch (const ThreadView::InvalidThreadException & e)
+        {
+            _statusBar->displayMessage(e.what());
+        }
     }
 }
 

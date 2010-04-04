@@ -26,12 +26,10 @@
 class ThreadMessageView : public View
 {
     public:
-        ThreadMessageView(notmuch_thread_t * thread,
+        ThreadMessageView(const std::string & threadId,
             int x = defaultX(), int y = defaultY(),
             int width = defaultWidth(), int height = defaultHeight());
         virtual ~ThreadMessageView();
-
-        static ThreadMessageView * fromId(const std::string & threadId);
 
         virtual void update();
         virtual void refresh();

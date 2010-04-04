@@ -193,10 +193,19 @@ void SearchView::openSelectedThread()
 
     if (_selectedIndex < _threads.size())
     {
-        std::shared_ptr<ThreadMessageView> threadMessageView(ThreadMessageView::fromId(_threads.at(_selectedIndex).id));
-
-        if (threadMessageView.get())
-            ViewManager::instance().addView(threadMessageView);
+        try
+        {
+            ViewManager::instance().addView(std::shared_ptr<ThreadMessageView>(
+                new ThreadMessageView(_threads.at(_selectedIndex).id)));
+        }
+        catch (const ThreadView::InvalidThreadException & e)
+        {
+            StatusBar::instance().displayMessage(e.what());
+        }
+        catch (const MessageView::InvalidMessageException & e)
+        {
+            StatusBar::instance().displayMessage(e.what());
+        }
     }
 }
 

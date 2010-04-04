@@ -17,7 +17,6 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <fstream>
 #include <sstream>
 #include <cstring>
 
@@ -31,6 +30,20 @@ const std::vector<std::string> headers{ "To", "From", "Subject" };
 const std::string lessMessage("[less]");
 const std::string moreMessage("[more]");
 
+MessageView::InvalidMessageException::InvalidMessageException(const std::string & messageId)
+    : _id(messageId)
+{
+}
+
+MessageView::InvalidMessageException::~InvalidMessageException() throw()
+{
+}
+
+const char * MessageView::InvalidMessageException::what() const throw()
+{
+    return ("Cannot find message with ID: " + _id).c_str();
+}
+
 MessageView::MessageView(int x, int y, int width, int height)
     : LineBrowserView(x, y, width, height)
 {
@@ -42,34 +55,22 @@ MessageView::~MessageView()
 {
 }
 
-MessageView * MessageView::fromId(const std::string & messageId)
+void MessageView::setMessage(const std::string & messageId)
 {
-    MessageView * messageView;
+    _lines.clear();
 
     notmuch_database_t * database = NotMuch::openDatabase();
     notmuch_message_t * message = notmuch_database_find_message(database, messageId.c_str());
 
-    if (message != NULL)
+    if (!message)
     {
-        messageView = new MessageView();
-        messageView->setMessage(message);
+        notmuch_database_close(database);
+        throw InvalidMessageException(messageId);
     }
-    else
-    {
-        messageView = 0;
-        StatusBar::instance().displayMessage("Cannot find message with ID: " + messageId);
-    }
-
-    notmuch_database_close(database);
-
-    return messageView;
-}
-
-void MessageView::setMessage(notmuch_message_t * message)
-{
-    _lines.clear();
 
     std::string filename = notmuch_message_get_filename(message);
+
+    notmuch_database_close(database);
 
     FILE * file = fopen(filename.c_str(), "r");
 

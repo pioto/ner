@@ -30,13 +30,23 @@
 class MessageView : public LineBrowserView
 {
     public:
+        class InvalidMessageException : public std::exception
+        {
+            public:
+                InvalidMessageException(const std::string & messageId);
+                ~InvalidMessageException() throw();
+
+                virtual const char * what() const throw();
+
+            private:
+                std::string _id;
+        };
+
         MessageView(int x = defaultX(), int y = defaultY(),
             int width = defaultWidth(), int height = defaultHeight());
         virtual ~MessageView();
 
-        static MessageView * fromId(const std::string & messageId);
-
-        void setMessage(notmuch_message_t * message);
+        void setMessage(const std::string & messageId);
 
         virtual void update();
         virtual std::string name() const { return "message-view"; }

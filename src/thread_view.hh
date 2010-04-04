@@ -28,12 +28,22 @@
 class ThreadView : public LineBrowserView
 {
     public:
-        ThreadView(notmuch_thread_t * thread,
+        class InvalidThreadException : public std::exception
+        {
+            public:
+                InvalidThreadException(const std::string & threadId);
+                ~InvalidThreadException() throw();
+
+                virtual const char * what() const throw();
+
+            private:
+                std::string _id;
+        };
+
+        ThreadView(const std::string & threadId,
             int x = defaultX(), int y = defaultY(),
             int width = defaultWidth(), int height = defaultHeight());
         virtual ~ThreadView();
-
-        static ThreadView * fromId(const std::string & threadId);
 
         virtual void update();
         virtual std::string name() const { return "thread-view"; }
