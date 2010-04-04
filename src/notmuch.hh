@@ -44,7 +44,6 @@ namespace NotMuch
 
     struct Message
     {
-        Message() = default;
         Message(notmuch_message_t * message);
 
         std::string id;

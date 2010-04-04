@@ -128,7 +128,7 @@ void Ner::run()
             auto handleResult = handleKeySequence(sequence);
 
             /* If Ner handled the input sequence */
-            if (handleResult == InputHandler::HANDLED)
+            if (handleResult == InputHandler::HandleResult::Handled)
                 sequence.clear();
             else
             {
@@ -137,9 +137,9 @@ void Ner::run()
                 /* If the ViewManager handled the input sequence, or neither
                  * Ner nor the ViewManager had a partial match with the input
                  * sequence */
-                if (viewManagerHandleResult == InputHandler::HANDLED ||
-                    (viewManagerHandleResult == InputHandler::NO_MATCH &&
-                        handleResult == InputHandler::NO_MATCH))
+                if (viewManagerHandleResult == InputHandler::HandleResult::Handled ||
+                    (viewManagerHandleResult == InputHandler::HandleResult::NoMatch &&
+                        handleResult == InputHandler::HandleResult::NoMatch))
                     sequence.clear();
             }
         }

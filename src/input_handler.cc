@@ -29,20 +29,20 @@ InputHandler::HandleResult InputHandler::handleKeySequence(const std::vector<int
 
     /* If there are no keys greater than or equal to sequence */
     if (lowerBound == _handledSequences.end())
-        return NO_MATCH;
+        return HandleResult::NoMatch;
     /* If there is an exact match */
     else if (sequence == (*lowerBound).first)
     {
         (*lowerBound).second();
 
-        return HANDLED;
+        return HandleResult::Handled;
     }
     /* If there is a partial match */
     else if (std::equal(sequence.begin(), sequence.end(), (*lowerBound).first.begin()))
-        return PARTIAL_MATCH;
+        return HandleResult::PartialMatch;
     /* Otherwise there is no match */
     else
-        return NO_MATCH;
+        return HandleResult::NoMatch;
 }
 
 void InputHandler::addHandledSequence(const std::vector<int> & sequence, const std::function<void ()> & function)
@@ -52,6 +52,7 @@ void InputHandler::addHandledSequence(const std::vector<int> & sequence, const s
 
 void InputHandler::addHandledSequence(const std::string & string, const std::function<void ()> & function)
 {
+    // TODO: Parse things like "<Ctrl-D>" into single characters
     addHandledSequence(std::vector<int>(string.begin(), string.end()), function);
 }
 

@@ -25,9 +25,18 @@ View::~View()
 {
 }
 
+void View::resize()
+{
+    resize(defaultX(), defaultY(), defaultWidth(), defaultHeight());
+}
+
 void View::focus()
 {
     updateStatus();
+}
+
+void View::unfocus()
+{
 }
 
 std::vector<std::string> View::status() const

@@ -28,8 +28,15 @@
 
 #include "colors.hh"
 
+/**
+ * NCurses utility functions
+ */
 namespace NCurses
 {
+    /**
+     * An exception indicating that a move was attempted past the edge of the
+     * screen.
+     */
     class CutOffException : public std::exception
     {
         public:
@@ -38,18 +45,37 @@ namespace NCurses
             const char * what() throw ();
     };
 
-    inline void checkMove(WINDOW * window, int x)
-    {
-        if (wmove(window, getcury(window), x) == ERR)
-            throw NCurses::CutOffException();
-    }
+    /**
+     * Perform a checked move to the specified column.
+     *
+     * Throws a CutOffException if this coordinate is past the edge of the
+     * screen.
+     *
+     * \param window The window in which to move.
+     * \param x The column to move to.
+     */
+    void checkMove(WINDOW * window, int x);
 
-    inline void addCutOffIndicator(WINDOW * window, attr_t attributes = 0)
-    {
-        wmove(window, getcury(window), getmaxx(window) - 1);
-        waddch(window, '$' | attributes | COLOR_PAIR(Colors::CUT_OFF_INDICATOR));
-    }
+    /**
+     * Adds a cut-off indicator to the end of the current line.
+     *
+     * \param window The window in which to add the indicator.
+     * \param attributes The attributes for the indicator.
+     */
+    void addCutOffIndicator(WINDOW * window, attr_t attributes = 0);
 
+    /**
+     * Adds a plain string to the window.
+     *
+     * The cursor is not advanced.
+     *
+     * \param window The window in which to add the string
+     * \param first An input iterator pointing to the first character.
+     * \param last An input iterator pointing to the end.
+     * \param attributes The attributes of the string.
+     * \param color The color of the string.
+     * \param maxLength The maximum number of columns to print.
+     */
     template <class InputIterator>
         int addPlainString(WINDOW * window, InputIterator first, InputIterator last,
             attr_t attributes = 0, short color = 0, int maxLength = std::numeric_limits<int>::max())
@@ -67,87 +93,45 @@ namespace NCurses
         return length;
     }
 
-    inline int addPlainString(WINDOW * window, const std::string & string,
-        attr_t attributes = 0, short color = 0, int maxLength = std::numeric_limits<int>::max())
-    {
-        return addPlainString(window, string.begin(), string.end(), attributes, color, maxLength);
-    }
+    /**
+     * \overload
+     */
+    int addPlainString(WINDOW * window, const std::string & string,
+        attr_t attributes = 0, short color = 0, int maxLength = std::numeric_limits<int>::max());
 
-    inline int addPlainString(WINDOW * window, const char * string,
-        attr_t attributes = 0, short color = 0, int maxLength = std::numeric_limits<int>::max())
-    {
-        return addPlainString(window, string, string + std::strlen(string), attributes, color, maxLength);
-    }
+    /**
+     * \overload
+     */
+    int addPlainString(WINDOW * window, const char * string,
+        attr_t attributes = 0, short color = 0, int maxLength = std::numeric_limits<int>::max());
 
-    inline int addChar(WINDOW * window, chtype character,
-        int attributes = 0, short color = 0)
-    {
-        character |= attributes | COLOR_PAIR(color);
-        waddchnstr(window, &character, 1);
-        return 1;
-    }
+    /**
+     * Adds a UTF-8 string to the window.
+     *
+     * The characters in string are expanded with mbrtowc, and then added to
+     * the screen. The cursor is not advanced.
+     *
+     * \param window The window in which to print the string.
+     * \param string The UTF-8 string to print.
+     * \param attributes The attributes of the string.
+     * \param color The color of the string.
+     * \param maxLength The maximum number of columns the string should take up.
+     */
+    int addUtf8String(WINDOW * window, const char * string,
+        attr_t attributes = 0, short color = 0, int maxLength = std::numeric_limits<int>::max());
 
-    inline int addUtf8String(WINDOW * window, const char * string,
-        attr_t attributes = 0, short color = 0, int maxLength = std::numeric_limits<int>::max())
-    {
-        mbstate_t state = { 0 };
-
-        int length = strlen(string);
-
-        cchar_t displayCharacters[length + 1];
-        int displayIndex = 0;
-
-        wchar_t wideCharacters[CCHARW_MAX + 1];
-        wchar_t wideCharacter;
-        int wideIndex = 0;
-
-        for (int position = 0; position < length;)
-        {
-            int bytesRead = std::mbrtowc(&wideCharacter,
-                string + position, length - position, &state);
-
-            position += bytesRead;
-
-            if (bytesRead < 0)
-                break;
-
-            int width = wcwidth(wideCharacter);
-
-            /* We found a new spacing character, set the next cchar_t */
-            if ((width > 0 && wideIndex > 0) || wideIndex == CCHARW_MAX)
-            {
-                wideCharacters[wideIndex] = L'\0';
-                setcchar(&displayCharacters[displayIndex++], wideCharacters,
-                    attributes, color, NULL);
-
-                /* Start the next display character */
-                wideIndex = 0;
-            }
-            else if (width == 0 && wideIndex == 0)
-                wideCharacters[wideIndex++] = L' ';
-            else if (width < 0)
-                break;
-
-            wideCharacters[wideIndex++] = wideCharacter;
-        }
-
-        if (wideIndex > 0)
-        {
-            wideCharacters[wideIndex] = L'\0';
-            setcchar(&displayCharacters[displayIndex++], wideCharacters,
-                attributes, color, NULL);
-        }
-
-        /* Set the NULL cchar_t */
-        wideCharacters[0] = L'\0';
-        setcchar(&displayCharacters[displayIndex], wideCharacters, 0, 0, NULL);
-
-        int displayLength = std::min(maxLength, displayIndex);
-
-        wadd_wchnstr(window, displayCharacters, displayLength);
-
-        return displayLength;
-    }
+    /**
+     * Adds a single character to the window.
+     *
+     * The cursor is not advanced.
+     *
+     * \param window The window in which to add the character.
+     * \param character The character to add.
+     * \param attributes The attributes of the character.
+     * \param color The color of the character.
+     */
+    int addChar(WINDOW * window, chtype character,
+        int attributes = 0, short color = 0);
 };
 
 #endif

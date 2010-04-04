@@ -99,10 +99,9 @@ void SearchView::update()
             attributes |= A_BOLD;
 
         if (selected)
-        {
             attributes |= A_REVERSE;
-            wchgat(_window, -1, A_REVERSE, 0, NULL);
-        }
+
+        wchgat(_window, -1, attributes, 0, NULL);
 
         try
         {

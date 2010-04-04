@@ -27,6 +27,11 @@
 
 class View;
 
+/**
+ * Manages the currently active Views.
+ *
+ * This class is a singleton.
+ */
 class ViewManager : public InputHandler
 {
     public:
@@ -38,10 +43,30 @@ class ViewManager : public InputHandler
         ViewManager();
         ~ViewManager();
 
+        /**
+         * Handles the given input sequence.
+         *
+         * First, the ViewManager itself will attempt to handle the sequence,
+         * and if it cannot, will try with the currently active view.
+         *
+         * \param sequence The sequence to handle.
+         */
         virtual InputHandler::HandleResult handleKeySequence(const std::vector<int> & sequence);
 
+        /**
+         * Adds the view to the managed views, then sets it as the active view.
+         *
+         * \param view The view to manage
+         */
         void addView(const std::shared_ptr<View> & view);
+
+        /**
+         * Closes the active view.
+         *
+         * The view will be deleted.
+         */
         void closeActiveView();
+
         void update();
         void refresh();
         void resize();

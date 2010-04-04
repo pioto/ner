@@ -35,7 +35,7 @@ class ConfigFile
 
     private:
         std::string _configPath;
-        std::map<std::string, std::map<std::string, std::string> > _config;
+        std::map<std::string, std::map<std::string, std::string>> _config;
 };
 
 #endif

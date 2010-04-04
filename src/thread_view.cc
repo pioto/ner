@@ -150,13 +150,12 @@ uint32_t ThreadView::displayMessageLine(const NotMuch::Message & message,
             attr_t attributes = 0;
 
             if (selected)
-            {
                 attributes |= A_REVERSE;
-                wchgat(_window, -1, A_REVERSE, 0, NULL);
-            }
 
             if (unread)
                 attributes |= A_BOLD;
+
+            wchgat(_window, -1, attributes, 0, NULL);
 
             x += NCurses::addPlainString(_window, leading.begin(), leading.end(),
                 attributes, Colors::THREAD_VIEW_ARROW);

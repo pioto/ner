@@ -40,19 +40,19 @@ InputHandler::HandleResult ViewManager::handleKeySequence(const std::vector<int>
 {
     auto handleResult = InputHandler::handleKeySequence(sequence);
 
-    if (handleResult == InputHandler::HANDLED)
-        return InputHandler::HANDLED;
+    if (handleResult == InputHandler::HandleResult::Handled)
+        return InputHandler::HandleResult::Handled;
     else
     {
         auto activeViewHandleResult = _activeView->handleKeySequence(sequence);
 
-        if (activeViewHandleResult == InputHandler::HANDLED)
-            return InputHandler::HANDLED;
-        else if (handleResult == InputHandler::NO_MATCH &&
-            activeViewHandleResult == InputHandler::NO_MATCH)
-            return InputHandler::NO_MATCH;
+        if (activeViewHandleResult == InputHandler::HandleResult::Handled)
+            return InputHandler::HandleResult::Handled;
+        else if (handleResult == InputHandler::HandleResult::NoMatch &&
+            activeViewHandleResult == InputHandler::HandleResult::NoMatch)
+            return InputHandler::HandleResult::NoMatch;
         else
-            return InputHandler::PARTIAL_MATCH;
+            return InputHandler::HandleResult::PartialMatch;
     }
 }
 

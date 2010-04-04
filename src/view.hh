@@ -28,19 +28,47 @@
 #include "input_handler.hh"
 #include "status_bar.hh"
 
-class ViewManager;
-
+/**
+ * The base class for all types of views
+ */
 class View : public InputHandler
 {
     public:
-        virtual ~View();
+        virtual ~View() = 0;
 
         /* Abstract methods */
+
+        /**
+         * Updates the screen.
+         *
+         * This gets called after each input sequence is successfully handled.
+         */
         virtual void update() = 0;
+
+        /**
+         * Refreshes the screen.
+         */
         virtual void refresh() = 0;
-        virtual void resize(int x = defaultX(), int y = defaultY(),
-            int width = defaultWidth(), int height = defaultHeight()) = 0;
+
+        /**
+         * Resizes the screen to the given size and position.
+         */
+        virtual void resize(int x, int y, int width, int height) = 0;
+
+        /**
+         * \overload
+         */
+        virtual void resize();
+
+        /**
+         * Called when focus gets transfered to this view.
+         */
         virtual void focus();
+
+        /**
+         * Called when focus gets transfered away from this view.
+         */
+        virtual void unfocus();
 
         virtual std::string name() const = 0;
         virtual std::vector<std::string> status() const;
