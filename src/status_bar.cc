@@ -71,18 +71,20 @@ void StatusBar::update()
     std::vector<std::string> status(view.status());
     for (auto statusItem = status.begin(), e = status.end(); statusItem != e; ++statusItem)
     {
-        /* Divider */
-        if (++x >= getmaxx(_statusWindow))
-            break;
-        wmove(_statusWindow, 0, x);
+        try
+        {
+            /* Divider */
+            NCurses::checkMove(_statusWindow, ++x);
 
-        x += NCurses::addChar(_statusWindow, '|', A_BOLD, Colors::STATUS_BAR_STATUS_DIVIDER);
+            x += NCurses::addChar(_statusWindow, '|', A_BOLD, Colors::STATUS_BAR_STATUS_DIVIDER);
 
-        if (++x >= getmaxx(_statusWindow))
-            break;
-        wmove(_statusWindow, 0, x);
+            NCurses::checkMove(_statusWindow, ++x);
 
-        x += NCurses::addPlainString(_statusWindow, *statusItem, 0, Colors::STATUS_BAR_STATUS);
+            x += NCurses::addPlainString(_statusWindow, *statusItem, 0, Colors::STATUS_BAR_STATUS);
+        }
+        catch (const NCurses::CutOffException & e)
+        {
+        }
     }
 }
 
