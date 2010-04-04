@@ -29,6 +29,8 @@ class LineBrowserView : public WindowView
 
         virtual void resize(int x, int y, int width, int height);
 
+        virtual std::vector<std::string> status() const;
+
         virtual void next();
         virtual void previous();
         virtual void nextPage();

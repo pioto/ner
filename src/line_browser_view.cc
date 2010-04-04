@@ -17,6 +17,8 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <sstream>
+
 #include "line_browser_view.hh"
 
 LineBrowserView::LineBrowserView(int x, int y, int width, int height)
@@ -46,6 +48,18 @@ void LineBrowserView::resize(int x, int y, int width, int height)
     WindowView::resize(x, y, width, height);
 
     makeSelectionVisible();
+}
+
+std::vector<std::string> LineBrowserView::status() const
+{
+    std::ostringstream position;
+
+    if (lineCount() > 0)
+        position << "line " << _selectedIndex + 1 << " of " << lineCount();
+    else
+        position << "no lines";
+
+    return std::vector<std::string>{ position.str() };
 }
 
 void LineBrowserView::next()
