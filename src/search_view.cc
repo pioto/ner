@@ -85,13 +85,6 @@ void SearchView::update()
         thread != _threads.end() && row < getmaxy(_window);
         ++thread, ++row)
     {
-#define CHECK_CONTINUE(amount) \
-    if ((amount) >= getmaxx(_window)) \
-    { \
-        NCurses::addCutOffIndicator(_window, attributes); \
-        continue; \
-    }
-
         bool selected = row + _offset == _selectedIndex;
         bool unread = (*thread).tags.find("unread") != (*thread).tags.end();
         bool completeMatch = (*thread).matchedMessages == (*thread).totalMessages;
@@ -111,64 +104,61 @@ void SearchView::update()
             wchgat(_window, -1, A_REVERSE, 0, NULL);
         }
 
-        /* Date */
-        NCurses::addPlainString(_window, relativeTime((*thread).newestDate),
-            attributes, Colors::SEARCH_VIEW_DATE, newestDateWidth - 1);
+        try
+        {
+            /* Date */
+            NCurses::addPlainString(_window, relativeTime((*thread).newestDate),
+                attributes, Colors::SEARCH_VIEW_DATE, newestDateWidth - 1);
 
-        CHECK_CONTINUE(x += newestDateWidth)
-        wmove(_window, row, x);
+            NCurses::checkMove(_window, x += newestDateWidth);
 
-        /* Message Count */
-        std::ostringstream messageCountStream;
-        messageCountStream << (*thread).matchedMessages << '/' << (*thread).totalMessages;
+            /* Message Count */
+            std::ostringstream messageCountStream;
+            messageCountStream << (*thread).matchedMessages << '/' << (*thread).totalMessages;
 
-        x += NCurses::addChar(_window, '[', attributes);
+            x += NCurses::addChar(_window, '[', attributes);
+            NCurses::checkMove(_window, x);
 
-        CHECK_CONTINUE(x)
+            x += NCurses::addPlainString(_window, messageCountStream.str(),
+                attributes, completeMatch ? Colors::SEARCH_VIEW_MESSAGE_COUNT_COMPLETE :
+                                            Colors::SEARCH_VIEW_MESSAGE_COUNT_PARTIAL,
+                messageCountWidth - 1);
+            NCurses::checkMove(_window, x);
 
-        x += NCurses::addPlainString(_window, messageCountStream.str(),
-            attributes, completeMatch ? Colors::SEARCH_VIEW_MESSAGE_COUNT_COMPLETE :
-                                        Colors::SEARCH_VIEW_MESSAGE_COUNT_PARTIAL,
-            messageCountWidth - 1);
+            NCurses::addChar(_window, ']', attributes);
 
-        CHECK_CONTINUE(x)
-        wmove(_window, row, x);
+            NCurses::checkMove(_window, x = newestDateWidth + messageCountWidth);
 
-        NCurses::addChar(_window, ']', attributes);
+            /* Authors */
+            NCurses::addUtf8String(_window, (*thread).authors.c_str(),
+                attributes, Colors::SEARCH_VIEW_AUTHORS, authorsWidth - 1);
 
-        CHECK_CONTINUE(x = newestDateWidth + messageCountWidth)
-        wmove(_window, row, x);
+            NCurses::checkMove(_window, x += authorsWidth);
 
-        /* Authors */
-        NCurses::addUtf8String(_window, (*thread).authors.c_str(),
-            attributes, Colors::SEARCH_VIEW_AUTHORS, authorsWidth - 1);
+            /* Subject */
+            x += NCurses::addUtf8String(_window, (*thread).subject.c_str(),
+                attributes, Colors::SEARCH_VIEW_SUBJECT);
 
-        CHECK_CONTINUE(x += authorsWidth)
-        wmove(_window, row, x);
+            NCurses::checkMove(_window, ++x);
 
-        /* Subject */
-        x += NCurses::addUtf8String(_window, (*thread).subject.c_str(),
-            attributes, Colors::SEARCH_VIEW_SUBJECT);
+            /* Tags */
+            std::ostringstream tagStream;
+            std::copy((*thread).tags.begin(), (*thread).tags.end(),
+                std::ostream_iterator<std::string>(tagStream, " "));
+            std::string tags(tagStream.str());
 
-        CHECK_CONTINUE(++x)
-        wmove(_window, row, x);
+            if (tags.size() > 0)
+                /* Get rid of the trailing space */
+                tags.resize(tags.size() - 1);
 
-        /* Tags */
-        std::ostringstream tagStream;
-        std::copy((*thread).tags.begin(), (*thread).tags.end(),
-            std::ostream_iterator<std::string>(tagStream, " "));
-        std::string tags(tagStream.str());
+            x += NCurses::addPlainString(_window, tags, attributes, Colors::SEARCH_VIEW_TAGS);
 
-        if (tags.size() > 0)
-            /* Get rid of the trailing space */
-            tags.resize(tags.size() - 1);
-
-        x += NCurses::addPlainString(_window, tags, attributes, Colors::SEARCH_VIEW_TAGS);
-
-        if (x > getmaxx(_window))
+            NCurses::checkMove(_window, x - 1);
+        }
+        catch (const NCurses::CutOffException & e)
+        {
             NCurses::addCutOffIndicator(_window, attributes);
-
-#undef CHECK_CONTINUE
+        }
     }
 }
 

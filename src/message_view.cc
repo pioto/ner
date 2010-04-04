@@ -115,21 +115,21 @@ void MessageView::update()
 
         wmove(_window, row, x);
 
-        x += NCurses::addPlainString(_window, (*header) + ": ",
-            0, Colors::MESSAGE_VIEW_HEADER);
-
-        if (x >= getmaxx(_window))
+        try
         {
-            NCurses::addCutOffIndicator(_window, 0);
-            continue;
+            x += NCurses::addPlainString(_window, (*header) + ": ",
+                0, Colors::MESSAGE_VIEW_HEADER);
+
+            NCurses::checkMove(_window, x);
+
+            x += NCurses::addUtf8String(_window, _headers[*header].c_str());
+
+            NCurses::checkMove(_window, x - 1);
         }
-
-        wmove(_window, row, x);
-
-        x += NCurses::addUtf8String(_window, _headers[*header].c_str());
-
-        if (x > getmaxx(_window))
-            NCurses::addCutOffIndicator(_window, 0);
+        catch (const NCurses::CutOffException & e)
+        {
+            NCurses::addCutOffIndicator(_window);
+        }
     }
 
     wmove(_window, row, 0);

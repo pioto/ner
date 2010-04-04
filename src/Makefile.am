@@ -11,7 +11,7 @@ ner_SOURCES = \
 	config_file.cc config_file.hh \
 	util.cc util.hh \
 	colors.hh \
-	ncurses.hh \
+	ncurses.cc ncurses.hh \
 	notmuch.cc notmuch.hh \
 	status_bar.cc status_bar.hh \
 	view_manager.cc view_manager.hh \

@@ -137,15 +137,8 @@ uint32_t ThreadView::displayMessageLine(const NotMuch::Message & message,
 {
     if (index >= _offset)
     {
-        for (;;) // So that we can break when needed
+        try
         {
-#define CHECK_BREAK(amount) \
-    if ((amount) >= getmaxx(_window)) \
-    { \
-        NCurses::addCutOffIndicator(_window, attributes); \
-        break; \
-    }
-
             bool selected = index == _selectedIndex;
             bool unread = message.tags.find("unread") != message.tags.end();
 
@@ -168,33 +161,28 @@ uint32_t ThreadView::displayMessageLine(const NotMuch::Message & message,
             x += NCurses::addPlainString(_window, leading.begin(), leading.end(),
                 attributes, Colors::THREAD_VIEW_ARROW);
 
-            CHECK_BREAK(x)
-            wmove(_window, row, x);
+            NCurses::checkMove(_window, x);
 
             x += NCurses::addChar(_window, last ? ACS_LLCORNER : ACS_LTEE,
                 attributes, Colors::THREAD_VIEW_ARROW);
 
-            CHECK_BREAK(x)
-            wmove(_window, row, x);
+            NCurses::checkMove(_window, x);
 
             x += NCurses::addChar(_window, '>', attributes, Colors::THREAD_VIEW_ARROW);
 
-            CHECK_BREAK(++x)
-            wmove(_window, row, x);
+            NCurses::checkMove(_window, ++x);
 
             /* Sender */
             x += NCurses::addUtf8String(_window, (*message.headers.find("From")).second.c_str(),
                 attributes);
 
-            CHECK_BREAK(++x)
-            wmove(_window, row, x);
+            NCurses::checkMove(_window, ++x);
 
             /* Date */
             x += NCurses::addPlainString(_window, relativeTime(message.date),
                 attributes, Colors::THREAD_VIEW_DATE);
 
-            CHECK_BREAK(++x)
-            wmove(_window, row, x);
+            NCurses::checkMove(_window, ++x);
 
             /* Tags */
             std::ostringstream tagStream;
@@ -208,12 +196,11 @@ uint32_t ThreadView::displayMessageLine(const NotMuch::Message & message,
 
             x += NCurses::addPlainString(_window, tags, attributes, Colors::THREAD_VIEW_TAGS);
 
-            if (x > getmaxx(_window))
-                NCurses::addCutOffIndicator(_window, attributes);
-
-            break;
-
-#undef CHECK_BREAK
+            NCurses::checkMove(_window, x - 1);
+        }
+        catch (const NCurses::CutOffException & e)
+        {
+            NCurses::addCutOffIndicator(_window);
         }
     }
 

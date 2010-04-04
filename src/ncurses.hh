@@ -26,8 +26,24 @@
 #include <cstring>
 #include <ncursesw/ncurses.h>
 
+#include "colors.hh"
+
 namespace NCurses
 {
+    class CutOffException : public std::exception
+    {
+        public:
+            ~CutOffException() throw ();
+
+            const char * what() throw ();
+    };
+
+    inline void checkMove(WINDOW * window, int x)
+    {
+        if (wmove(window, getcury(window), x) == ERR)
+            throw NCurses::CutOffException();
+    }
+
     inline void addCutOffIndicator(WINDOW * window, attr_t attributes = 0)
     {
         wmove(window, getcury(window), getmaxx(window) - 1);
@@ -63,10 +79,11 @@ namespace NCurses
         return addPlainString(window, string, string + std::strlen(string), attributes, color, maxLength);
     }
 
-    inline int addChar(WINDOW * window, const chtype character,
+    inline int addChar(WINDOW * window, chtype character,
         int attributes = 0, short color = 0)
     {
-        waddch(window, character | attributes | COLOR_PAIR(color));
+        character |= attributes | COLOR_PAIR(color);
+        waddchnstr(window, &character, 1);
         return 1;
     }
 
