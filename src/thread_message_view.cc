@@ -85,7 +85,7 @@ void ThreadMessageView::previousMessage()
 {
     _threadView.previous();
     loadSelectedMessage();
-    _messageView.moveToBottom();
+    _messageView.moveToTop();
 }
 
 void ThreadMessageView::loadSelectedMessage()
