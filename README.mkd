@@ -10,8 +10,8 @@ key bindings:
 - **Q**:        Quit
 - **q**:        Close the current view
 - **s**:        Start a new search
-- **m**:        Open a message by its ID
-- **t**:        Open a thread by its ID
+- **M**:        Open a message by its ID
+- **T**:        Open a thread by its ID
 - **Ctrl-C**:   Clear the current input sequence
 - **Ctrl-L**:   Redraw the screen
 

@@ -39,8 +39,8 @@ Ner::Ner()
     /* Key Sequences */
     addHandledSequence("Q", std::bind(&Ner::quit, this));
     addHandledSequence("s", std::bind(&Ner::search, this));
-    addHandledSequence("m", std::bind(&Ner::openMessage, this));
-    addHandledSequence("t", std::bind(&Ner::openThread, this));
+    addHandledSequence("M", std::bind(&Ner::openMessage, this));
+    addHandledSequence("T", std::bind(&Ner::openThread, this));
     addHandledSequence('l' - 96, std::bind(&Ner::redraw, this)); // Ctrl-L
 
     /* Colors */
