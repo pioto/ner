@@ -49,7 +49,12 @@ namespace Colors
         THREAD_VIEW_TAGS,
 
         /* Message View */
-        MESSAGE_VIEW_HEADER
+        MESSAGE_VIEW_HEADER,
+
+        /* View View */
+        VIEW_VIEW_NUMBER,
+        VIEW_VIEW_NAME,
+        VIEW_VIEW_STATUS
     };
 };
 

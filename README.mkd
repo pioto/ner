@@ -12,6 +12,7 @@ key bindings:
 - **s**:        Start a new search
 - **M**:        Open a message by its ID
 - **T**:        Open a thread by its ID
+- **;**:        Open the current list of views
 - **Ctrl-C**:   Clear the current input sequence
 - **Ctrl-L**:   Redraw the screen
 

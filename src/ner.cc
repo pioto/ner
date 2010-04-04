@@ -27,6 +27,7 @@
 #include "search_view.hh"
 #include "message_view.hh"
 #include "thread_view.hh"
+#include "view_view.hh"
 #include "colors.hh"
 
 Ner::Ner()
@@ -41,6 +42,7 @@ Ner::Ner()
     addHandledSequence("s", std::bind(&Ner::search, this));
     addHandledSequence("M", std::bind(&Ner::openMessage, this));
     addHandledSequence("T", std::bind(&Ner::openThread, this));
+    addHandledSequence(";", std::bind(&Ner::openViewView, this));
     addHandledSequence('l' - 96, std::bind(&Ner::redraw, this)); // Ctrl-L
 
     /* Colors */
@@ -199,6 +201,11 @@ void Ner::openThread()
             _statusBar->displayMessage(e.what());
         }
     }
+}
+
+void Ner::openViewView()
+{
+    _viewManager->addView(std::shared_ptr<ViewView>(new ViewView()));
 }
 
 void Ner::redraw()

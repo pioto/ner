@@ -21,6 +21,7 @@
 
 #include "view_manager.hh"
 #include "view.hh"
+#include "view_view.hh"
 #include "status_bar.hh"
 
 ViewManager * ViewManager::_instance = 0;
@@ -58,6 +59,9 @@ InputHandler::HandleResult ViewManager::handleKeySequence(const std::vector<int>
 
 void ViewManager::addView(const std::shared_ptr<View> & view)
 {
+    if (_activeView.get())
+        _activeView->unfocus();
+
     _views.push_back(view);
     _activeView = view;
 
@@ -83,8 +87,6 @@ void ViewManager::closeActiveView()
         _activeView = _views.back();
 
         _activeView->focus();
-        _activeView->update();
-        _activeView->refresh();
 
         StatusBar::instance().update();
         StatusBar::instance().refresh();
@@ -112,6 +114,21 @@ void ViewManager::resize()
 const View & ViewManager::activeView() const
 {
     return *_activeView;
+}
+
+void ViewManager::openView(int index)
+{
+    _activeView->unfocus();
+
+    _activeView = _views.at(index);
+
+    StatusBar::instance().update();
+    StatusBar::instance().refresh();
+
+    _activeView->focus();
+
+    _activeView->update();
+    _activeView->refresh();
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

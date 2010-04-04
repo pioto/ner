@@ -76,8 +76,12 @@ class ViewManager : public InputHandler
     private:
         static ViewManager * _instance;
 
+        void openView(int index);
+
         std::shared_ptr<View> _activeView;
         std::vector<std::shared_ptr<View>> _views;
+
+    friend class ViewView;
 };
 
 #endif

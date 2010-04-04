@@ -22,5 +22,6 @@ ner_SOURCES = \
 	search_view.cc search_view.hh \
 	thread_view.cc thread_view.hh \
 	message_view.cc message_view.hh \
-	thread_message_view.cc thread_message_view.hh
+	thread_message_view.cc thread_message_view.hh \
+	view_view.cc view_view.hh
 
