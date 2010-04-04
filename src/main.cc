@@ -50,7 +50,8 @@ int main(int argc, char * argv[])
 
     Ner ner;
 
-    ner.viewManager()->addView(new SearchView("tag:inbox"));
+    std::shared_ptr<View> searchView(new SearchView("tag:inbox"));
+    ner.viewManager()->addView(searchView);
     ner.run();
 
     g_mime_shutdown();

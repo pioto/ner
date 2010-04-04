@@ -193,9 +193,9 @@ void SearchView::openSelectedThread()
 
     if (_selectedIndex < _threads.size())
     {
-        ThreadMessageView * threadMessageView = ThreadMessageView::fromId(_threads.at(_selectedIndex).id);
+        std::shared_ptr<ThreadMessageView> threadMessageView(ThreadMessageView::fromId(_threads.at(_selectedIndex).id));
 
-        if (threadMessageView)
+        if (threadMessageView.get())
             ViewManager::instance().addView(threadMessageView);
     }
 }

@@ -17,6 +17,8 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
+
 #include "view_manager.hh"
 #include "view.hh"
 #include "status_bar.hh"
@@ -24,7 +26,6 @@
 ViewManager * ViewManager::_instance = 0;
 
 ViewManager::ViewManager()
-    : _activeView(0)
 {
     _instance = this;
 
@@ -33,8 +34,6 @@ ViewManager::ViewManager()
 
 ViewManager::~ViewManager()
 {
-    for (auto view = _views.begin(), e = _views.end(); view != e; ++view)
-        delete *view;
 }
 
 InputHandler::HandleResult ViewManager::handleKeySequence(const std::vector<int> & sequence)
@@ -57,12 +56,12 @@ InputHandler::HandleResult ViewManager::handleKeySequence(const std::vector<int>
     }
 }
 
-void ViewManager::addView(View * view)
+void ViewManager::addView(const std::shared_ptr<View> & view)
 {
-    _views.push_back(view);
+    StatusBar::instance().setViewName(view->name());
 
+    _views.push_back(view);
     _activeView = view;
-    StatusBar::instance().setViewName(_activeView->name());
 
     _activeView->focus();
     _activeView->update();
@@ -78,8 +77,7 @@ void ViewManager::closeActiveView()
     }
     else
     {
-        delete _views.back();
-        _views.pop_back();
+        _views.erase(std::find(_views.begin(), _views.end(), _activeView));
 
         _activeView = _views.back();
         StatusBar::instance().setViewName(_activeView->name());
@@ -108,9 +106,9 @@ void ViewManager::resize()
     }
 }
 
-View * ViewManager::activeView() const
+View & ViewManager::activeView() const
 {
-    return _activeView;
+    return *_activeView;
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

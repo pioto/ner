@@ -113,9 +113,9 @@ std::vector<std::string> ThreadView::status() const
 
 void ThreadView::openSelectedMessage()
 {
-    MessageView * messageView = MessageView::fromId(selectedMessage().id);
+    std::shared_ptr<MessageView> messageView(MessageView::fromId(selectedMessage().id));
 
-    if (messageView)
+    if (messageView.get())
         ViewManager::instance().addView(messageView);
 }
 

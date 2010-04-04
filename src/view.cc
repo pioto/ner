@@ -37,10 +37,10 @@ std::vector<std::string> View::status() const
 
 void View::updateStatus()
 {
-    if (ViewManager::instance().activeView() == this)
+    if (&ViewManager::instance().activeView() == this)
         StatusBar::instance().setStatus(status());
     else
-        ViewManager::instance().activeView()->updateStatus();
+        ViewManager::instance().activeView().updateStatus();
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

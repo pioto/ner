@@ -162,7 +162,7 @@ void Ner::search()
     std::string searchTerms = StatusBar::instance().prompt("Search: ");
 
     if (!searchTerms.empty())
-        _viewManager->addView(new SearchView(searchTerms));
+        _viewManager->addView(std::shared_ptr<SearchView>(new SearchView(searchTerms)));
 }
 
 void Ner::openMessage()
@@ -171,9 +171,9 @@ void Ner::openMessage()
 
     if (!messageId.empty())
     {
-        MessageView * messageView = MessageView::fromId(messageId);
+        std::shared_ptr<MessageView> messageView(MessageView::fromId(messageId));
 
-        if (messageView)
+        if (messageView.get())
             _viewManager->addView(messageView);
     }
 }
@@ -184,9 +184,9 @@ void Ner::openThread()
 
     if (!threadId.empty())
     {
-        ThreadView * threadView = ThreadView::fromId(threadId);
+        std::shared_ptr<ThreadView> threadView(ThreadView::fromId(threadId));
 
-        if (threadView)
+        if (threadView.get())
             _viewManager->addView(threadView);
     }
 }

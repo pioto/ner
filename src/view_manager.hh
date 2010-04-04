@@ -21,6 +21,7 @@
 #define NER_VIEW_MANAGER_H 1
 
 #include <vector>
+#include <memory>
 
 #include "input_handler.hh"
 
@@ -39,19 +40,19 @@ class ViewManager : public InputHandler
 
         virtual InputHandler::HandleResult handleKeySequence(const std::vector<int> & sequence);
 
-        void addView(View * view);
+        void addView(const std::shared_ptr<View> & view);
         void closeActiveView();
         void update();
         void refresh();
         void resize();
 
-        View * activeView() const;
+        View & activeView() const;
 
     private:
         static ViewManager * _instance;
 
-        View * _activeView;
-        std::vector<View *> _views;
+        std::shared_ptr<View> _activeView;
+        std::vector<std::shared_ptr<View>> _views;
 };
 
 #endif
