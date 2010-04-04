@@ -109,7 +109,7 @@ void ViewManager::resize()
     }
 }
 
-View & ViewManager::activeView() const
+const View & ViewManager::activeView() const
 {
     return *_activeView;
 }

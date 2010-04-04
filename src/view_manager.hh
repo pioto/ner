@@ -71,7 +71,7 @@ class ViewManager : public InputHandler
         void refresh();
         void resize();
 
-        View & activeView() const;
+        const View & activeView() const;
 
     private:
         static ViewManager * _instance;
