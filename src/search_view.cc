@@ -257,7 +257,7 @@ void SearchView::refreshThreads()
             _selectedIndex = _threads.size() - 1;
     }
 
-    updateStatus();
+    StatusBar::instance().update();
     makeSelectionVisible();
 }
 

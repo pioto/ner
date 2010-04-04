@@ -43,8 +43,6 @@ class StatusBar
 
         void displayMessage(const std::string & message);
         std::string prompt(const std::string & message);
-        void setViewName(const std::string & name);
-        void setStatus(const std::vector<std::string> & status);
 
     private:
         static StatusBar * _instance;
@@ -54,9 +52,6 @@ class StatusBar
 
         WINDOW * _statusWindow;
         WINDOW * _promptWindow;
-
-        std::string _viewName;
-        std::vector<std::string> _status;
 
         bool _messageCleared;
         std::thread _messageClearThread;

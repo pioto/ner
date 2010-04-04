@@ -79,8 +79,6 @@ class View : public InputHandler
         static inline int defaultWidth() { return COLS; }
         static inline int defaultHeight() { return LINES - StatusBar::instance().height(); }
 
-        virtual void updateStatus();
-
     friend class ViewManager;
 };
 

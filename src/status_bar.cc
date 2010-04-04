@@ -22,6 +22,8 @@
 #include "status_bar.hh"
 #include "colors.hh"
 #include "ncurses.hh"
+#include "view.hh"
+#include "view_manager.hh"
 
 StatusBar * StatusBar::_instance = 0;
 
@@ -59,12 +61,15 @@ void StatusBar::update()
     werase(_statusWindow);
     wmove(_statusWindow, 0, x);
 
+    const View & view = ViewManager::instance().activeView();
+
     /* View Name */
-    x += NCurses::addPlainString(_statusWindow, "[" + _viewName + "]",
+    x += NCurses::addPlainString(_statusWindow, '[' + view.name() + ']',
         A_BOLD, Colors::STATUS_BAR_STATUS);
 
     /* Status */
-    for (auto statusItem = _status.begin(), e = _status.end(); statusItem != e; ++statusItem)
+    std::vector<std::string> status(view.status());
+    for (auto statusItem = status.begin(), e = status.end(); statusItem != e; ++statusItem)
     {
         /* Divider */
         if (++x >= getmaxx(_statusWindow))
@@ -79,8 +84,6 @@ void StatusBar::update()
 
         x += NCurses::addPlainString(_statusWindow, *statusItem, 0, Colors::STATUS_BAR_STATUS);
     }
-
-    wrefresh(_statusWindow);
 }
 
 void StatusBar::refresh()
@@ -140,20 +143,6 @@ std::string StatusBar::prompt(const std::string & message)
     wrefresh(_promptWindow);
 
     return std::string(response);
-}
-
-void StatusBar::setViewName(const std::string & name)
-{
-    _viewName = name;
-
-    update();
-}
-
-void StatusBar::setStatus(const std::vector<std::string> & status)
-{
-    _status = status;
-
-    update();
 }
 
 void StatusBar::delayedClearMessage(int delay)

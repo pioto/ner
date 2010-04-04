@@ -58,14 +58,15 @@ InputHandler::HandleResult ViewManager::handleKeySequence(const std::vector<int>
 
 void ViewManager::addView(const std::shared_ptr<View> & view)
 {
-    StatusBar::instance().setViewName(view->name());
-
     _views.push_back(view);
     _activeView = view;
 
     _activeView->focus();
     _activeView->update();
     _activeView->refresh();
+
+    StatusBar::instance().update();
+    StatusBar::instance().refresh();
 }
 
 void ViewManager::closeActiveView()
@@ -80,11 +81,13 @@ void ViewManager::closeActiveView()
         _views.erase(std::find(_views.begin(), _views.end(), _activeView));
 
         _activeView = _views.back();
-        StatusBar::instance().setViewName(_activeView->name());
 
         _activeView->focus();
         _activeView->update();
         _activeView->refresh();
+
+        StatusBar::instance().update();
+        StatusBar::instance().refresh();
     }
 }
 

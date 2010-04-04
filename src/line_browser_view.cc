@@ -20,6 +20,7 @@
 #include <sstream>
 
 #include "line_browser_view.hh"
+#include "view_manager.hh"
 
 LineBrowserView::LineBrowserView(int x, int y, int width, int height)
     : WindowView(x, y, width, height),
@@ -68,7 +69,6 @@ void LineBrowserView::next()
         ++_selectedIndex;
 
     makeSelectionVisible();
-    updateStatus();
 }
 
 void LineBrowserView::previous()
@@ -77,7 +77,6 @@ void LineBrowserView::previous()
         --_selectedIndex;
 
     makeSelectionVisible();
-    updateStatus();
 }
 
 void LineBrowserView::nextPage()
@@ -88,7 +87,6 @@ void LineBrowserView::nextPage()
         _selectedIndex += visibleLines() - 1;
 
     makeSelectionVisible();
-    updateStatus();
 }
 
 void LineBrowserView::previousPage()
@@ -99,7 +97,6 @@ void LineBrowserView::previousPage()
         _selectedIndex -= visibleLines() - 1;
 
     makeSelectionVisible();
-    updateStatus();
 }
 
 void LineBrowserView::moveToTop()
@@ -107,7 +104,6 @@ void LineBrowserView::moveToTop()
     _selectedIndex = 0;
 
     makeSelectionVisible();
-    updateStatus();
 }
 
 void LineBrowserView::moveToBottom()
@@ -115,7 +111,6 @@ void LineBrowserView::moveToBottom()
     _selectedIndex = lineCount() - 1;
 
     makeSelectionVisible();
-    updateStatus();
 }
 
 void LineBrowserView::makeSelectionVisible()
@@ -124,6 +119,9 @@ void LineBrowserView::makeSelectionVisible()
         _offset = _selectedIndex;
     else if (_selectedIndex >= _offset + visibleLines())
         _offset = _selectedIndex - visibleLines() + 1;
+
+    StatusBar::instance().update();
+    StatusBar::instance().refresh();
 }
 
 int LineBrowserView::visibleLines() const

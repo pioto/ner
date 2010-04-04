@@ -32,7 +32,7 @@ void View::resize()
 
 void View::focus()
 {
-    updateStatus();
+    StatusBar::instance().update();
 }
 
 void View::unfocus()
@@ -42,14 +42,6 @@ void View::unfocus()
 std::vector<std::string> View::status() const
 {
     return std::vector<std::string>();
-}
-
-void View::updateStatus()
-{
-    if (&ViewManager::instance().activeView() == this)
-        StatusBar::instance().setStatus(status());
-    else
-        ViewManager::instance().activeView().updateStatus();
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
