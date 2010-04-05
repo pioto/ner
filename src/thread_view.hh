@@ -41,8 +41,7 @@ class ThreadView : public LineBrowserView
         };
 
         ThreadView(const std::string & threadId,
-            int x = defaultX(), int y = defaultY(),
-            int width = defaultWidth(), int height = defaultHeight());
+            const View::Geometry & geometry = View::Geometry());
         virtual ~ThreadView();
 
         virtual void update();

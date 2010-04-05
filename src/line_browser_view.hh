@@ -28,9 +28,9 @@
 class LineBrowserView : public WindowView
 {
     public:
-        LineBrowserView(int x, int y, int width, int height);
+        LineBrowserView(const View::Geometry & geometry = View::Geometry());
 
-        virtual void resize(int x, int y, int width, int height);
+        virtual void resize(const View::Geometry & geometry = View::Geometry());
 
         virtual std::vector<std::string> status() const;
 

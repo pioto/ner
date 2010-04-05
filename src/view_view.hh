@@ -25,8 +25,7 @@
 class ViewView : public LineBrowserView
 {
     public:
-        ViewView(int x = defaultX(), int y = defaultY(),
-            int width = defaultWidth(), int height = defaultHeight());
+        ViewView(const View::Geometry & geometry = View::Geometry());
         virtual ~ViewView();
 
         virtual void update();

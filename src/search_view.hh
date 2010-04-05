@@ -30,8 +30,7 @@ class SearchView : public LineBrowserView
 {
     public:
         SearchView(const std::string & search,
-            int x = defaultX(), int y = defaultY(),
-            int width = defaultWidth(), int height = defaultHeight());
+            const View::Geometry & geometry = View::Geometry());
         virtual ~SearchView();
 
         virtual void update();

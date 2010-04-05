@@ -43,8 +43,8 @@ const char * ThreadView::InvalidThreadException::what() const throw()
     return ("Cannot find thread with ID: " + _id).c_str();
 }
 
-ThreadView::ThreadView(const std::string & threadId, int x, int y, int width, int height)
-    : LineBrowserView(x, y, width, height), _id(threadId)
+ThreadView::ThreadView(const std::string & threadId, const View::Geometry & geometry)
+    : LineBrowserView(geometry), _id(threadId)
 {
     notmuch_database_t * database = NotMuch::openDatabase();
     notmuch_query_t * query = notmuch_query_create(database, ("thread:" + threadId).c_str());

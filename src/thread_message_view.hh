@@ -27,13 +27,12 @@ class ThreadMessageView : public View
 {
     public:
         ThreadMessageView(const std::string & threadId,
-            int x = defaultX(), int y = defaultY(),
-            int width = defaultWidth(), int height = defaultHeight());
+            const View::Geometry & geometry = View::Geometry());
         virtual ~ThreadMessageView();
 
         virtual void update();
         virtual void refresh();
-        virtual void resize(int x, int y, int width, int height);
+        virtual void resize(const View::Geometry & geometry = View::Geometry());
 
         virtual std::string name() const { return "thread-message-view"; }
         virtual Type type() const { return Type::ThreadMessageView; }

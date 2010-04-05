@@ -43,6 +43,17 @@ class View : public InputHandler
             ViewView
         };
 
+        struct Geometry
+        {
+            Geometry(int x_, int y_, int width_, int height_);
+            Geometry();
+
+            int x;
+            int y;
+            int width;
+            int height;
+        };
+
         virtual ~View() = 0;
 
         /* Abstract methods */
@@ -62,12 +73,7 @@ class View : public InputHandler
         /**
          * Resizes the screen to the given size and position.
          */
-        virtual void resize(int x, int y, int width, int height) = 0;
-
-        /**
-         * \overload
-         */
-        virtual void resize();
+        virtual void resize(const Geometry & geometry = Geometry()) = 0;
 
         /**
          * Called when focus gets transfered to this view.
@@ -82,12 +88,6 @@ class View : public InputHandler
         virtual std::string name() const = 0;
         virtual Type type() const = 0;
         virtual std::vector<std::string> status() const;
-
-    protected:
-        static inline int defaultX() { return 0; }
-        static inline int defaultY() { return 0; }
-        static inline int defaultWidth() { return COLS; }
-        static inline int defaultHeight() { return LINES - StatusBar::instance().height(); }
 
     friend class ViewManager;
 };

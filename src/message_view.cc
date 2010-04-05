@@ -44,8 +44,8 @@ const char * MessageView::InvalidMessageException::what() const throw()
     return ("Cannot find message with ID: " + _id).c_str();
 }
 
-MessageView::MessageView(int x, int y, int width, int height)
-    : LineBrowserView(x, y, width, height)
+MessageView::MessageView(const View::Geometry & geometry)
+    : LineBrowserView(geometry)
 {
     /* Colors */
     init_pair(Colors::MESSAGE_VIEW_HEADER,  COLOR_CYAN, COLOR_BLACK);

@@ -21,13 +21,19 @@
 #include "status_bar.hh"
 #include "view_manager.hh"
 
-View::~View()
+View::Geometry::Geometry(int x_, int y_, int width_, int height_)
+    : x(x_), y(y_), width(width_), height(height_)
 {
 }
 
-void View::resize()
+View::Geometry::Geometry()
+    : x(0), y(0),
+        width(COLS), height(LINES - StatusBar::instance().height())
 {
-    resize(defaultX(), defaultY(), defaultWidth(), defaultHeight());
+}
+
+View::~View()
+{
 }
 
 void View::focus()

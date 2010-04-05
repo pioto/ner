@@ -22,8 +22,8 @@
 #include "line_browser_view.hh"
 #include "view_manager.hh"
 
-LineBrowserView::LineBrowserView(int x, int y, int width, int height)
-    : WindowView(x, y, width, height),
+LineBrowserView::LineBrowserView(const View::Geometry & geometry)
+    : WindowView(geometry),
         _selectedIndex(0),
         _offset(0)
 {
@@ -44,9 +44,9 @@ LineBrowserView::LineBrowserView(int x, int y, int width, int height)
     addHandledSequence(KEY_END,     std::bind(&LineBrowserView::moveToBottom, this));
 }
 
-void LineBrowserView::resize(int x, int y, int width, int height)
+void LineBrowserView::resize(const View::Geometry & geometry)
 {
-    WindowView::resize(x, y, width, height);
+    WindowView::resize(geometry);
 
     makeSelectionVisible();
 }

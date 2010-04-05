@@ -26,8 +26,8 @@
 
 const int nameWidth = 25;
 
-ViewView::ViewView(int x, int y, int width, int height)
-    : LineBrowserView(x, y, width, height)
+ViewView::ViewView(const View::Geometry & geometry)
+    : LineBrowserView(geometry)
 {
     /* Colors */
     init_pair(Colors::VIEW_VIEW_NUMBER, COLOR_CYAN,     COLOR_BLACK);

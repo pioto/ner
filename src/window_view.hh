@@ -25,11 +25,11 @@
 class WindowView : public View
 {
     public:
-        WindowView(int x, int y, int width, int height);
+        WindowView(const View::Geometry & geometry = View::Geometry());
         virtual ~WindowView();
 
         virtual void refresh();
-        virtual void resize(int x, int y, int width, int height);
+        virtual void resize(const View::Geometry & geometry = View::Geometry());
 
     protected:
         WINDOW * _window;

@@ -42,8 +42,7 @@ class MessageView : public LineBrowserView
                 std::string _id;
         };
 
-        MessageView(int x = defaultX(), int y = defaultY(),
-            int width = defaultWidth(), int height = defaultHeight());
+        MessageView(const View::Geometry & geometry = View::Geometry());
         virtual ~MessageView();
 
         void setMessage(const std::string & messageId);

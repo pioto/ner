@@ -23,9 +23,12 @@
 
 const int threadViewHeight = 8;
 
-ThreadMessageView::ThreadMessageView(const std::string & threadId, int x, int y, int width, int height)
-    : _threadView(threadId, x, y, width, threadViewHeight),
-        _messageView(x, y + threadViewHeight + 1, width, height - threadViewHeight - 1)
+ThreadMessageView::ThreadMessageView(const std::string & threadId, const View::Geometry & geometry)
+    : _threadView(threadId, { geometry.x, geometry.y, geometry.width, threadViewHeight }),
+        _messageView({
+            geometry.x, geometry.y + threadViewHeight + 1,
+            geometry.width, geometry.height - threadViewHeight - 1
+        })
 {
     _messageView.setMessage(_threadView.selectedMessage().id);
 
@@ -68,10 +71,13 @@ void ThreadMessageView::refresh()
     _messageView.refresh();
 }
 
-void ThreadMessageView::resize(int x, int y, int width, int height)
+void ThreadMessageView::resize(const View::Geometry & geometry)
 {
-    _threadView.resize(x, y, width, threadViewHeight);
-    _messageView.resize(x, threadViewHeight + 1, width, height - threadViewHeight - 1);
+    _threadView.resize({ geometry.x, geometry.y, geometry.width, threadViewHeight });
+    _messageView.resize({
+        geometry.x, threadViewHeight + 1,
+        geometry.width, geometry.height - threadViewHeight - 1
+    });
 }
 
 void ThreadMessageView::nextMessage()
