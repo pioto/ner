@@ -48,8 +48,8 @@ namespace Colors
         THREAD_VIEW_DATE,
         THREAD_VIEW_TAGS,
 
-        /* Message View */
-        MESSAGE_VIEW_HEADER,
+        /* Email View */
+        EMAIL_VIEW_HEADER,
 
         /* View View */
         VIEW_VIEW_NUMBER,

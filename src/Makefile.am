@@ -21,6 +21,7 @@ ner_SOURCES = \
 	line_browser_view.cc line_browser_view.hh \
 	search_view.cc search_view.hh \
 	thread_view.cc thread_view.hh \
+	email_view.cc email_view.hh \
 	message_view.cc message_view.hh \
 	thread_message_view.cc thread_message_view.hh \
 	view_view.cc view_view.hh

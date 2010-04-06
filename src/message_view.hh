@@ -22,12 +22,10 @@
 
 #include <string>
 #include <vector>
-#include <gmime/gmime.h>
-#include <notmuch.h>
 
-#include "line_browser_view.hh"
+#include "email_view.hh"
 
-class MessageView : public LineBrowserView
+class MessageView : public EmailView
 {
     public:
         class InvalidMessageException : public std::exception
@@ -47,19 +45,8 @@ class MessageView : public LineBrowserView
 
         void setMessage(const std::string & messageId);
 
-        virtual void update();
         virtual std::string name() const { return "message-view"; }
         virtual Type type() const { return Type::MessageView; }
-        virtual std::vector<std::string> status() const;
-
-    protected:
-        virtual int visibleLines() const;
-        virtual int lineCount() const;
-
-        void processMimePart(GMimeObject * part);
-
-        std::map<std::string, std::string> _headers;
-        std::vector<std::string> _lines;
 };
 
 #endif
