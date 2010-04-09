@@ -2,7 +2,7 @@
 
 bin_PROGRAMS = ner
 
-AM_CXXFLAGS = $(gmime_CFLAGS)
+AM_CXXFLAGS = $(gmime_CFLAGS) -D_XOPEN_SOURCE_EXTENDED
 
 ner_LDADD = $(gmime_LIBS)
 
