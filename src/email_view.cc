@@ -180,6 +180,8 @@ void EmailView::processMimePart(GMimeObject * part)
         {
             std::string line;
             std::getline(stream, line);
+            for (std::size_t tab = 0; (tab = line.find('\t', tab)) != std::string::npos; ++tab)
+                line.replace(tab, 1, 8 - (tab % 8), ' ');
             _lines.push_back(line);
         }
     }
