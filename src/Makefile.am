@@ -5,17 +5,25 @@ bin_PROGRAMS = ner
 AM_CXXFLAGS = $(gmime_CFLAGS)
 
 ner_LDADD = $(gmime_LIBS)
+
+# Core
 ner_SOURCES = \
 	main.cc \
 	ner.cc ner.hh \
 	config_file.cc config_file.hh \
-	util.cc util.hh \
-	colors.hh \
-	ncurses.cc ncurses.hh \
 	notmuch.cc notmuch.hh \
 	status_bar.cc status_bar.hh \
 	view_manager.cc view_manager.hh \
-	input_handler.cc input_handler.hh \
+	input_handler.cc input_handler.hh
+
+# Utility
+ner_SOURCES += \
+	colors.hh \
+	util.cc util.hh \
+	ncurses.cc ncurses.hh
+
+# Views
+ner_SOURCES += \
 	view.cc view.hh \
 	window_view.cc window_view.hh \
 	line_browser_view.cc line_browser_view.hh \
