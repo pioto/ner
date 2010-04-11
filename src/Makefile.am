@@ -20,7 +20,8 @@ ner_SOURCES = \
 ner_SOURCES += \
 	colors.hh \
 	util.cc util.hh \
-	ncurses.cc ncurses.hh
+	ncurses.cc ncurses.hh \
+	gmime_iostream.cc gmime_iostream.hh
 
 # Views
 ner_SOURCES += \
