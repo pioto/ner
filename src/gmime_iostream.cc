@@ -45,7 +45,7 @@ std::streambuf::int_type GMimeIOStreamBuffer::underflow()
     if (g_mime_stream_eos(_stream))
         return traits_type::eof();
 
-    setg(data, data, data + _buffer.size());
+    setg(data, data, data + n);
 
     return traits_type::to_int_type(*gptr());
 }
