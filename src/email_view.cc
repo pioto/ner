@@ -22,12 +22,16 @@
 #include "ncurses.hh"
 #include "util.hh"
 
-const std::vector<std::string> headers{ "To", "From", "Subject" };
 const std::string lessMessage("[less]");
 const std::string moreMessage("[more]");
 
 EmailView::EmailView(const View::Geometry & geometry)
-    : LineBrowserView(geometry)
+    : LineBrowserView(geometry),
+        _visibleHeaders{
+            "From",
+            "To",
+            "Subject",
+        }
 {
     /* Colors */
     init_pair(Colors::EMAIL_VIEW_HEADER,  COLOR_CYAN, COLOR_BLACK);
@@ -54,6 +58,10 @@ void EmailView::setEmail(const std::string & filename)
             { "To",         internet_address_list_to_string(g_mime_message_get_recipients(message,
                 GMIME_RECIPIENT_TYPE_TO), true) ? : "(null)" },
             { "From",       g_mime_message_get_sender(message) ? : "(null)" },
+            { "Cc",         internet_address_list_to_string(g_mime_message_get_recipients(message,
+                GMIME_RECIPIENT_TYPE_CC), true) ? : "(null)" },
+            { "Bcc",         internet_address_list_to_string(g_mime_message_get_recipients(message,
+                GMIME_RECIPIENT_TYPE_BCC), true) ? : "(null)" },
             { "Subject",    g_mime_message_get_subject(message) ? : "(null)" }
         };
 
@@ -64,14 +72,11 @@ void EmailView::setEmail(const std::string & filename)
 
         g_object_unref(mimePart);
     }
-    else
-    {
-        _headers = {
-            { "To",         "(null)" },
-            { "From",       "(null)" },
-            { "Subject",    "(null)" },
-        };
-    }
+}
+
+void EmailView::setVisibleHeaders(const std::vector<std::string> & headers)
+{
+    _visibleHeaders = headers;
 }
 
 void EmailView::update()
@@ -80,7 +85,7 @@ void EmailView::update()
 
     werase(_window);
 
-    for (auto header = headers.begin(), e = headers.end(); header != e; ++header, ++row)
+    for (auto header = _visibleHeaders.begin(), e = _visibleHeaders.end(); header != e; ++header, ++row)
     {
         int x = 0;
 
@@ -111,7 +116,7 @@ void EmailView::update()
         line != e && row < getmaxy(_window);
         ++line, ++row)
     {
-        bool selected = _selectedIndex == row - (headers.size() + 1) + _offset;
+        bool selected = _selectedIndex == row - (_visibleHeaders.size() + 1) + _offset;
 
         wmove(_window, row, 0);
 
@@ -133,7 +138,7 @@ void EmailView::update()
     wattron(_window, COLOR_PAIR(Colors::MORE_LESS_INDICATOR));
 
     if (_offset > 0)
-        mvwaddstr(_window, headers.size() + 1, getmaxx(_window) - lessMessage.size(), lessMessage.c_str());
+        mvwaddstr(_window, _visibleHeaders.size() + 1, getmaxx(_window) - lessMessage.size(), lessMessage.c_str());
 
     if (_offset + visibleLines() < lineCount())
         mvwaddstr(_window, getmaxy(_window) - 1, getmaxx(_window) - moreMessage.size(), moreMessage.c_str());
@@ -143,7 +148,7 @@ void EmailView::update()
 
 int EmailView::visibleLines() const
 {
-    return getmaxy(_window) - headers.size() - 1;
+    return getmaxy(_window) - _visibleHeaders.size() - 1;
 }
 
 int EmailView::lineCount() const

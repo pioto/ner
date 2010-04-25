@@ -31,6 +31,7 @@ class EmailView : public LineBrowserView
         virtual ~EmailView();
 
         void setEmail(const std::string & emailFilePath);
+        void setVisibleHeaders(const std::vector<std::string> & headers);
 
         virtual void update();
 
@@ -39,6 +40,7 @@ class EmailView : public LineBrowserView
         virtual int lineCount() const;
 
         std::map<std::string, std::string> _headers;
+        std::vector<std::string> _visibleHeaders;
         std::vector<std::string> _lines;
 };
 
