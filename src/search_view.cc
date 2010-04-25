@@ -187,11 +187,11 @@ void SearchView::openSelectedThread()
             ViewManager::instance().addView(std::shared_ptr<ThreadMessageView>(
                 new ThreadMessageView(_threads.at(_selectedIndex).id)));
         }
-        catch (const ThreadView::InvalidThreadException & e)
+        catch (const NotMuch::InvalidThreadException & e)
         {
             StatusBar::instance().displayMessage(e.what());
         }
-        catch (const MessageView::InvalidMessageException & e)
+        catch (const NotMuch::InvalidMessageException & e)
         {
             StatusBar::instance().displayMessage(e.what());
         }

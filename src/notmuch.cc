@@ -25,6 +25,34 @@ using namespace NotMuch;
 
 GKeyFile * _config = NULL;
 
+NotMuch::InvalidThreadException::InvalidThreadException(const std::string & threadId)
+    : _id(threadId)
+{
+}
+
+NotMuch::InvalidThreadException::~InvalidThreadException() throw()
+{
+}
+
+const char * NotMuch::InvalidThreadException::what() const throw()
+{
+    return ("Cannot find thread with ID: " + _id).c_str();
+}
+
+NotMuch::InvalidMessageException::InvalidMessageException(const std::string & messageId)
+    : _id(messageId)
+{
+}
+
+NotMuch::InvalidMessageException::~InvalidMessageException() throw()
+{
+}
+
+const char * NotMuch::InvalidMessageException::what() const throw()
+{
+    return ("Cannot find message with ID: " + _id).c_str();
+}
+
 Thread::Thread(notmuch_thread_t * thread)
     : id(notmuch_thread_get_thread_id(thread)),
         subject(notmuch_thread_get_subject(thread) ? : "(null)"),

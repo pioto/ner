@@ -26,20 +26,6 @@
 #include "ncurses.hh"
 #include "status_bar.hh"
 
-MessageView::InvalidMessageException::InvalidMessageException(const std::string & messageId)
-    : _id(messageId)
-{
-}
-
-MessageView::InvalidMessageException::~InvalidMessageException() throw()
-{
-}
-
-const char * MessageView::InvalidMessageException::what() const throw()
-{
-    return ("Cannot find message with ID: " + _id).c_str();
-}
-
 MessageView::MessageView(const View::Geometry & geometry)
     : EmailView(geometry)
 {
@@ -57,7 +43,7 @@ void MessageView::setMessage(const std::string & messageId)
     if (!message)
     {
         notmuch_database_close(database);
-        throw InvalidMessageException(messageId);
+        throw NotMuch::InvalidMessageException(messageId);
     }
 
     std::string filename = notmuch_message_get_filename(message);

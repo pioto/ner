@@ -28,18 +28,6 @@
 class ThreadView : public LineBrowserView
 {
     public:
-        class InvalidThreadException : public std::exception
-        {
-            public:
-                InvalidThreadException(const std::string & threadId);
-                ~InvalidThreadException() throw();
-
-                virtual const char * what() const throw();
-
-            private:
-                std::string _id;
-        };
-
         ThreadView(const std::string & threadId,
             const View::Geometry & geometry = View::Geometry());
         virtual ~ThreadView();

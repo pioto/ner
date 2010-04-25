@@ -29,19 +29,6 @@
 #include "message_view.hh"
 #include "status_bar.hh"
 
-ThreadView::InvalidThreadException::InvalidThreadException(const std::string & threadId)
-    : _id(threadId)
-{
-}
-
-ThreadView::InvalidThreadException::~InvalidThreadException() throw()
-{
-}
-
-const char * ThreadView::InvalidThreadException::what() const throw()
-{
-    return ("Cannot find thread with ID: " + _id).c_str();
-}
 
 ThreadView::ThreadView(const std::string & threadId, const View::Geometry & geometry)
     : LineBrowserView(geometry), _id(threadId)
@@ -59,7 +46,7 @@ ThreadView::ThreadView(const std::string & threadId, const View::Geometry & geom
 
         notmuch_database_close(database);
 
-        throw InvalidThreadException(threadId);
+        throw NotMuch::InvalidThreadException(threadId);
     }
 
     for (messages = notmuch_thread_get_toplevel_messages(thread);
@@ -126,7 +113,7 @@ void ThreadView::openSelectedMessage()
         messageView->setMessage(selectedMessage().id);
         ViewManager::instance().addView(messageView);
     }
-    catch (const MessageView::InvalidMessageException & e)
+    catch (const NotMuch::InvalidMessageException & e)
     {
         StatusBar::instance().displayMessage(e.what());
     }

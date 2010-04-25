@@ -29,6 +29,30 @@
 
 namespace NotMuch
 {
+    class InvalidThreadException : public std::exception
+    {
+        public:
+            InvalidThreadException(const std::string & threadId);
+            ~InvalidThreadException() throw();
+
+            virtual const char * what() const throw();
+
+        private:
+            std::string _id;
+    };
+
+    class InvalidMessageException : public std::exception
+    {
+        public:
+            InvalidMessageException(const std::string & messageId);
+            ~InvalidMessageException() throw();
+
+            virtual const char * what() const throw();
+
+        private:
+            std::string _id;
+    };
+
     struct Thread
     {
         Thread(notmuch_thread_t * thread);

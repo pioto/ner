@@ -28,18 +28,6 @@
 class MessageView : public EmailView
 {
     public:
-        class InvalidMessageException : public std::exception
-        {
-            public:
-                InvalidMessageException(const std::string & messageId);
-                ~InvalidMessageException() throw();
-
-                virtual const char * what() const throw();
-
-            private:
-                std::string _id;
-        };
-
         MessageView(const View::Geometry & geometry = View::Geometry());
         virtual ~MessageView();
 
