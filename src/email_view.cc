@@ -20,7 +20,7 @@
 #include "email_view.hh"
 #include "colors.hh"
 #include "ncurses.hh"
-#include "gmime_iostream.hh"
+#include "util.hh"
 
 const std::vector<std::string> headers{ "To", "From", "Subject" };
 const std::string lessMessage("[less]");
@@ -60,7 +60,9 @@ void EmailView::setEmail(const std::string & filename)
         GMimeObject * mimePart = g_mime_message_get_mime_part(message);
 
         /* Locate plain text parts */
-        processMimePart(mimePart);
+        mimePartLines(mimePart, std::back_inserter(_lines));
+
+        g_object_unref(mimePart);
     }
     else
     {
@@ -147,53 +149,6 @@ int EmailView::visibleLines() const
 int EmailView::lineCount() const
 {
     return _lines.size();
-}
-
-void EmailView::processMimePart(GMimeObject * part)
-{
-    GMimeContentType * contentType = g_mime_object_get_content_type(part);
-
-    /* If this part is plain text */
-    if (g_mime_content_type_is_type(contentType, "text", "*") &&
-        !g_mime_content_type_is_type(contentType, "text", "html"))
-    {
-        GMimeDataWrapper * content = g_mime_part_get_content_object(GMIME_PART(part));
-        const char * charset = g_mime_object_get_content_type_parameter(part, "charset");
-        GMimeStream * content_stream = g_mime_data_wrapper_get_stream(content);
-        GMimeStream * filtered_stream = g_mime_stream_filter_new(content_stream);
-
-        GMimeFilter * filter = g_mime_filter_basic_new(g_mime_data_wrapper_get_encoding(content), false);
-        g_mime_stream_filter_add(GMIME_STREAM_FILTER(filtered_stream), filter);
-        g_object_unref(filter);
-
-        if (charset)
-        {
-            GMimeFilter * filter = g_mime_filter_charset_new(charset, "UTF-8");
-            g_mime_stream_filter_add(GMIME_STREAM_FILTER(filtered_stream), filter);
-            g_object_unref(filter);
-        }
-
-        GMimeIOStream stream(filtered_stream);
-        g_object_unref(filtered_stream);
-
-        while (stream.good())
-        {
-            std::string line;
-            std::getline(stream, line);
-            for (std::size_t tab = 0; (tab = line.find('\t', tab)) != std::string::npos; ++tab)
-                line.replace(tab, 1, 8 - (tab % 8), ' ');
-            _lines.push_back(line);
-        }
-    }
-    else if (g_mime_content_type_is_type(contentType, "multipart", "*"))
-    {
-        for (int index = 0, count = g_mime_multipart_get_count(GMIME_MULTIPART(part));
-            index < count;
-            ++index)
-        {
-            processMimePart(g_mime_multipart_get_part(GMIME_MULTIPART(part), index));
-        }
-    }
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

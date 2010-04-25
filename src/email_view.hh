@@ -38,8 +38,6 @@ class EmailView : public LineBrowserView
         virtual int visibleLines() const;
         virtual int lineCount() const;
 
-        void processMimePart(GMimeObject * part);
-
         std::map<std::string, std::string> _headers;
         std::vector<std::string> _lines;
 };

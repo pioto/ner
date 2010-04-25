@@ -17,8 +17,9 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "util.hh"
 #include <stdio.h>
+
+#include "util.hh"
 
 #define MINUTE (60)
 #define HOUR (60 * MINUTE)
