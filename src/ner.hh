@@ -22,7 +22,6 @@
 
 #include <string>
 #include <vector>
-#include <notmuch.h>
 
 #include "input_handler.hh"
 

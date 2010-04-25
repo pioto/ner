@@ -29,7 +29,6 @@
 #include "message_view.hh"
 #include "status_bar.hh"
 
-
 ThreadView::ThreadView(const std::string & threadId, const View::Geometry & geometry)
     : LineBrowserView(geometry), _id(threadId)
 {
@@ -117,6 +116,40 @@ void ThreadView::openSelectedMessage()
     {
         StatusBar::instance().displayMessage(e.what());
     }
+}
+
+const NotMuch::Message & ThreadView::selectedMessage() const
+{
+    std::vector<const NotMuch::Message *> messages;
+
+    std::transform(_topMessages.rbegin(), _topMessages.rend(),
+        std::back_inserter(messages), addressOf<NotMuch::Message>());
+
+    const NotMuch::Message * message = messages.back();
+
+    for (int index = 0; index < _selectedIndex; ++index)
+    {
+        messages.pop_back();
+
+        if (!message->replies.empty())
+        {
+            for (auto reply = message->replies.rbegin(), e = message->replies.rend();
+                reply != e;
+                ++reply)
+            {
+                messages.push_back(&(*reply));
+            }
+        }
+
+        message = messages.back();
+    }
+
+    return *message;
+}
+
+int ThreadView::lineCount() const
+{
+    return _messageCount;
 }
 
 uint32_t ThreadView::displayMessageLine(const NotMuch::Message & message,
@@ -207,40 +240,6 @@ uint32_t ThreadView::displayMessageLine(const NotMuch::Message & message,
     leading.pop_back();
 
     return index;
-}
-
-int ThreadView::lineCount() const
-{
-    return _messageCount;
-}
-
-const NotMuch::Message & ThreadView::selectedMessage() const
-{
-    std::vector<const NotMuch::Message *> messages;
-
-    std::transform(_topMessages.rbegin(), _topMessages.rend(),
-        std::back_inserter(messages), addressOf<NotMuch::Message>());
-
-    const NotMuch::Message * message = messages.back();
-
-    for (int index = 0; index < _selectedIndex; ++index)
-    {
-        messages.pop_back();
-
-        if (!message->replies.empty())
-        {
-            for (auto reply = message->replies.rbegin(), e = message->replies.rend();
-                reply != e;
-                ++reply)
-            {
-                messages.push_back(&(*reply));
-            }
-        }
-
-        message = messages.back();
-    }
-
-    return *message;
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

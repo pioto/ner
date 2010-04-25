@@ -29,6 +29,7 @@
 #include "thread_view.hh"
 #include "view_view.hh"
 #include "colors.hh"
+#include "notmuch.hh"
 
 Ner::Ner()
     : _viewManager(new ViewManager)
