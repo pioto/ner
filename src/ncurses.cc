@@ -63,6 +63,7 @@ int NCurses::addUtf8String(WINDOW * window, const char * string,
 
     cchar_t displayCharacters[length + 1];
     int displayIndex = 0;
+    int displayLength = 0;
 
     wchar_t wideCharacters[CCHARW_MAX + 1];
     wchar_t wideCharacter;
@@ -79,6 +80,12 @@ int NCurses::addUtf8String(WINDOW * window, const char * string,
             break;
 
         int width = wcwidth(wideCharacter);
+
+        if (width > 0)
+            displayLength += width;
+
+        if (displayLength > maxLength)
+            break;
 
         /* We found a new spacing character, set the next cchar_t */
         if ((width > 0 && wideIndex > 0) || wideIndex == CCHARW_MAX)
@@ -109,9 +116,7 @@ int NCurses::addUtf8String(WINDOW * window, const char * string,
     wideCharacters[0] = L'\0';
     setcchar(&displayCharacters[displayIndex], wideCharacters, 0, 0, NULL);
 
-    int displayLength = std::min(maxLength, displayIndex);
-
-    wadd_wchnstr(window, displayCharacters, displayLength);
+    wadd_wchnstr(window, displayCharacters, displayIndex);
 
     return displayLength;
 }
