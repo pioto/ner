@@ -17,11 +17,13 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <glib-object.h>
+
 #include "notmuch.hh"
 
 using namespace NotMuch;
 
-std::string _databasePath;
+GKeyFile * _config = NULL;
 
 Thread::Thread(notmuch_thread_t * thread)
     : id(notmuch_thread_get_thread_id(thread)),
@@ -82,17 +84,23 @@ Message::Message(notmuch_message_t * message)
 
 notmuch_database_t * NotMuch::openDatabase(notmuch_database_mode_t mode)
 {
-    return notmuch_database_open(_databasePath.c_str(), mode);
+    return notmuch_database_open(g_key_file_get_string(_config, "database", "path", NULL), mode);
 }
 
-const std::string & NotMuch::databasePath()
+GKeyFile * NotMuch::config()
 {
-    return _databasePath;
+    return _config;
 }
 
-void NotMuch::setDatabasePath(const std::string & path)
+void NotMuch::setConfig(const std::string & path)
 {
-    _databasePath = path;
+    if (_config)
+        g_object_unref(_config);
+
+    _config = g_key_file_new();
+
+    if (!g_key_file_load_from_file(_config, path.c_str(), G_KEY_FILE_NONE, NULL))
+        _config = NULL;
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

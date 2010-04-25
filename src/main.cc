@@ -25,7 +25,6 @@
 
 #include "notmuch.hh"
 #include "ner.hh"
-#include "config_file.hh"
 #include "view_manager.hh"
 #include "search_view.hh"
 
@@ -43,10 +42,7 @@ int main(int argc, char * argv[])
     const std::string & configPath = (environmentConfigPath != NULL &&
         access(environmentConfigPath, R_OK) == 0) ? environmentConfigPath : defaultConfigPath;
 
-    ConfigFile configFile(configPath);
-    configFile.parse();
-
-    NotMuch::setDatabasePath(configFile.value("database", "path"));
+    NotMuch::setConfig(configPath);
 
     Ner ner;
 

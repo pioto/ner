@@ -10,7 +10,6 @@ ner_LDADD = $(gmime_LIBS)
 ner_SOURCES = \
 	main.cc \
 	ner.cc ner.hh \
-	config_file.cc config_file.hh \
 	notmuch.cc notmuch.hh \
 	status_bar.cc status_bar.hh \
 	view_manager.cc view_manager.hh \

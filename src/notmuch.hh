@@ -25,6 +25,7 @@
 #include <map>
 #include <vector>
 #include <notmuch.h>
+#include <glib.h>
 
 namespace NotMuch
 {
@@ -57,8 +58,8 @@ namespace NotMuch
 
     notmuch_database_t * openDatabase(notmuch_database_mode_t mode = NOTMUCH_DATABASE_MODE_READ_ONLY);
 
-    const std::string & databasePath();
-    void setDatabasePath(const std::string & path);
+    GKeyFile * config();
+    void setConfig(const std::string & path);
 };
 
 #endif
