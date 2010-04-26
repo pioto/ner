@@ -17,7 +17,7 @@ decltype(a) b;
 
 typedef check<int> check_type;
 check_type c;
-check_type&& cr = c;
+check_type& cr = c;
           ])
 
 dnl AX_PROG_CXX_CXX0X(ACTION-IF-FOUND, ACTION-IF-NOT-FOUND)
