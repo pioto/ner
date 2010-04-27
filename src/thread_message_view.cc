@@ -48,6 +48,8 @@ ThreadMessageView::ThreadMessageView(const std::string & threadId, const View::G
     addHandledSequence("G",         std::bind(&MessageView::moveToBottom, &_messageView));
     addHandledSequence(KEY_END,     std::bind(&MessageView::moveToBottom, &_messageView));
 
+    addHandledSequence("r",         std::bind(&ThreadView::reply, &_threadView));
+
     addHandledSequence(" ",         std::bind(&ThreadMessageView::nextMessage, this));
     addHandledSequence('n' - 96,    std::bind(&ThreadMessageView::nextMessage, this));
     addHandledSequence('p' - 96,    std::bind(&ThreadMessageView::previousMessage, this));

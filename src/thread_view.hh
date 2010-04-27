@@ -40,6 +40,8 @@ class ThreadView : public LineBrowserView
         const NotMuch::Message & selectedMessage() const;
         virtual void openSelectedMessage();
 
+        void reply();
+
     protected:
         virtual int lineCount() const;
 

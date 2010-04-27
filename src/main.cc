@@ -34,6 +34,7 @@ int main(int argc, char * argv[])
 {
     std::setlocale(LC_ALL, "");
 
+    srand(time(NULL));
     g_mime_init(0);
 
     const char * environmentConfigPath = std::getenv("NOTMUCH_CONFIG");

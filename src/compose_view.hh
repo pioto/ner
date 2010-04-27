@@ -1,4 +1,4 @@
-/* ner: src/ner.hh
+/* ner: src/compose_view.hh
  *
  * Copyright (c) 2010 Michael Forney
  *
@@ -17,45 +17,24 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NER_NER_H
-#define NER_NER_H 1
+#ifndef NER_COMPOSE_VIEW_H
+#define NER_COMPOSE_VIEW_H 1
 
-#include <string>
-#include <vector>
+#include "email_edit_view.hh"
 
-#include "input_handler.hh"
-
-class ViewManager;
-class StatusBar;
-
-class Ner : public InputHandler
+class ComposeView : public EmailEditView
 {
     public:
-        Ner();
-        ~Ner();
+        ComposeView(const View::Geometry & geometry = View::Geometry());
+        virtual ~ComposeView();
 
-        void run();
-        void quit();
+        virtual std::string name() const { return "compose-view"; }
+        virtual Type type() const { return Type::ComposeView; }
 
-        void search();
-        void compose();
-        void openMessage();
-        void openThread();
-        void openViewView();
-        void redraw();
-
-        inline ViewManager * viewManager() const
-        {
-            return _viewManager;
-        }
-
-    private:
-        void initializeScreen();
-        void cleanupScreen();
-
-        bool _running;
-        ViewManager * _viewManager;
-        StatusBar * _statusBar;
+    protected:
+        std::string _to;
+        std::string _cc;
+        std::string _subject;
 };
 
 #endif

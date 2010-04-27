@@ -28,6 +28,7 @@
 #include "view_manager.hh"
 #include "message_view.hh"
 #include "status_bar.hh"
+#include "reply_view.hh"
 
 ThreadView::ThreadView(const std::string & threadId, const View::Geometry & geometry)
     : LineBrowserView(geometry), _id(threadId)
@@ -65,6 +66,7 @@ ThreadView::ThreadView(const std::string & threadId, const View::Geometry & geom
 
     /* Key Sequences */
     addHandledSequence("\n", std::bind(&ThreadView::openSelectedMessage, this));
+    addHandledSequence("r", std::bind(&ThreadView::reply, this));
 
     /* Colors */
     init_pair(Colors::THREAD_VIEW_ARROW,        COLOR_GREEN,    COLOR_BLACK);
@@ -145,6 +147,18 @@ const NotMuch::Message & ThreadView::selectedMessage() const
     }
 
     return *message;
+}
+
+void ThreadView::reply()
+{
+    try
+    {
+        ViewManager::instance().addView(std::shared_ptr<ReplyView>(new ReplyView(selectedMessage().id)));
+    }
+    catch (const NotMuch::InvalidMessageException & e)
+    {
+        StatusBar::instance().displayMessage(e.what());
+    }
 }
 
 int ThreadView::lineCount() const

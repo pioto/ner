@@ -28,6 +28,7 @@
 #include "message_view.hh"
 #include "thread_view.hh"
 #include "view_view.hh"
+#include "compose_view.hh"
 #include "colors.hh"
 #include "notmuch.hh"
 
@@ -41,6 +42,7 @@ Ner::Ner()
     /* Key Sequences */
     addHandledSequence("Q", std::bind(&Ner::quit, this));
     addHandledSequence("s", std::bind(&Ner::search, this));
+    addHandledSequence("m", std::bind(&Ner::compose, this));
     addHandledSequence("M", std::bind(&Ner::openMessage, this));
     addHandledSequence("T", std::bind(&Ner::openThread, this));
     addHandledSequence(";", std::bind(&Ner::openViewView, this));
@@ -166,6 +168,11 @@ void Ner::search()
 
     if (!searchTerms.empty())
         _viewManager->addView(std::shared_ptr<SearchView>(new SearchView(searchTerms)));
+}
+
+void Ner::compose()
+{
+    _viewManager->addView(std::shared_ptr<ComposeView>(new ComposeView()));
 }
 
 void Ner::openMessage()

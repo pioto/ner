@@ -1,4 +1,4 @@
-/* ner: src/ner.hh
+/* ner: src/email_edit_view.hh
  *
  * Copyright (c) 2010 Michael Forney
  *
@@ -17,45 +17,32 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NER_NER_H
-#define NER_NER_H 1
+#ifndef NER_EMAIL_EDIT_VIEW_H
+#define NER_EMAIL_EDIT_VIEW_H 1
 
-#include <string>
-#include <vector>
+#include "email_view.hh"
 
-#include "input_handler.hh"
-
-class ViewManager;
-class StatusBar;
-
-class Ner : public InputHandler
+class EmailEditView : public EmailView
 {
     public:
-        Ner();
-        ~Ner();
+        EmailEditView(const View::Geometry & geometry = View::Geometry());
+        virtual ~EmailEditView();
 
-        void run();
-        void quit();
+        void edit();
 
-        void search();
-        void compose();
-        void openMessage();
-        void openThread();
-        void openViewView();
-        void redraw();
+    protected:
+        /**
+         * Creates a new message file at a temporary location using the
+         * specified message.
+         */
+        virtual void createMessage(GMimeMessage * message);
 
-        inline ViewManager * viewManager() const
-        {
-            return _viewManager;
-        }
+        /**
+         * Sends the message with the configured MTA
+         */
+        virtual void send();
 
-    private:
-        void initializeScreen();
-        void cleanupScreen();
-
-        bool _running;
-        ViewManager * _viewManager;
-        StatusBar * _statusBar;
+        std::string _messageFile;
 };
 
 #endif

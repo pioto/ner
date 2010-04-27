@@ -1,4 +1,4 @@
-/* ner: src/ner.hh
+/* ner: src/reply_view.hh
  *
  * Copyright (c) 2010 Michael Forney
  *
@@ -17,45 +17,24 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NER_NER_H
-#define NER_NER_H 1
+#ifndef NER_REPLY_VIEW_H
+#define NER_REPLY_VIEW_H 1
 
-#include <string>
-#include <vector>
+#include "email_edit_view.hh"
 
-#include "input_handler.hh"
-
-class ViewManager;
-class StatusBar;
-
-class Ner : public InputHandler
+class ReplyView : public EmailEditView
 {
     public:
-        Ner();
-        ~Ner();
+        ReplyView(const std::string & messageId, const View::Geometry & geometry = View::Geometry());
+        virtual ~ReplyView();
 
-        void run();
-        void quit();
+        virtual std::string name() const { return "reply-view"; }
+        virtual View::Type type() const { return View::Type::ReplyView; }
 
-        void search();
-        void compose();
-        void openMessage();
-        void openThread();
-        void openViewView();
-        void redraw();
-
-        inline ViewManager * viewManager() const
-        {
-            return _viewManager;
-        }
-
-    private:
-        void initializeScreen();
-        void cleanupScreen();
-
-        bool _running;
-        ViewManager * _viewManager;
-        StatusBar * _statusBar;
+    protected:
+        std::string _subject;
+        std::string _to;
+        std::string _replyTo;
 };
 
 #endif
