@@ -20,6 +20,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstring>
+#include <cstdlib>
 #include <sys/time.h>
 #include <gmime/gmime.h>
 
