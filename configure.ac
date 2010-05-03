@@ -2,7 +2,7 @@ dnl ner: configure.ac
 
 AC_PREREQ(2.59)
 
-AC_INIT([ner], [0.0.1], [michael@obberon.com])
+AC_INIT([ner], [0.0.1], [mforney@mforney.org])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 AC_LANG([C++])
 
