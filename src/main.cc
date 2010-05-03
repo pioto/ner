@@ -19,16 +19,33 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 #include <clocale>
 #include <unistd.h>
 #include <gmime/gmime.h>
+#include <yaml.h>
 
 #include "notmuch.hh"
 #include "ner.hh"
 #include "view_manager.hh"
 #include "search_view.hh"
+#include "identity_manager.hh"
 
 #define NOTMUCH_CONFIG_FILE ".notmuch-config"
+#define NER_CONFIG_FILE ".ner.yaml"
+
+void loadConfig()
+{
+    std::string configPath(std::string(getenv("HOME")) + "/" NER_CONFIG_FILE);
+    std::ifstream configFile(configPath.c_str());
+
+    YAML::Parser parser(configFile);
+
+    YAML::Node document;
+    parser.GetNextDocument(document);
+
+    IdentityManager::instance().load(document.FindValue("identities"));
+}
 
 int main(int argc, char * argv[])
 {
@@ -44,6 +61,8 @@ int main(int argc, char * argv[])
         access(environmentConfigPath, R_OK) == 0) ? environmentConfigPath : defaultConfigPath;
 
     NotMuch::setConfig(configPath);
+
+    loadConfig();
 
     Ner ner;
 

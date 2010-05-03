@@ -1,4 +1,4 @@
-/* ner: src/email_edit_view.hh
+/* ner: src/mail_store.hh
  *
  * Copyright (c) 2010 Michael Forney
  *
@@ -17,34 +17,18 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NER_EMAIL_EDIT_VIEW_H
-#define NER_EMAIL_EDIT_VIEW_H 1
+#ifndef NER_MAIL_STORE_H
+#define NER_MAIL_STORE_H 1
 
-#include "email_view.hh"
-#include "identity_manager.hh"
+#include <string>
+#include <gmime/gmime.h>
 
-class EmailEditView : public EmailView
+class MailStore
 {
     public:
-        EmailEditView(const View::Geometry & geometry = View::Geometry());
-        virtual ~EmailEditView();
+        virtual ~MailStore();
 
-        void edit();
-
-    protected:
-        /**
-         * Creates a new message file at a temporary location using the
-         * specified message.
-         */
-        virtual void createMessage(GMimeMessage * message);
-
-        /**
-         * Sends the message with the configured MTA
-         */
-        virtual void send();
-
-        std::string _messageFile;
-        const Identity * _identity;
+        virtual bool addMessage(GMimeMessage * message) = 0;
 };
 
 #endif

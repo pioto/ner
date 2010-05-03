@@ -2,9 +2,9 @@
 
 bin_PROGRAMS = ner
 
-AM_CXXFLAGS = $(gmime_CFLAGS) -D_XOPEN_SOURCE_EXTENDED
+AM_CXXFLAGS = $(yaml_cpp_CFLAGS) $(gmime_CFLAGS) -D_XOPEN_SOURCE_EXTENDED
 
-ner_LDADD = $(gmime_LIBS)
+ner_LDADD = $(yaml_cpp_LIBS) $(gmime_LIBS)
 
 # Core
 ner_SOURCES = \
@@ -13,7 +13,10 @@ ner_SOURCES = \
 	notmuch.cc notmuch.hh \
 	status_bar.cc status_bar.hh \
 	view_manager.cc view_manager.hh \
-	input_handler.cc input_handler.hh
+	input_handler.cc input_handler.hh \
+	identity_manager.cc identity_manager.hh \
+	mail_store.cc mail_store.hh \
+	maildir.cc maildir.hh
 
 # Utility
 ner_SOURCES += \

@@ -17,6 +17,7 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <fstream>
 #include <sstream>
 #include <iterator>
 #include <strings.h>
@@ -80,7 +81,7 @@ ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geome
     g_mime_object_set_header(GMIME_OBJECT(replyMessage), "In-Reply-To", originalMessageId.c_str());
 
     /* Set addresses */
-    InternetAddress * userAddress = NULL;
+    const Identity * userIdentity = 0;
 
     std::vector<GMimeRecipientType> recipientTypes{
         GMIME_RECIPIENT_TYPE_TO,
@@ -88,16 +89,13 @@ ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geome
         GMIME_RECIPIENT_TYPE_BCC
     };
 
-    const char * userName = g_key_file_get_string(NotMuch::config(), "user", "name", NULL);
-    const char * primaryAddress = g_key_file_get_string(NotMuch::config(), "user", "primary_email", NULL);
-    size_t otherAddressesLength;
-    char ** otherAddresses = g_key_file_get_string_list(NotMuch::config(), "user", "other_email",
-        &otherAddressesLength, NULL);
-
-    const char * sender = g_mime_object_get_header(GMIME_OBJECT(originalMessage), "From");
+    /* Copy headers, while looking for the user's identity */
+    const char * sender = g_mime_message_get_sender(originalMessage);
     InternetAddressList * senderAddressList = internet_address_list_parse_string(sender);
     InternetAddress * senderAddress = internet_address_list_get_address(senderAddressList, 0);
-    internet_address_list_add(g_mime_message_get_recipients(replyMessage, GMIME_RECIPIENT_TYPE_TO), senderAddress);
+    if (!(userIdentity = IdentityManager::instance().findIdentity(senderAddress)))
+        internet_address_list_add(g_mime_message_get_recipients(replyMessage,
+            GMIME_RECIPIENT_TYPE_TO), senderAddress);
     g_object_unref(senderAddressList);
 
     for (auto recipientType = recipientTypes.begin();
@@ -110,35 +108,21 @@ ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geome
         {
             InternetAddress * address = internet_address_list_get_address(addresses, index);
 
-            /* Check if this is the user address */
-            if (strcasecmp(primaryAddress, internet_address_mailbox_get_addr(INTERNET_ADDRESS_MAILBOX(address))) == 0)
-                /* We default to the primary anyway */
-                continue;
-
-            bool found = false;
-            for (int otherIndex = 0; otherIndex < otherAddressesLength; ++otherIndex)
-            {
-                if (strcasecmp(otherAddresses[otherIndex], internet_address_mailbox_get_addr(INTERNET_ADDRESS_MAILBOX(address))) == 0)
-                {
-                    userAddress = internet_address_mailbox_new(
-                        userName,
-                        internet_address_mailbox_get_addr(INTERNET_ADDRESS_MAILBOX(address))
-                    );
-                    found = true;
-                    break;
-                }
-            }
-
-            /* Otherwise its just a normal recipient */
-            if (!found)
+            if (!userIdentity)
+                userIdentity = IdentityManager::instance().findIdentity(address);
+            else
                 internet_address_list_add(g_mime_message_get_recipients(replyMessage, *recipientType), address);
         }
     }
 
-    if (!userAddress)
-         userAddress = internet_address_mailbox_new(userName, primaryAddress);
+    if (userIdentity)
+        _identity = userIdentity;
 
+    /* Create a internet address for the user */
+    InternetAddress * userAddress = internet_address_mailbox_new(_identity->name.c_str(),
+        userIdentity->email.c_str());
     g_mime_message_set_sender(replyMessage, internet_address_to_string(userAddress, true));
+    g_object_unref(userAddress);
 
     /* Set content */
     std::ostringstream messageContentStream;
@@ -149,11 +133,12 @@ ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geome
     mimePartLines(part, std::ostream_iterator<std::string>(messageContentStream, "\n> "));
     g_object_unref(part);
 
-    std::string messageContent(messageContentStream.str());
+    /* Read user's signature */
+    messageContentStream << std::endl << "-- " << std::endl;
+    std::ifstream signatureFile(userIdentity->signaturePath.c_str());
+    messageContentStream << signatureFile.rdbuf();
 
-    /* Get rid of the last '> ' */
-    messageContent.resize(messageContent.size() - 3);
-    messageContent.append("\n\n");
+    std::string messageContent(messageContentStream.str());
 
     GMimeStream * contentStream = g_mime_stream_mem_new_with_buffer(messageContent.c_str(), messageContent.size());
     GMimePart * replyPart = g_mime_part_new_with_type("text", "plain");

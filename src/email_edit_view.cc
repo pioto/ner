@@ -26,12 +26,14 @@
 
 #include "email_edit_view.hh"
 #include "view_manager.hh"
+#include "maildir.hh"
 
 const std::string editorCommand = "vim +";
 const std::string sendCommand = "/usr/sbin/sendmail -t";
 
 EmailEditView::EmailEditView(const View::Geometry & geometry)
-    : EmailView(geometry)
+    : EmailView(geometry),
+        _identity(IdentityManager::instance().defaultIdentity())
 {
     setVisibleHeaders(std::vector<std::string>{
         "From",
@@ -114,6 +116,10 @@ void EmailEditView::send()
     if (status == 0)
     {
         StatusBar::instance().displayMessage("Message sent successfully");
+
+        if (_identity->sentMail)
+            if (!_identity->sentMail->addMessage(message))
+                StatusBar::instance().displayMessage("Could not add message to configured mail store");
 
         unlink(_messageFile.c_str());
         ViewManager::instance().closeActiveView();
