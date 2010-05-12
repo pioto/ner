@@ -181,6 +181,9 @@ void Ner::openMessage()
 
     if (!messageId.empty())
     {
+        if (messageId.size() > 3 && std::equal(messageId.begin(), messageId.begin() + 3, "id:"))
+            messageId.erase(0, 3);
+
         try
         {
             std::shared_ptr<MessageView> messageView(new MessageView());
