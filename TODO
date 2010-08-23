@@ -7,4 +7,10 @@ TODO
   want to use.
 - Configurable colors and UI.
 - Handle Xapian errors rather than crashing.
+- Message tagging support.
+- GPG support.
+- HTML support (use external command?).
+- Message dynamic text wrapping.
+- Message color highlighting (signature, reply levels, etc).
+- Add the ability to reload configuration.
 
