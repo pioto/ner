@@ -95,7 +95,6 @@ void IdentityManager::load(const YAML::Node * node)
     }
 }
 
-
 void IdentityManager::setDefaultIdentity(const std::string & identity)
 {
     _defaultIdentity = identity;
