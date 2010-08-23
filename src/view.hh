@@ -42,7 +42,8 @@ class View : public InputHandler
             ThreadMessageView,
             ViewView,
             ComposeView,
-            ReplyView
+            ReplyView,
+            SearchListView
         };
 
         struct Geometry

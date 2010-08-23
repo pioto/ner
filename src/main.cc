@@ -28,7 +28,7 @@
 #include "notmuch.hh"
 #include "ner.hh"
 #include "view_manager.hh"
-#include "search_view.hh"
+#include "search_list_view.hh"
 #include "identity_manager.hh"
 
 #define NOTMUCH_CONFIG_FILE ".notmuch-config"
@@ -66,8 +66,8 @@ int main(int argc, char * argv[])
 
     Ner ner;
 
-    std::shared_ptr<View> searchView(new SearchView("tag:inbox"));
-    ner.viewManager()->addView(searchView);
+    std::shared_ptr<View> searchListView(new SearchListView());
+    ner.viewManager()->addView(searchListView);
     ner.run();
 
     g_mime_shutdown();

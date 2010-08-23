@@ -38,5 +38,6 @@ ner_SOURCES += \
 	view_view.cc view_view.hh \
 	email_edit_view.cc email_edit_view.hh \
 	compose_view.cc compose_view.hh \
-	reply_view.cc reply_view.hh
+	reply_view.cc reply_view.hh \
+	search_list_view.cc search_list_view.hh
 

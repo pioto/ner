@@ -54,7 +54,12 @@ namespace Colors
         /* View View */
         VIEW_VIEW_NUMBER,
         VIEW_VIEW_NAME,
-        VIEW_VIEW_STATUS
+        VIEW_VIEW_STATUS,
+
+        /* Search List View */
+        SEARCH_LIST_VIEW_NAME,
+        SEARCH_LIST_VIEW_TERMS,
+        SEARCH_LIST_VIEW_RESULTS
     };
 };
 
