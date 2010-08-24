@@ -38,6 +38,7 @@ class ViewView : public LineBrowserView
 
         void updateViews();
         void openSelectedView();
+        void closeSelectedView();
 
     protected:
         struct ViewInfo

@@ -131,5 +131,26 @@ void ViewManager::openView(int index)
     _activeView->refresh();
 }
 
+void ViewManager::closeView(int index)
+{
+    /* If this is our last view */
+    if (_views.size() == 1)
+        StatusBar::instance().displayMessage("This is the last view left, use Q to quit");
+    else
+    {
+        auto view = _views.begin() + index;
+
+        if (_activeView == *view)
+        {
+            if (index < _views.size() - 1)
+                _activeView = *(view + 1);
+            else
+                _activeView = *(view - 1);
+        }
+
+        _views.erase(view);
+    }
+}
+
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
 

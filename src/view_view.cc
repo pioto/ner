@@ -36,6 +36,7 @@ ViewView::ViewView(const View::Geometry & geometry)
 
     /* Key Sequences */
     addHandledSequence("\n", std::bind(&ViewView::openSelectedView, this));
+    addHandledSequence("x", std::bind(&ViewView::closeSelectedView, this));
 }
 
 ViewView::~ViewView()
@@ -109,6 +110,20 @@ int ViewView::lineCount() const
 void ViewView::openSelectedView()
 {
     ViewManager::instance().openView(_selectedIndex);
+}
+
+void ViewView::closeSelectedView()
+{
+    /* Decrement by one to account for ViewView */
+    int views = ViewManager::instance()._views.size() - 1;
+
+    if (views > 1)
+    {
+        ViewManager::instance().closeView(_selectedIndex);
+        _selectedIndex = std::min(_selectedIndex, views - 2);
+    }
+    else
+        StatusBar::instance().displayMessage("This is the last view left, use Q to quit");
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

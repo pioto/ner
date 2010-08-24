@@ -77,6 +77,7 @@ class ViewManager : public InputHandler
         static ViewManager * _instance;
 
         void openView(int index);
+        void closeView(int index);
 
         std::shared_ptr<View> _activeView;
         std::vector<std::shared_ptr<View>> _views;
