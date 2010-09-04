@@ -24,6 +24,94 @@
 
 const std::string lessMessage("[less]");
 const std::string moreMessage("[more]");
+const std::string whitespace(" \t\r\n");
+const int messageWrapWidth = 80;
+
+class WrappedLineIterator : public std::iterator<std::input_iterator_tag, std::string>
+{
+    public:
+        explicit WrappedLineIterator(const std::string & line, int maxWidth = messageWrapWidth)
+            : _line(line), _maxWidth(maxWidth), _position(0)
+        {
+            updateWidth();
+        }
+
+        /**
+         * Default constructor used as an iterator indicating the end of the
+         * line.
+         */
+        WrappedLineIterator(int maxWidth = messageWrapWidth)
+            : _maxWidth(maxWidth), _position(std::string::npos)
+        {
+        }
+
+        WrappedLineIterator & operator++()
+        {
+            if (_width == std::string::npos)
+                _position = std::string::npos;
+            else
+            {
+                _position = _line.find_first_not_of(whitespace, _position + _width);
+                updateWidth();
+            }
+
+            return *this;
+        }
+
+        std::string operator*() const
+        {
+            return _line.substr(_position, _width);
+        }
+
+        bool operator==(const WrappedLineIterator & other) const
+        {
+            return ((_position == std::string::npos && other._position == std::string::npos) ||
+                (_position == other._position && _maxWidth == other._maxWidth &&
+                    _line == other._line));
+        }
+
+        bool operator!=(const WrappedLineIterator & other) const
+        {
+            return ((_position != std::string::npos || other._position != std::string::npos) &&
+                (_position != other._position || _maxWidth != other._maxWidth ||
+                    _line != other._line));
+        }
+
+        void updateWidth()
+        {
+            size_t lastWhitespaceIndex;
+
+            if (_line.size() > _position + _maxWidth)
+            {
+                if (isspace(_line.at(_position + _maxWidth)))
+                    lastWhitespaceIndex = _position + _maxWidth;
+                else
+                {
+                    size_t index = _line.find_last_of(whitespace, _position + _maxWidth);
+
+                    if (index == std::string::npos || index < _position)
+                        lastWhitespaceIndex = _position + _maxWidth;
+                    else
+                        lastWhitespaceIndex = index;
+                }
+
+                _width = _line.find_last_not_of(whitespace, lastWhitespaceIndex) - _position + 1;
+            }
+            else
+                _width = std::string::npos;
+        }
+
+        bool wrapped() const
+        {
+            return _position != 0;
+        }
+
+    private:
+        size_t _position;
+        size_t _width;
+        int _maxWidth;
+        std::string _line;
+};
 
 EmailView::EmailView(const View::Geometry & geometry)
     : LineBrowserView(geometry),
@@ -71,6 +159,8 @@ void EmailView::setEmail(const std::string & filename)
         mimePartLines(mimePart, std::back_inserter(_lines));
 
         g_object_unref(mimePart);
+
+        calculateLines();
     }
 }
 
@@ -112,24 +202,35 @@ void EmailView::update()
     whline(_window, 0, getmaxx(_window));
     ++row;
 
-    for (auto line = _lines.begin() + _offset, e = _lines.end();
-        line != e && row < getmaxy(_window);
-        ++line, ++row)
+    for (auto line = _lines.begin(), e = _lines.end(), messageRow = 0;
+        line != e && row < getmaxy(_window); ++line)
     {
-        bool selected = _selectedIndex == row - (_visibleHeaders.size() + 1) + _offset;
-
-        wmove(_window, row, 0);
-
-        attr_t attributes = 0;
-
-        if (selected)
+        for (auto wrappedLine = WrappedLineIterator(*line), e = WrappedLineIterator();
+            wrappedLine != e && row < getmaxy(_window); ++wrappedLine, ++messageRow)
         {
-            attributes |= A_REVERSE;
-            wchgat(_window, -1, A_REVERSE, 0, NULL);
-        }
+            if (messageRow < _offset)
+                continue;
 
-        if (NCurses::addUtf8String(_window, (*line).c_str(), attributes) > getmaxx(_window))
-            NCurses::addCutOffIndicator(_window, attributes);
+            bool selected = _selectedIndex == messageRow;
+
+            if (wrappedLine.wrapped())
+                mvwaddch(_window, row, 0, ACS_CKBOARD | COLOR_PAIR(Colors::LINE_WRAP_INDICATOR));
+
+            wmove(_window, row, 2);
+
+            attr_t attributes = 0;
+
+            if (selected)
+            {
+                attributes |= A_REVERSE;
+                wchgat(_window, -1, A_REVERSE, 0, NULL);
+            }
+
+            if (NCurses::addUtf8String(_window, (*wrappedLine).c_str(), attributes) > getmaxx(_window))
+                NCurses::addCutOffIndicator(_window, attributes);
+
+            ++row;
+        }
     }
 
     for (; row < getmaxy(_window); ++row)
@@ -146,6 +247,18 @@ void EmailView::update()
     wattroff(_window, COLOR_PAIR(Colors::MORE_LESS_INDICATOR));
 }
 
+void EmailView::calculateLines()
+{
+    _lineCount = 0;
+
+    for (auto line = _lines.begin(), e = _lines.end();
+        line != e; ++line)
+    {
+        for (auto wrappedLine = WrappedLineIterator(*line), e = WrappedLineIterator();
+            wrappedLine != e; ++wrappedLine, ++_lineCount);
+    }
+}
+
 int EmailView::visibleLines() const
 {
     return getmaxy(_window) - _visibleHeaders.size() - 1;
@@ -153,7 +266,7 @@ int EmailView::visibleLines() const
 
 int EmailView::lineCount() const
 {
-    return _lines.size();
+    return _lineCount;
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

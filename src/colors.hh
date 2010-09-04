@@ -28,6 +28,7 @@ namespace Colors
         CUT_OFF_INDICATOR = 1,
         MORE_LESS_INDICATOR,
         EMPTY_SPACE_INDICATOR,
+        LINE_WRAP_INDICATOR,
 
         /* Status Bar */
         STATUS_BAR_STATUS,

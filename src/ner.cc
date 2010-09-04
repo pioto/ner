@@ -52,6 +52,7 @@ Ner::Ner()
     init_pair(Colors::CUT_OFF_INDICATOR,        COLOR_GREEN,    COLOR_BLACK);
     init_pair(Colors::MORE_LESS_INDICATOR,      COLOR_BLACK,    COLOR_GREEN);
     init_pair(Colors::EMPTY_SPACE_INDICATOR,    COLOR_CYAN,     COLOR_BLACK);
+    init_pair(Colors::LINE_WRAP_INDICATOR,      COLOR_GREEN,    COLOR_BLACK);
 }
 
 Ner::~Ner()

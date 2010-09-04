@@ -36,12 +36,14 @@ class EmailView : public LineBrowserView
         virtual void update();
 
     protected:
+        void calculateLines();
         virtual int visibleLines() const;
         virtual int lineCount() const;
 
         std::map<std::string, std::string> _headers;
         std::vector<std::string> _visibleHeaders;
         std::vector<std::string> _lines;
+        int _lineCount;
 };
 
 #endif
