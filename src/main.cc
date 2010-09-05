@@ -45,6 +45,7 @@ void loadConfig()
     parser.GetNextDocument(document);
 
     IdentityManager::instance().load(document.FindValue("identities"));
+    IdentityManager::instance().setDefaultIdentity(*document.FindValue("default_identity"));
 }
 
 int main(int argc, char * argv[])
