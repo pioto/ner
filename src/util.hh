@@ -25,6 +25,7 @@
 #include <gmime/gmime.h>
 
 #include "gmime_iostream.hh"
+#include "ncurses.hh"
 
 std::string relativeTime(time_t rawTime);
 
@@ -42,28 +43,34 @@ template <class OutputIterator>
 {
     GMimeContentType * contentType = g_mime_object_get_content_type(part);
 
+    /* If this part is html */
+    if (g_mime_content_type_is_type(contentType, "text", "html"))
+    {
+        /* TODO: Handle html email */
+    }
     /* If this part is plain text */
-    if (g_mime_content_type_is_type(contentType, "text", "*") &&
-        !g_mime_content_type_is_type(contentType, "text", "html"))
+    if (g_mime_content_type_is_type(contentType, "text", "*"))
     {
         GMimeDataWrapper * content = g_mime_part_get_content_object(GMIME_PART(part));
         const char * charset = g_mime_object_get_content_type_parameter(part, "charset");
-        GMimeStream * content_stream = g_mime_data_wrapper_get_stream(content);
-        GMimeStream * filtered_stream = g_mime_stream_filter_new(content_stream);
+        GMimeStream * contentStream = g_mime_data_wrapper_get_stream(content);
+        GMimeStream * filteredStream = g_mime_stream_filter_new(contentStream);
 
         GMimeFilter * filter = g_mime_filter_basic_new(g_mime_data_wrapper_get_encoding(content), false);
-        g_mime_stream_filter_add(GMIME_STREAM_FILTER(filtered_stream), filter);
+        g_mime_stream_filter_add(GMIME_STREAM_FILTER(filteredStream), filter);
         g_object_unref(filter);
 
         if (charset)
         {
             GMimeFilter * filter = g_mime_filter_charset_new(charset, "UTF-8");
-            g_mime_stream_filter_add(GMIME_STREAM_FILTER(filtered_stream), filter);
+            g_mime_stream_filter_add(GMIME_STREAM_FILTER(filteredStream), filter);
             g_object_unref(filter);
         }
 
-        GMimeIOStream stream(filtered_stream);
-        g_object_unref(filtered_stream);
+        g_mime_stream_reset(contentStream);
+
+        GMimeIOStream stream(filteredStream);
+        g_object_unref(filteredStream);
 
         while (stream.good())
         {
