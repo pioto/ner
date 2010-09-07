@@ -120,7 +120,7 @@ ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geome
 
     /* Create a internet address for the user */
     InternetAddress * userAddress = internet_address_mailbox_new(_identity->name.c_str(),
-        userIdentity->email.c_str());
+        _identity->email.c_str());
     g_mime_message_set_sender(replyMessage, internet_address_to_string(userAddress, true));
     g_object_unref(userAddress);
 
@@ -134,9 +134,12 @@ ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geome
     g_object_unref(part);
 
     /* Read user's signature */
-    messageContentStream << std::endl << "-- " << std::endl;
-    std::ifstream signatureFile(userIdentity->signaturePath.c_str());
-    messageContentStream << signatureFile.rdbuf();
+    if (!_identity->signaturePath.empty())
+    {
+        messageContentStream << std::endl << "-- " << std::endl;
+        std::ifstream signatureFile(_identity->signaturePath.c_str());
+        messageContentStream << signatureFile.rdbuf();
+    }
 
     std::string messageContent(messageContentStream.str());
 
