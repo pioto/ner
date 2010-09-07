@@ -34,10 +34,8 @@ ComposeView::ComposeView(const View::Geometry & geometry)
     std::string bcc = StatusBar::instance().prompt("Bcc: ");
     std::string subject = StatusBar::instance().prompt("Subject: ");
 
-    InternetAddress * from = internet_address_mailbox_new(
-        g_key_file_get_string(NotMuch::config(), "user", "name", NULL),
-        g_key_file_get_string(NotMuch::config(), "user", "primary_email", NULL)
-    );
+    InternetAddress * from = internet_address_mailbox_new(_identity->name.c_str(),
+        _identity->email.c_str());
     g_mime_message_set_sender(message, internet_address_to_string(from, true));
     g_mime_object_set_header(GMIME_OBJECT(message), "To", to.c_str());
     g_mime_object_set_header(GMIME_OBJECT(message), "Cc", cc.c_str());
