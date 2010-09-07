@@ -49,7 +49,7 @@ template <class OutputIterator>
         /* TODO: Handle html email */
     }
     /* If this part is plain text */
-    if (g_mime_content_type_is_type(contentType, "text", "*"))
+    else if (g_mime_content_type_is_type(contentType, "text", "*"))
     {
         GMimeDataWrapper * content = g_mime_part_get_content_object(GMIME_PART(part));
         const char * charset = g_mime_object_get_content_type_parameter(part, "charset");
