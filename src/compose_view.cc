@@ -18,6 +18,7 @@
  */
 
 #include <iostream>
+#include <fstream>
 #include <cstring>
 #include <gmime/gmime.h>
 
@@ -41,6 +42,28 @@ ComposeView::ComposeView(const View::Geometry & geometry)
     g_mime_object_set_header(GMIME_OBJECT(message), "Cc", cc.c_str());
     g_mime_object_set_header(GMIME_OBJECT(message), "Bcc", bcc.c_str());
     g_mime_message_set_subject(message, subject.c_str());
+
+    std::ostringstream messageContentStream;
+
+    /* Read the user's signature */
+    if (!_identity->signaturePath.empty())
+    {
+        messageContentStream << std::endl << "-- " << std::endl;
+        std::ifstream signatureFile(_identity->signaturePath.c_str());
+        messageContentStream << signatureFile.rdbuf();
+    }
+
+    std::string messageContent(messageContentStream.str());
+
+    GMimeStream * contentStream = g_mime_stream_mem_new_with_buffer(messageContent.c_str(), messageContent.size());
+    GMimePart * messagePart = g_mime_part_new_with_type("text", "plain");
+    GMimeDataWrapper * contentWrapper = g_mime_data_wrapper_new_with_stream(contentStream, GMIME_CONTENT_ENCODING_DEFAULT);
+    g_mime_part_set_content_object(messagePart, contentWrapper);
+    g_mime_message_set_mime_part(message, GMIME_OBJECT(messagePart));
+
+    g_object_unref(messagePart);
+    g_object_unref(contentWrapper);
+    g_object_unref(contentStream);
 
     createMessage(message);
 
