@@ -39,9 +39,6 @@ class IdentityManager
     public:
         static IdentityManager & instance();
 
-        IdentityManager();
-        ~IdentityManager();
-
         void load(const YAML::Node * node);
         void setDefaultIdentity(const std::string & identity);
 
@@ -49,6 +46,9 @@ class IdentityManager
         const Identity * findIdentity(InternetAddress * address);
 
     private:
+        IdentityManager();
+        ~IdentityManager();
+
         std::map<std::string, Identity> _identities;
         std::string _defaultIdentity;
 };
