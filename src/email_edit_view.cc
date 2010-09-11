@@ -27,9 +27,7 @@
 #include "email_edit_view.hh"
 #include "view_manager.hh"
 #include "maildir.hh"
-
-const std::string editorCommand = "vim +";
-const std::string sendCommand = "/usr/sbin/sendmail -t";
+#include "ner_config.hh"
 
 EmailEditView::EmailEditView(const View::Geometry & geometry)
     : EmailView(geometry),
@@ -56,7 +54,7 @@ void EmailEditView::edit()
 {
     endwin();
 
-    std::string command(editorCommand);
+    std::string command(NerConfig::instance().command("edit"));
     command.push_back(' ');
     command.append(_messageFile);
     std::system(command.c_str());
@@ -105,7 +103,7 @@ void EmailEditView::send()
     g_mime_message_set_message_id(message, messageId.str().c_str());
 
     /* Send the message */
-    FILE * sendMailPipe = popen(sendCommand.c_str(), "w");
+    FILE * sendMailPipe = popen(NerConfig::instance().command("send").c_str(), "w");
     GMimeStream * sendMailStream = g_mime_stream_file_new(sendMailPipe);
     g_mime_stream_file_set_owner(GMIME_STREAM_FILE(sendMailStream), false);
     g_mime_object_write_to_stream(GMIME_OBJECT(message), sendMailStream);

@@ -10,6 +10,7 @@ ner_LDADD = $(yaml_cpp_LIBS) $(gmime_LIBS)
 ner_SOURCES = \
 	main.cc \
 	ner.cc ner.hh \
+	ner_config.cc ner_config.hh \
 	notmuch.cc notmuch.hh \
 	status_bar.cc status_bar.hh \
 	view_manager.cc view_manager.hh \

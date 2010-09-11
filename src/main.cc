@@ -23,30 +23,15 @@
 #include <clocale>
 #include <unistd.h>
 #include <gmime/gmime.h>
-#include <yaml.h>
 
 #include "notmuch.hh"
 #include "ner.hh"
 #include "view_manager.hh"
 #include "search_list_view.hh"
 #include "identity_manager.hh"
+#include "ner_config.hh"
 
-#define NOTMUCH_CONFIG_FILE ".notmuch-config"
-#define NER_CONFIG_FILE ".ner.yaml"
-
-void loadConfig()
-{
-    std::string configPath(std::string(getenv("HOME")) + "/" NER_CONFIG_FILE);
-    std::ifstream configFile(configPath.c_str());
-
-    YAML::Parser parser(configFile);
-
-    YAML::Node document;
-    parser.GetNextDocument(document);
-
-    IdentityManager::instance().load(document.FindValue("identities"));
-    IdentityManager::instance().setDefaultIdentity(*document.FindValue("default_identity"));
-}
+const std::string notmuchConfigFile(".notmuch-config");
 
 int main(int argc, char * argv[])
 {
@@ -56,14 +41,14 @@ int main(int argc, char * argv[])
     g_mime_init(0);
 
     const char * environmentConfigPath = std::getenv("NOTMUCH_CONFIG");
-    std::string defaultConfigPath(std::string(std::getenv("HOME")) + "/" NOTMUCH_CONFIG_FILE);
+    std::string defaultConfigPath(std::string(std::getenv("HOME")) + "/" + notmuchConfigFile);
 
     const std::string & configPath = (environmentConfigPath != NULL &&
         access(environmentConfigPath, R_OK) == 0) ? environmentConfigPath : defaultConfigPath;
 
     NotMuch::setConfig(configPath);
 
-    loadConfig();
+    NerConfig::instance().load();
 
     Ner ner;
 
