@@ -1,0 +1,63 @@
+# ner.yaml.sample
+
+%YAML 1.2
+%TAG ! tag:the-ner.org,2010:
+---
+commands:
+    send: /usr/sbin/sendmail -t
+    edit: vim +
+
+default_identity: first_identity
+    first_identity:
+        name: Bruce Wayne
+        email: bruce.wayne@domain.tld
+        signature: /home/user/.signature
+        sent_mail: !maildir /home/user/mail/sent
+    second_identity:
+        name: Batman
+        email: batman@domain.tld
+        signature: /home/user/.signature
+        sent_mail: !maildir /home/user/mail/sent
+
+colors:
+    # General
+    cut_off_indicator                   : { fg: green,   bg: black }
+    more_less_indicator                 : { fg: black,   bg: green }
+    empty_space_indicator               : { fg: cyan,    bg: black }
+    line_wrap_indicator                 : { fg: green,   bg: black }
+
+    # Status Bar
+    status_bar_status                   : { fg: white,   bg: blue  }
+    status_bar_status_divider           : { fg: white,   bg: blue  }
+    status_bar_message                  : { fg: black,   bg: white }
+    status_bar_prompt                   : { fg: white,   bg: black }
+
+    # Search View
+    search_view_date                    : { fg: yellow,  bg: black }
+    search_view_message_count_complete  : { fg: green,   bg: black }
+    search_view_message_count_partial   : { fg: magenta, bg: black }
+    search_view_authors                 : { fg: cyan,    bg: black }
+    search_view_subject                 : { fg: white,   bg: black }
+    search_view_tags                    : { fg: red,     bg: black }
+
+    # Thread View
+    thread_view_arrow                   : { fg: green,   bg: black }
+    thread_view_date                    : { fg: cyan,    bg: black }
+    thread_view_tags                    : { fg: red,     bg: black }
+
+    # Email View
+    email_view_header                   : { fg: cyan,    bg: black }
+
+    # View View
+    view_view_number                    : { fg: cyan,    bg: black }
+    view_view_name                      : { fg: green,   bg: black }
+    view_view_status                    : { fg: white,   bg: black }
+
+    # Search List View
+    search_list_view_name               : { fg: cyan,    bg: black }
+    search_list_view_terms              : { fg: yellow,  bg: black }
+    search_list_view_results            : { fg: green,   bg: black }
+...
+
+# vim: ft=yaml
+
