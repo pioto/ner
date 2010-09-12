@@ -35,11 +35,6 @@ SearchListView::SearchListView(const View::Geometry & geometry)
             { "Inbox", "tag:inbox" }
         }
 {
-    /* Colors */
-    init_pair(Colors::SEARCH_LIST_VIEW_NAME,    COLOR_CYAN,     COLOR_BLACK);
-    init_pair(Colors::SEARCH_LIST_VIEW_TERMS,   COLOR_YELLOW,   COLOR_BLACK);
-    init_pair(Colors::SEARCH_LIST_VIEW_RESULTS, COLOR_GREEN,    COLOR_BLACK);
-
     /* Key Sequences */
     addHandledSequence("\n", std::bind(&SearchListView::openSelectedSearch, this));
 }
@@ -78,13 +73,13 @@ void SearchListView::update()
         {
             /* Search Name */
             NCurses::addUtf8String(_window, (*search).name.c_str(), attributes,
-                Colors::SEARCH_LIST_VIEW_NAME, searchNameWidth - 1);
+                ColorID::SearchListViewName, searchNameWidth - 1);
 
             NCurses::checkMove(_window, x += searchNameWidth);
 
             /* Search Terms */
             NCurses::addUtf8String(_window, (*search).terms.c_str(), attributes,
-                Colors::SEARCH_LIST_VIEW_TERMS, searchTermsWidth - 1);
+                ColorID::SearchListViewTerms, searchTermsWidth - 1);
 
             NCurses::checkMove(_window, x += searchTermsWidth);
 
@@ -97,7 +92,7 @@ void SearchListView::update()
             notmuch_database_close(database);
 
             NCurses::addPlainString(_window, results.str(), attributes,
-                Colors::SEARCH_LIST_VIEW_RESULTS);
+                ColorID::SearchListViewResults);
 
             NCurses::checkMove(_window, x - 1);
         }

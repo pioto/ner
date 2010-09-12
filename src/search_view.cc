@@ -46,14 +46,6 @@ SearchView::SearchView(const std::string & search, const View::Geometry & geomet
     _collecting = true;
     _thread = std::thread(std::bind(&SearchView::collectThreads, this));
 
-    /* Colors */
-    init_pair(Colors::SEARCH_VIEW_DATE,                     COLOR_YELLOW,   COLOR_BLACK);
-    init_pair(Colors::SEARCH_VIEW_MESSAGE_COUNT_COMPLETE,   COLOR_GREEN,    COLOR_BLACK);
-    init_pair(Colors::SEARCH_VIEW_MESSAGE_COUNT_PARTIAL,    COLOR_MAGENTA,  COLOR_BLACK);
-    init_pair(Colors::SEARCH_VIEW_AUTHORS,                  COLOR_CYAN,     COLOR_BLACK);
-    init_pair(Colors::SEARCH_VIEW_SUBJECT,                  COLOR_WHITE,    COLOR_BLACK);
-    init_pair(Colors::SEARCH_VIEW_TAGS,                     COLOR_RED,      COLOR_BLACK);
-
     /* Key Sequences */
     addHandledSequence("=", std::bind(&SearchView::refreshThreads, this));
     addHandledSequence("\n", std::bind(&SearchView::openSelectedThread, this));
@@ -107,7 +99,7 @@ void SearchView::update()
         {
             /* Date */
             NCurses::addPlainString(_window, relativeTime((*thread).newestDate),
-                attributes, Colors::SEARCH_VIEW_DATE, newestDateWidth - 1);
+                attributes, ColorID::SearchViewDate, newestDateWidth - 1);
 
             NCurses::checkMove(_window, x += newestDateWidth);
 
@@ -119,8 +111,8 @@ void SearchView::update()
             NCurses::checkMove(_window, x);
 
             x += NCurses::addPlainString(_window, messageCountStream.str(),
-                attributes, completeMatch ? Colors::SEARCH_VIEW_MESSAGE_COUNT_COMPLETE :
-                                            Colors::SEARCH_VIEW_MESSAGE_COUNT_PARTIAL,
+                attributes, completeMatch ? ColorID::SearchViewMessageCountComplete :
+                                            ColorID::SearchViewMessageCountPartial,
                 messageCountWidth - 1);
             NCurses::checkMove(_window, x);
 
@@ -130,13 +122,13 @@ void SearchView::update()
 
             /* Authors */
             NCurses::addUtf8String(_window, (*thread).authors.c_str(),
-                attributes, Colors::SEARCH_VIEW_AUTHORS, authorsWidth - 1);
+                attributes, ColorID::SearchViewAuthors, authorsWidth - 1);
 
             NCurses::checkMove(_window, x += authorsWidth);
 
             /* Subject */
             x += NCurses::addUtf8String(_window, (*thread).subject.c_str(),
-                attributes, Colors::SEARCH_VIEW_SUBJECT);
+                attributes, ColorID::SearchViewSubject);
 
             NCurses::checkMove(_window, ++x);
 
@@ -150,7 +142,7 @@ void SearchView::update()
                 /* Get rid of the trailing space */
                 tags.resize(tags.size() - 1);
 
-            x += NCurses::addPlainString(_window, tags, attributes, Colors::SEARCH_VIEW_TAGS);
+            x += NCurses::addPlainString(_window, tags, attributes, ColorID::SearchViewTags);
 
             NCurses::checkMove(_window, x - 1);
         }

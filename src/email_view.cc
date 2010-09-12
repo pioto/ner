@@ -121,8 +121,6 @@ EmailView::EmailView(const View::Geometry & geometry)
             "Subject",
         }
 {
-    /* Colors */
-    init_pair(Colors::EMAIL_VIEW_HEADER,  COLOR_CYAN, COLOR_BLACK);
 }
 
 EmailView::~EmailView()
@@ -184,7 +182,7 @@ void EmailView::update()
         try
         {
             x += NCurses::addPlainString(_window, (*header) + ": ",
-                0, Colors::EMAIL_VIEW_HEADER);
+                0, ColorID::EmailViewHeader);
 
             NCurses::checkMove(_window, x);
 
@@ -214,7 +212,7 @@ void EmailView::update()
             bool selected = _selectedIndex == messageRow;
 
             if (wrappedLine.wrapped())
-                mvwaddch(_window, row, 0, ACS_CKBOARD | COLOR_PAIR(Colors::LINE_WRAP_INDICATOR));
+                mvwaddch(_window, row, 0, ACS_CKBOARD | COLOR_PAIR(ColorID::LineWrapIndicator));
 
             wmove(_window, row, 2);
 
@@ -234,9 +232,9 @@ void EmailView::update()
     }
 
     for (; row < getmaxy(_window); ++row)
-        mvwaddch(_window, row, 0, '~' | A_BOLD | COLOR_PAIR(Colors::EMPTY_SPACE_INDICATOR));
+        mvwaddch(_window, row, 0, '~' | A_BOLD | COLOR_PAIR(ColorID::EmptySpaceIndicator));
 
-    wattron(_window, COLOR_PAIR(Colors::MORE_LESS_INDICATOR));
+    wattron(_window, COLOR_PAIR(ColorID::MoreLessIndicator));
 
     if (_offset > 0)
         mvwaddstr(_window, _visibleHeaders.size() + 1, getmaxx(_window) - lessMessage.size(), lessMessage.c_str());
@@ -244,7 +242,7 @@ void EmailView::update()
     if (_offset + visibleLines() < lineCount())
         mvwaddstr(_window, getmaxy(_window) - 1, getmaxx(_window) - moreMessage.size(), moreMessage.c_str());
 
-    wattroff(_window, COLOR_PAIR(Colors::MORE_LESS_INDICATOR));
+    wattroff(_window, COLOR_PAIR(ColorID::MoreLessIndicator));
 }
 
 void EmailView::calculateLines()

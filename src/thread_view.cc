@@ -67,11 +67,6 @@ ThreadView::ThreadView(const std::string & threadId, const View::Geometry & geom
     /* Key Sequences */
     addHandledSequence("\n", std::bind(&ThreadView::openSelectedMessage, this));
     addHandledSequence("r", std::bind(&ThreadView::reply, this));
-
-    /* Colors */
-    init_pair(Colors::THREAD_VIEW_ARROW,        COLOR_GREEN,    COLOR_BLACK);
-    init_pair(Colors::THREAD_VIEW_DATE,         COLOR_CYAN,     COLOR_BLACK);
-    init_pair(Colors::THREAD_VIEW_TAGS,         COLOR_RED,      COLOR_BLACK);
 }
 
 ThreadView::~ThreadView()
@@ -192,16 +187,16 @@ uint32_t ThreadView::displayMessageLine(const NotMuch::Message & message,
             wchgat(_window, -1, attributes, 0, NULL);
 
             x += NCurses::addPlainString(_window, leading.begin(), leading.end(),
-                attributes, Colors::THREAD_VIEW_ARROW);
+                attributes, ColorID::ThreadViewArrow);
 
             NCurses::checkMove(_window, x);
 
             x += NCurses::addChar(_window, last ? ACS_LLCORNER : ACS_LTEE,
-                attributes, Colors::THREAD_VIEW_ARROW);
+                attributes, ColorID::ThreadViewArrow);
 
             NCurses::checkMove(_window, x);
 
-            x += NCurses::addChar(_window, '>', attributes, Colors::THREAD_VIEW_ARROW);
+            x += NCurses::addChar(_window, '>', attributes, ColorID::ThreadViewArrow);
 
             NCurses::checkMove(_window, ++x);
 
@@ -213,7 +208,7 @@ uint32_t ThreadView::displayMessageLine(const NotMuch::Message & message,
 
             /* Date */
             x += NCurses::addPlainString(_window, relativeTime(message.date),
-                attributes, Colors::THREAD_VIEW_DATE);
+                attributes, ColorID::ThreadViewDate);
 
             NCurses::checkMove(_window, ++x);
 
@@ -227,7 +222,7 @@ uint32_t ThreadView::displayMessageLine(const NotMuch::Message & message,
                 /* Get rid of the trailing space */
                 tags.resize(tags.size() - 1);
 
-            x += NCurses::addPlainString(_window, tags, attributes, Colors::THREAD_VIEW_TAGS);
+            x += NCurses::addPlainString(_window, tags, attributes, ColorID::ThreadViewTags);
 
             NCurses::checkMove(_window, x - 1);
         }

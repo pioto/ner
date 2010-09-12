@@ -39,7 +39,7 @@ void NCurses::checkMove(WINDOW * window, int x)
 void NCurses::addCutOffIndicator(WINDOW * window, attr_t attributes)
 {
     wmove(window, getcury(window), getmaxx(window) - 1);
-    waddch(window, '$' | attributes | COLOR_PAIR(Colors::CUT_OFF_INDICATOR));
+    waddch(window, '$' | attributes | COLOR_PAIR(ColorID::CutOffIndicator));
 }
 
 int NCurses::addPlainString(WINDOW * window, const std::string & string,

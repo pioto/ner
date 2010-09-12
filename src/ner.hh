@@ -50,7 +50,6 @@ class Ner : public InputHandler
         }
 
     private:
-        void initializeScreen();
         void cleanupScreen();
 
         bool _running;

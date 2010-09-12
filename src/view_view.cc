@@ -29,11 +29,6 @@ const int nameWidth = 25;
 ViewView::ViewView(const View::Geometry & geometry)
     : LineBrowserView(geometry)
 {
-    /* Colors */
-    init_pair(Colors::VIEW_VIEW_NUMBER, COLOR_CYAN,     COLOR_BLACK);
-    init_pair(Colors::VIEW_VIEW_NAME,   COLOR_GREEN,    COLOR_BLACK);
-    init_pair(Colors::VIEW_VIEW_STATUS, COLOR_WHITE,    COLOR_BLACK);
-
     /* Key Sequences */
     addHandledSequence("\n", std::bind(&ViewView::openSelectedView, this));
     addHandledSequence("x", std::bind(&ViewView::closeSelectedView, this));
@@ -78,20 +73,20 @@ void ViewView::update()
         std::ostringstream numberStream;
         numberStream << row + _offset << ".";
         x += NCurses::addPlainString(_window, numberStream.str(),
-            attributes, Colors::VIEW_VIEW_NUMBER);
+            attributes, ColorID::ViewViewNumber);
 
         NCurses::checkMove(_window, ++x);
 
         /* Name */
         NCurses::addPlainString(_window, (*view)->name(),
-            attributes, Colors::VIEW_VIEW_NAME, nameWidth - 1);
+            attributes, ColorID::ViewViewName, nameWidth - 1);
 
         NCurses::checkMove(_window, x = nameWidth);
 
         /* Status */
         std::vector<std::string> status((*view)->status());
         if (status.size() > 0)
-            NCurses::addPlainString(_window, status.at(0), attributes, Colors::VIEW_VIEW_STATUS);
+            NCurses::addPlainString(_window, status.at(0), attributes, ColorID::ViewViewStatus);
     }
 }
 

@@ -20,48 +20,45 @@
 #ifndef NER_COLORS_H
 #define NER_COLORS_H 1
 
-namespace Colors
+enum ColorID
 {
-    enum Color
-    {
-        /* General */
-        CUT_OFF_INDICATOR = 1,
-        MORE_LESS_INDICATOR,
-        EMPTY_SPACE_INDICATOR,
-        LINE_WRAP_INDICATOR,
+    /* General */
+    CutOffIndicator = 1,
+    MoreLessIndicator,
+    EmptySpaceIndicator,
+    LineWrapIndicator,
 
-        /* Status Bar */
-        STATUS_BAR_STATUS,
-        STATUS_BAR_STATUS_DIVIDER,
-        STATUS_BAR_MESSAGE,
-        STATUS_BAR_PROMPT,
+    /* Status Bar */
+    StatusBarStatus,
+    StatusBarStatusDivider,
+    StatusBarMessage,
+    StatusBarPrompt,
 
-        /* Search View */
-        SEARCH_VIEW_DATE,
-        SEARCH_VIEW_MESSAGE_COUNT_COMPLETE,
-        SEARCH_VIEW_MESSAGE_COUNT_PARTIAL,
-        SEARCH_VIEW_AUTHORS,
-        SEARCH_VIEW_SUBJECT,
-        SEARCH_VIEW_TAGS,
+    /* Search View */
+    SearchViewDate,
+    SearchViewMessageCountComplete,
+    SearchViewMessageCountPartial,
+    SearchViewAuthors,
+    SearchViewSubject,
+    SearchViewTags,
 
-        /* Thread View */
-        THREAD_VIEW_ARROW,
-        THREAD_VIEW_DATE,
-        THREAD_VIEW_TAGS,
+    /* Thread View */
+    ThreadViewArrow,
+    ThreadViewDate,
+    ThreadViewTags,
 
-        /* Email View */
-        EMAIL_VIEW_HEADER,
+    /* Email View */
+    EmailViewHeader,
 
-        /* View View */
-        VIEW_VIEW_NUMBER,
-        VIEW_VIEW_NAME,
-        VIEW_VIEW_STATUS,
+    /* View View */
+    ViewViewNumber,
+    ViewViewName,
+    ViewViewStatus,
 
-        /* Search List View */
-        SEARCH_LIST_VIEW_NAME,
-        SEARCH_LIST_VIEW_TERMS,
-        SEARCH_LIST_VIEW_RESULTS
-    };
+    /* Search List View */
+    SearchListViewName,
+    SearchListViewTerms,
+    SearchListViewResults
 };
 
 #endif

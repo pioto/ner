@@ -35,8 +35,6 @@
 Ner::Ner()
     : _viewManager(new ViewManager)
 {
-    initializeScreen();
-
     _statusBar = new StatusBar;
 
     /* Key Sequences */
@@ -47,12 +45,6 @@ Ner::Ner()
     addHandledSequence("T", std::bind(&Ner::openThread, this));
     addHandledSequence(";", std::bind(&Ner::openViewView, this));
     addHandledSequence('l' - 96, std::bind(&Ner::redraw, this)); // Ctrl-L
-
-    /* Colors */
-    init_pair(Colors::CUT_OFF_INDICATOR,        COLOR_GREEN,    COLOR_BLACK);
-    init_pair(Colors::MORE_LESS_INDICATOR,      COLOR_BLACK,    COLOR_GREEN);
-    init_pair(Colors::EMPTY_SPACE_INDICATOR,    COLOR_CYAN,     COLOR_BLACK);
-    init_pair(Colors::LINE_WRAP_INDICATOR,      COLOR_GREEN,    COLOR_BLACK);
 }
 
 Ner::~Ner()
@@ -60,31 +52,6 @@ Ner::~Ner()
     delete _viewManager;
     delete _statusBar;
     cleanupScreen();
-}
-
-void Ner::initializeScreen()
-{
-    /* Initialize the screen */
-    initscr();
-
-    /* Initialize colors */
-    if (has_colors())
-    {
-        start_color();
-    }
-
-    /* Enable raw input */
-    raw();
-
-    /* Do not echo input */
-    noecho();
-
-    /* Enable keyboard mapping */
-    keypad(stdscr, TRUE);
-
-    /* Make the cursor invisible */
-    curs_set(0);
-    refresh();
 }
 
 void Ner::cleanupScreen()

@@ -33,6 +33,31 @@
 
 const std::string notmuchConfigFile(".notmuch-config");
 
+void initialize()
+{
+    /* Initialize the screen */
+    initscr();
+
+    /* Initialize colors */
+    if (has_colors())
+    {
+        start_color();
+    }
+
+    /* Enable raw input */
+    raw();
+
+    /* Do not echo input */
+    noecho();
+
+    /* Enable keyboard mapping */
+    keypad(stdscr, TRUE);
+
+    /* Make the cursor invisible */
+    curs_set(0);
+    refresh();
+}
+
 int main(int argc, char * argv[])
 {
     std::setlocale(LC_ALL, "");
@@ -45,6 +70,8 @@ int main(int argc, char * argv[])
 
     const std::string & configPath = (environmentConfigPath != NULL &&
         access(environmentConfigPath, R_OK) == 0) ? environmentConfigPath : defaultConfigPath;
+
+    initialize();
 
     NotMuch::setConfig(configPath);
 
