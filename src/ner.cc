@@ -38,13 +38,13 @@ Ner::Ner()
     _statusBar = new StatusBar;
 
     /* Key Sequences */
-    addHandledSequence("Q", std::bind(&Ner::quit, this));
-    addHandledSequence("s", std::bind(&Ner::search, this));
-    addHandledSequence("m", std::bind(&Ner::compose, this));
-    addHandledSequence("M", std::bind(&Ner::openMessage, this));
-    addHandledSequence("T", std::bind(&Ner::openThread, this));
-    addHandledSequence(";", std::bind(&Ner::openViewView, this));
-    addHandledSequence('l' - 96, std::bind(&Ner::redraw, this)); // Ctrl-L
+    addHandledSequence("Q",     std::bind(&Ner::quit, this));
+    addHandledSequence("s",     std::bind(&Ner::search, this));
+    addHandledSequence("m",     std::bind(&Ner::compose, this));
+    addHandledSequence("M",     std::bind(&Ner::openMessage, this));
+    addHandledSequence("T",     std::bind(&Ner::openThread, this));
+    addHandledSequence(";",     std::bind(&Ner::openViewView, this));
+    addHandledSequence("<C-l>", std::bind(&Ner::redraw, this));
 }
 
 Ner::~Ner()

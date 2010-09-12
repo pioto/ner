@@ -33,26 +33,26 @@ ThreadMessageView::ThreadMessageView(const std::string & threadId, const View::G
     _messageView.setMessage(_threadView.selectedMessage().id);
 
     /* Key Sequences */
-    addHandledSequence("j",         std::bind(&MessageView::next, &_messageView));
-    addHandledSequence(KEY_DOWN,    std::bind(&MessageView::next, &_messageView));
-    addHandledSequence("k",         std::bind(&MessageView::previous, &_messageView));
-    addHandledSequence(KEY_UP,      std::bind(&MessageView::previous, &_messageView));
+    addHandledSequence("j",          std::bind(&MessageView::next, &_messageView));
+    addHandledSequence("<Down>",     std::bind(&MessageView::next, &_messageView));
+    addHandledSequence("k",          std::bind(&MessageView::previous, &_messageView));
+    addHandledSequence("<Up>",       std::bind(&MessageView::previous, &_messageView));
 
-    addHandledSequence(KEY_NPAGE,   std::bind(&MessageView::nextPage, &_messageView));
-    addHandledSequence('d' - 96,    std::bind(&MessageView::nextPage, &_messageView)); // Ctrl-D
-    addHandledSequence(KEY_PPAGE,   std::bind(&MessageView::previousPage, &_messageView));
-    addHandledSequence('u' - 96,    std::bind(&MessageView::previousPage, &_messageView)); // Ctrl-U
+    addHandledSequence("<PageDown>", std::bind(&MessageView::nextPage, &_messageView));
+    addHandledSequence("<C-d>",      std::bind(&MessageView::nextPage, &_messageView));
+    addHandledSequence("<PageUp>",   std::bind(&MessageView::previousPage, &_messageView));
+    addHandledSequence("<C-d>",      std::bind(&MessageView::previousPage, &_messageView));
 
-    addHandledSequence("gg",        std::bind(&MessageView::moveToTop, &_messageView));
-    addHandledSequence(KEY_HOME,    std::bind(&MessageView::moveToTop, &_messageView));
-    addHandledSequence("G",         std::bind(&MessageView::moveToBottom, &_messageView));
-    addHandledSequence(KEY_END,     std::bind(&MessageView::moveToBottom, &_messageView));
+    addHandledSequence("gg",         std::bind(&MessageView::moveToTop, &_messageView));
+    addHandledSequence("<Home>",     std::bind(&MessageView::moveToTop, &_messageView));
+    addHandledSequence("G",          std::bind(&MessageView::moveToBottom, &_messageView));
+    addHandledSequence("<End>",      std::bind(&MessageView::moveToBottom, &_messageView));
 
-    addHandledSequence("r",         std::bind(&ThreadView::reply, &_threadView));
+    addHandledSequence("r",          std::bind(&ThreadView::reply, &_threadView));
 
-    addHandledSequence(" ",         std::bind(&ThreadMessageView::nextMessage, this));
-    addHandledSequence('n' - 96,    std::bind(&ThreadMessageView::nextMessage, this));
-    addHandledSequence('p' - 96,    std::bind(&ThreadMessageView::previousMessage, this));
+    addHandledSequence(" ",          std::bind(&ThreadMessageView::nextMessage, this));
+    addHandledSequence("<C-n>",      std::bind(&ThreadMessageView::nextMessage, this));
+    addHandledSequence("<C-p>",      std::bind(&ThreadMessageView::previousMessage, this));
 }
 
 ThreadMessageView::~ThreadMessageView()

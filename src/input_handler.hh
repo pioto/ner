@@ -66,20 +66,22 @@ class InputHandler
         /**
          * Add a new sequence to the set of handled key sequences.
          *
-         * \param sequence The sequence to handle
+         * Strings surrounded in angle braces will be interpreted with parseKey.
+         *
+         * \param string The sequence of keys to handle
          * \param function The function to execute when the sequence is executed
-         */
-        void addHandledSequence(const std::vector<int> & sequence, const std::function<void ()> & function);
-
-        /**
-         * \overload
          */
         void addHandledSequence(const std::string & string, const std::function<void ()> & function);
 
         /**
-         * \overload
+         * Parses the special key into an integer for ncurses
+         *
+         * Examples:
+         *   - "C-a"    : Control 'a'
+         *   - "Home"   : Home
+         *   - "S-Home" : Shift Home
          */
-        void addHandledSequence(const int, const std::function<void ()> & function);
+        int parseKey(const std::string & keyString) const;
 
     private:
         std::map<std::vector<int>, std::function<void ()>> _handledSequences;

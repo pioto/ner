@@ -28,20 +28,20 @@ LineBrowserView::LineBrowserView(const View::Geometry & geometry)
         _offset(0)
 {
     /* Key Sequences */
-    addHandledSequence("j",         std::bind(&LineBrowserView::next, this));
-    addHandledSequence(KEY_DOWN,    std::bind(&LineBrowserView::next, this));
-    addHandledSequence("k",         std::bind(&LineBrowserView::previous, this));
-    addHandledSequence(KEY_UP,      std::bind(&LineBrowserView::previous, this));
+    addHandledSequence("j",          std::bind(&LineBrowserView::next, this));
+    addHandledSequence("<Down>",     std::bind(&LineBrowserView::next, this));
+    addHandledSequence("k",          std::bind(&LineBrowserView::previous, this));
+    addHandledSequence("<Up>",       std::bind(&LineBrowserView::previous, this));
 
-    addHandledSequence(KEY_NPAGE,   std::bind(&LineBrowserView::nextPage, this));
-    addHandledSequence('d' - 96,    std::bind(&LineBrowserView::nextPage, this)); // Ctrl-D
-    addHandledSequence(KEY_PPAGE,   std::bind(&LineBrowserView::previousPage, this));
-    addHandledSequence('u' - 96,    std::bind(&LineBrowserView::previousPage, this)); // Ctrl-U
+    addHandledSequence("<PageDown>", std::bind(&LineBrowserView::nextPage, this));
+    addHandledSequence("<C-d>",      std::bind(&LineBrowserView::nextPage, this));
+    addHandledSequence("<PageUp>",   std::bind(&LineBrowserView::previousPage, this));
+    addHandledSequence("<C-u>",      std::bind(&LineBrowserView::previousPage, this));
 
-    addHandledSequence("gg",        std::bind(&LineBrowserView::moveToTop, this));
-    addHandledSequence(KEY_HOME,    std::bind(&LineBrowserView::moveToTop, this));
-    addHandledSequence("G",         std::bind(&LineBrowserView::moveToBottom, this));
-    addHandledSequence(KEY_END,     std::bind(&LineBrowserView::moveToBottom, this));
+    addHandledSequence("gg",         std::bind(&LineBrowserView::moveToTop, this));
+    addHandledSequence("<Home>",     std::bind(&LineBrowserView::moveToTop, this));
+    addHandledSequence("G",          std::bind(&LineBrowserView::moveToBottom, this));
+    addHandledSequence("<End>",      std::bind(&LineBrowserView::moveToBottom, this));
 }
 
 void LineBrowserView::resize(const View::Geometry & geometry)
