@@ -78,8 +78,8 @@ void SearchView::update()
         ++thread, ++row)
     {
         bool selected = row + _offset == _selectedIndex;
-        bool unread = (*thread).tags.find("unread") != (*thread).tags.end();
-        bool completeMatch = (*thread).matchedMessages == (*thread).totalMessages;
+        bool unread = thread->tags.find("unread") != thread->tags.end();
+        bool completeMatch = thread->matchedMessages == thread->totalMessages;
 
         int x = 0;
 
@@ -98,14 +98,14 @@ void SearchView::update()
         try
         {
             /* Date */
-            NCurses::addPlainString(_window, relativeTime((*thread).newestDate),
+            NCurses::addPlainString(_window, relativeTime(thread->newestDate),
                 attributes, ColorID::SearchViewDate, newestDateWidth - 1);
 
             NCurses::checkMove(_window, x += newestDateWidth);
 
             /* Message Count */
             std::ostringstream messageCountStream;
-            messageCountStream << (*thread).matchedMessages << '/' << (*thread).totalMessages;
+            messageCountStream << thread->matchedMessages << '/' << thread->totalMessages;
 
             x += NCurses::addChar(_window, '[', attributes);
             NCurses::checkMove(_window, x);
@@ -121,20 +121,20 @@ void SearchView::update()
             NCurses::checkMove(_window, x = newestDateWidth + messageCountWidth);
 
             /* Authors */
-            NCurses::addUtf8String(_window, (*thread).authors.c_str(),
+            NCurses::addUtf8String(_window, thread->authors.c_str(),
                 attributes, ColorID::SearchViewAuthors, authorsWidth - 1);
 
             NCurses::checkMove(_window, x += authorsWidth);
 
             /* Subject */
-            x += NCurses::addUtf8String(_window, (*thread).subject.c_str(),
+            x += NCurses::addUtf8String(_window, thread->subject.c_str(),
                 attributes, ColorID::SearchViewSubject);
 
             NCurses::checkMove(_window, ++x);
 
             /* Tags */
             std::ostringstream tagStream;
-            std::copy((*thread).tags.begin(), (*thread).tags.end(),
+            std::copy(thread->tags.begin(), thread->tags.end(),
                 std::ostream_iterator<std::string>(tagStream, " "));
             std::string tags(tagStream.str());
 

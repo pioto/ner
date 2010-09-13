@@ -34,14 +34,14 @@ InputHandler::HandleResult InputHandler::handleKeySequence(const std::vector<int
     if (lowerBound == _handledSequences.end())
         return HandleResult::NoMatch;
     /* If there is an exact match */
-    else if (sequence == (*lowerBound).first)
+    else if (sequence == lowerBound->first)
     {
-        (*lowerBound).second();
+        lowerBound->second();
 
         return HandleResult::Handled;
     }
     /* If there is a partial match */
-    else if (std::equal(sequence.begin(), sequence.end(), (*lowerBound).first.begin()))
+    else if (std::equal(sequence.begin(), sequence.end(), lowerBound->first.begin()))
         return HandleResult::PartialMatch;
     /* Otherwise there is no match */
     else

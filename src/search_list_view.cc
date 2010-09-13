@@ -69,13 +69,13 @@ void SearchListView::update()
         try
         {
             /* Search Name */
-            NCurses::addUtf8String(_window, (*search).name.c_str(), attributes,
+            NCurses::addUtf8String(_window, search->name.c_str(), attributes,
                 ColorID::SearchListViewName, searchNameWidth - 1);
 
             NCurses::checkMove(_window, x += searchNameWidth);
 
             /* Search Terms */
-            NCurses::addUtf8String(_window, (*search).query.c_str(), attributes,
+            NCurses::addUtf8String(_window, search->query.c_str(), attributes,
                 ColorID::SearchListViewTerms, searchTermsWidth - 1);
 
             NCurses::checkMove(_window, x += searchTermsWidth);
@@ -83,7 +83,7 @@ void SearchListView::update()
             /* Number of Results */
             std::ostringstream results;
             notmuch_database_t * database = NotMuch::openDatabase();
-            notmuch_query_t * query = notmuch_query_create(database, (*search).query.c_str());
+            notmuch_query_t * query = notmuch_query_create(database, search->query.c_str());
             results << notmuch_query_count_messages(query) << " results";
             notmuch_query_destroy(query);
             notmuch_database_close(database);
