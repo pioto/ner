@@ -37,7 +37,6 @@ class NerConfig
         ~NerConfig();
 
         std::map<std::string, std::string> _commands;
-        std::string _defaultIdentity;
 };
 
 #endif
