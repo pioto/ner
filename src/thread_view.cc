@@ -64,6 +64,36 @@ ThreadView::ThreadView(const std::string & threadId, const View::Geometry & geom
 
     _messageCount = notmuch_thread_get_total_messages(thread);
 
+    /* Find first unread message */
+    std::vector<const NotMuch::Message *> messageList;
+
+    std::transform(_topMessages.rbegin(), _topMessages.rend(),
+        std::back_inserter(messageList), addressOf<NotMuch::Message>());
+
+    const NotMuch::Message * message = messageList.back();
+
+    for (_selectedIndex = 0; !messageList.empty(); ++_selectedIndex)
+    {
+        messageList.pop_back();
+
+        if (message->tags.find("unread") != message->tags.end())
+            break;
+
+        if (!message->replies.empty())
+        {
+            for (auto reply = message->replies.rbegin(), e = message->replies.rend();
+                reply != e;
+                ++reply)
+            {
+                messageList.push_back(&(*reply));
+            }
+        }
+
+        message = messageList.back();
+    }
+
+    makeSelectionVisible();
+
     /* Key Sequences */
     addHandledSequence("\n", std::bind(&ThreadView::openSelectedMessage, this));
     addHandledSequence("r", std::bind(&ThreadView::reply, this));
