@@ -23,6 +23,8 @@
 #include <map>
 #include <string>
 
+#include "search_list_view.hh"
+
 class NerConfig
 {
     public:
@@ -32,11 +34,14 @@ class NerConfig
 
         std::string command(const std::string & name);
 
+        const std::vector<Search> & searches() const;
+
     private:
         NerConfig();
         ~NerConfig();
 
         std::map<std::string, std::string> _commands;
+        std::vector<Search> _searches;
 };
 
 #endif

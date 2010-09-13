@@ -63,6 +63,12 @@ void operator>>(const YAML::Node & node, Color & color)
     color.background = ncursesColors.at(background);
 }
 
+void operator>>(const YAML::Node & node, Search & search)
+{
+    node.FindValue("name")->Read(search.name);
+    node.FindValue("query")->Read(search.query);
+}
+
 NerConfig & NerConfig::instance()
 {
     static NerConfig * config = NULL;
@@ -104,6 +110,17 @@ void NerConfig::load()
     const YAML::Node * commands = document.FindValue("commands");
     if (commands)
         commands->Read(_commands);
+
+    /* Saved Searches */
+    const YAML::Node * searches = document.FindValue("searches");
+    if (searches)
+        searches->Read(_searches);
+    else
+        _searches = {
+            { "New", "tag:inbox and tag:unread" },
+            { "Unread", "tag:unread" },
+            { "Inbox", "tag:inbox" }
+        };
 
     /* Colors */
     std::map<ColorID, Color> colorMap = {
@@ -213,6 +230,11 @@ std::string NerConfig::command(const std::string & name)
     {
         return command->second;
     }
+}
+
+const std::vector<Search> & NerConfig::searches() const
+{
+    return _searches;
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

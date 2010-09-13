@@ -23,17 +23,14 @@
 #include "view_manager.hh"
 #include "search_view.hh"
 #include "ncurses.hh"
+#include "ner_config.hh"
 
 const int searchNameWidth = 15;
 const int searchTermsWidth = 30;
 
 SearchListView::SearchListView(const View::Geometry & geometry)
     : LineBrowserView(geometry),
-        _searches{
-            { "New", "tag:inbox and tag:unread" },
-            { "Unread", "tag:unread" },
-            { "Inbox", "tag:inbox" }
-        }
+        _searches(NerConfig::instance().searches())
 {
     /* Key Sequences */
     addHandledSequence("\n", std::bind(&SearchListView::openSelectedSearch, this));
@@ -78,7 +75,7 @@ void SearchListView::update()
             NCurses::checkMove(_window, x += searchNameWidth);
 
             /* Search Terms */
-            NCurses::addUtf8String(_window, (*search).terms.c_str(), attributes,
+            NCurses::addUtf8String(_window, (*search).query.c_str(), attributes,
                 ColorID::SearchListViewTerms, searchTermsWidth - 1);
 
             NCurses::checkMove(_window, x += searchTermsWidth);
@@ -86,7 +83,7 @@ void SearchListView::update()
             /* Number of Results */
             std::ostringstream results;
             notmuch_database_t * database = NotMuch::openDatabase();
-            notmuch_query_t * query = notmuch_query_create(database, (*search).terms.c_str());
+            notmuch_query_t * query = notmuch_query_create(database, (*search).query.c_str());
             results << notmuch_query_count_messages(query) << " results";
             notmuch_query_destroy(query);
             notmuch_database_close(database);
@@ -124,7 +121,7 @@ int SearchListView::lineCount() const
 void SearchListView::openSelectedSearch()
 {
     ViewManager::instance().addView(std::shared_ptr<SearchView>(
-        new SearchView(_searches.at(_selectedIndex).terms)));
+        new SearchView(_searches.at(_selectedIndex).query)));
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

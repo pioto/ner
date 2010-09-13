@@ -24,14 +24,14 @@
 
 #include "line_browser_view.hh"
 
+struct Search
+{
+    std::string name;
+    std::string query;
+};
+
 class SearchListView : public LineBrowserView
 {
-    struct Search
-    {
-        std::string name;
-        std::string terms;
-    };
-
     public:
         SearchListView(const View::Geometry & geometry = View::Geometry());
         virtual ~SearchListView();

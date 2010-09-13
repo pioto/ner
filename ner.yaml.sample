@@ -19,6 +19,14 @@ default_identity: first_identity
         signature: /home/user/.signature
         sent_mail: !maildir /home/user/mail/sent
 
+searches:
+    - name: New
+      query: "tag:inbox and tag:unread"
+    - name: Unread
+      query: "tag:unread"
+    - name: Inbox
+      query: "tag:inbox"
+
 colors:
     # General
     cut_off_indicator                   : { fg: green,   bg: black }
