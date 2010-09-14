@@ -74,10 +74,10 @@ ThreadView::ThreadView(const std::string & threadId, const View::Geometry & geom
 
     for (_selectedIndex = 0; !messageList.empty(); ++_selectedIndex)
     {
-        messageList.pop_back();
-
         if (message->tags.find("unread") != message->tags.end())
             break;
+
+        messageList.pop_back();
 
         if (!message->replies.empty())
         {
@@ -91,6 +91,10 @@ ThreadView::ThreadView(const std::string & threadId, const View::Geometry & geom
 
         message = messageList.back();
     }
+
+    /* If no messages are unread */
+    if (messageList.empty())
+        _selectedIndex = 0;
 
     makeSelectionVisible();
 
