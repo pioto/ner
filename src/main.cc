@@ -21,6 +21,7 @@
 #include <iostream>
 #include <fstream>
 #include <clocale>
+#include <csignal>
 #include <unistd.h>
 #include <gmime/gmime.h>
 
@@ -32,6 +33,26 @@
 #include "ner_config.hh"
 
 const std::string notmuchConfigFile(".notmuch-config");
+
+void resize(int arg)
+{
+    endwin();
+    refresh();
+
+    ViewManager::instance().resize();
+    StatusBar::instance().resize();
+
+    refresh();
+
+    ViewManager::instance().update();
+    StatusBar::instance().update();
+
+    ViewManager::instance().refresh();
+    StatusBar::instance().refresh();
+
+    /* Clear the -1 character */
+    getch();
+}
 
 void initialize()
 {
@@ -74,8 +95,9 @@ int main(int argc, char * argv[])
     initialize();
 
     NotMuch::setConfig(configPath);
-
     NerConfig::instance().load();
+
+    std::signal(SIGWINCH, &resize);
 
     Ner ner;
 
