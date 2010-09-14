@@ -8,6 +8,7 @@ commands:
     edit: vim +
 
 default_identity: first_identity
+identities:
     first_identity:
         name: Bruce Wayne
         email: bruce.wayne@domain.tld
