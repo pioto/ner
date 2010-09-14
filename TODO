@@ -1,16 +1,16 @@
 TODO
 ====
 
-- Better configuration parser: right now it just barely works for the default
-  notmuch config file.
 - Configurable key bindings: allow the user to configure which bindings they
   want to use.
-- Configurable colors and UI.
+- Configurable UI.
 - Handle Xapian errors rather than crashing.
 - Message tagging support.
 - GPG support.
 - HTML support (use external command?).
-- Message dynamic text wrapping.
 - Message color highlighting (signature, reply levels, etc).
 - Add the ability to reload configuration.
+- Better line editing for status bar prompt
+- Pipe message parts to command
+- Add mime part logic
 
