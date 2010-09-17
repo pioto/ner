@@ -131,6 +131,7 @@ std::vector<std::string> ThreadView::status() const
 
     return std::vector<std::string>{
         "thread:" + _id,
+        "id:" + selectedMessage().id,
         messagePosition.str()
     };
 }
