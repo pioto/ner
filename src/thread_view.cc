@@ -130,7 +130,7 @@ std::vector<std::string> ThreadView::status() const
     messagePosition << "message " << (_selectedIndex + 1) << " of " << _messageCount;
 
     return std::vector<std::string>{
-        "thread-id: " + _id,
+        "thread:" + _id,
         messagePosition.str()
     };
 }
