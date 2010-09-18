@@ -17,7 +17,8 @@ ner_SOURCES = \
 	input_handler.cc input_handler.hh \
 	identity_manager.cc identity_manager.hh \
 	mail_store.cc mail_store.hh \
-	maildir.cc maildir.hh
+	maildir.cc maildir.hh \
+	line_editor.cc line_editor.hh
 
 # Utility
 ner_SOURCES += \

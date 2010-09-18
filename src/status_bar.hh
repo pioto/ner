@@ -24,6 +24,8 @@
 #include <vector>
 #include <thread>
 
+#include "ncurses.hh"
+
 class StatusBar
 {
     public:

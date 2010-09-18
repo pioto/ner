@@ -21,9 +21,9 @@
 
 #include "status_bar.hh"
 #include "colors.hh"
-#include "ncurses.hh"
 #include "view.hh"
 #include "view_manager.hh"
+#include "line_editor.hh"
 
 StatusBar * StatusBar::_instance = 0;
 
@@ -119,26 +119,25 @@ void StatusBar::displayMessage(const std::string & message)
 
 std::string StatusBar::prompt(const std::string & message)
 {
-    char response[256];
-
     if (!_messageCleared)
         clearMessage();
 
     wmove(_promptWindow, 0, 0);
     wattron(_promptWindow, COLOR_PAIR(ColorID::StatusBarPrompt));
     waddstr(_promptWindow, message.c_str());
-    echo();
-    curs_set(1);
-    wgetnstr(_promptWindow, response, sizeof(response));
-    curs_set(0);
-    noecho();
+    wrefresh(_promptWindow);
+
+    LineEditor editor(_promptWindow, getcurx(_promptWindow), 0);
+
+    std::string response = editor.line();
+
     wattroff(_promptWindow, COLOR_PAIR(ColorID::StatusBarPrompt));
 
     /* Clear the prompt window after we're done */
     werase(_promptWindow);
     wrefresh(_promptWindow);
 
-    return std::string(response);
+    return response;
 }
 
 void StatusBar::delayedClearMessage(int delay)
