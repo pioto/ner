@@ -80,6 +80,7 @@ std::string LineEditor::line() const
                 break;
             case 'h' - 96:
             case KEY_BACKSPACE:
+            case 127:
                 if (position > response.begin())
                     position = response.erase(position - 1);
                 break;
