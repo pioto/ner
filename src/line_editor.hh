@@ -20,6 +20,9 @@
 #ifndef NER_LINE_EDITOR_H
 #define NER_LINE_EDITOR_H 1
 
+#include <map>
+#include <vector>
+
 #include "ncurses.hh"
 
 class LineEditor
@@ -27,12 +30,14 @@ class LineEditor
     public:
         LineEditor(WINDOW * window, int x, int y);
 
-        std::string line() const;
+        std::string line(const std::string & field = std::string()) const;
 
     private:
         WINDOW * _window;
         int _x;
         int _y;
+
+        static std::map<std::string, std::vector<std::string>> _history;
 };
 
 #endif

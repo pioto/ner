@@ -30,10 +30,10 @@ ComposeView::ComposeView(const View::Geometry & geometry)
 {
     GMimeMessage * message = g_mime_message_new(true);
 
-    std::string to = StatusBar::instance().prompt("To: ");
-    std::string cc = StatusBar::instance().prompt("Cc: ");
-    std::string bcc = StatusBar::instance().prompt("Bcc: ");
-    std::string subject = StatusBar::instance().prompt("Subject: ");
+    std::string to = StatusBar::instance().prompt("To: ", "compose-to");
+    std::string cc = StatusBar::instance().prompt("Cc: ", "compose-cc");
+    std::string bcc = StatusBar::instance().prompt("Bcc: ", "compose-bcc");
+    std::string subject = StatusBar::instance().prompt("Subject: ", "compose-subject");
 
     InternetAddress * from = internet_address_mailbox_new(_identity->name.c_str(),
         _identity->email.c_str());

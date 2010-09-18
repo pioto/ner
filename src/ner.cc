@@ -113,7 +113,7 @@ void Ner::quit()
 
 void Ner::search()
 {
-    std::string searchTerms = StatusBar::instance().prompt("Search: ");
+    std::string searchTerms = StatusBar::instance().prompt("Search: ", "search");
 
     if (!searchTerms.empty())
         _viewManager->addView(std::shared_ptr<SearchView>(new SearchView(searchTerms)));
@@ -126,7 +126,7 @@ void Ner::compose()
 
 void Ner::openMessage()
 {
-    std::string messageId = StatusBar::instance().prompt("Message ID: ");
+    std::string messageId = StatusBar::instance().prompt("Message ID: ", "message-id");
 
     if (!messageId.empty())
     {
@@ -148,7 +148,7 @@ void Ner::openMessage()
 
 void Ner::openThread()
 {
-    std::string threadId = StatusBar::instance().prompt("Thread ID: ");
+    std::string threadId = StatusBar::instance().prompt("Thread ID: ", "thread-id");
 
     if (!threadId.empty())
     {
