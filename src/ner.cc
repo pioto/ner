@@ -18,6 +18,8 @@
  */
 
 #include <iostream>
+#include <sys/types.h>
+#include <signal.h>
 #include <ncursesw/ncurses.h>
 
 #include "ner.hh"
@@ -45,6 +47,7 @@ Ner::Ner()
     addHandledSequence("T",     std::bind(&Ner::openThread, this));
     addHandledSequence(";",     std::bind(&Ner::openViewView, this));
     addHandledSequence("<C-l>", std::bind(&Ner::redraw, this));
+    addHandledSequence("<C-z>", std::bind(&kill, getpid(), SIGTSTP));
 }
 
 Ner::~Ner()
