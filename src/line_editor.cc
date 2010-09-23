@@ -48,6 +48,9 @@ std::string LineEditor::line(const std::string & field) const
 
     int c;
 
+    auto notSpace = std::bind(std::logical_not<bool>(),
+        std::bind(std::equal_to<char>(), ' ', std::placeholders::_1));
+
     while ((c = getch()) != '\n')
     {
         switch (c)
@@ -66,10 +69,8 @@ std::string LineEditor::line(const std::string & field) const
                  * This is the character after the first space before the first
                  * character that is not a space at or before the cursor
                  * position. */
-                position = response->begin() + (response->rend() - std::find(std::find_if(
-                    response->rbegin() + (response->end() - position) + 1, response->rend(),
-                    std::bind(std::logical_not<bool>(), std::bind(std::equal_to<char>(),
-                    ' ', std::placeholders::_1))), response->rend(), ' '));
+                position = std::find(std::find_if(std::string::reverse_iterator(position),
+                    response->rend(), notSpace), response->rend(), ' ').base();
                 break;
             case KEY_SRIGHT:
                 /* Navigate to the beginning of next word from the cursor.
@@ -77,8 +78,7 @@ std::string LineEditor::line(const std::string & field) const
                  * This is the first charactor that is not a space, starting
                  * from the first space at or after the cursor position. */
                 position = std::find_if(std::find(position, response->end(), ' '),
-                    response->end(), std::bind(std::logical_not<bool>(),
-                    std::bind(std::equal_to<char>(), ' ', std::placeholders::_1)));
+                    response->end(), notSpace);
                 break;
             case KEY_UP:
                 if (response < history.rend() - 1)
@@ -119,11 +119,9 @@ std::string LineEditor::line(const std::string & field) const
             case 'w' - 96:
                 /* Erase all characters from the beginning of the previous word
                  * (see KEY_SLEFT handler) to the cursor position. */
-                position = response->erase(response->begin() + (response->rend() -
-                    std::find(std::find_if(response->rbegin() + (response->end() -
-                    position) + 1, response->rend(), std::bind(std::logical_not<bool>(),
-                    std::bind(std::equal_to<char>(), ' ', std::placeholders::_1))),
-                    response->rend(), ' ')), position);
+                position = response->erase(std::find(std::find_if(
+                    std::string::reverse_iterator(position), response->rend(), notSpace),
+                    response->rend(), ' ').base(), position);
                 break;
             default:
                 position = response->insert(position, c) + 1;
