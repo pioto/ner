@@ -41,7 +41,7 @@ ThreadMessageView::ThreadMessageView(const std::string & threadId, const View::G
     addHandledSequence("<PageDown>", std::bind(&MessageView::nextPage, &_messageView));
     addHandledSequence("<C-d>",      std::bind(&MessageView::nextPage, &_messageView));
     addHandledSequence("<PageUp>",   std::bind(&MessageView::previousPage, &_messageView));
-    addHandledSequence("<C-d>",      std::bind(&MessageView::previousPage, &_messageView));
+    addHandledSequence("<C-u>",      std::bind(&MessageView::previousPage, &_messageView));
 
     addHandledSequence("gg",         std::bind(&MessageView::moveToTop, &_messageView));
     addHandledSequence("<Home>",     std::bind(&MessageView::moveToTop, &_messageView));
