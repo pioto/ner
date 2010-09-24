@@ -17,6 +17,7 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdexcept>
 #include <glib-object.h>
 
 #include "notmuch.hh"
@@ -108,6 +109,38 @@ Message::Message(notmuch_message_t * message)
     }
 
     notmuch_messages_destroy(messages);
+}
+
+void Message::addTag(std::string & tag)
+{
+    notmuch_database_t * database = openDatabase(NOTMUCH_DATABASE_MODE_READ_WRITE);
+    notmuch_message_t * message = notmuch_database_find_message(database, id.c_str());
+
+    switch (notmuch_message_add_tag(message, tag.c_str()))
+    {
+        case NOTMUCH_STATUS_SUCCESS:
+            return;
+        case NOTMUCH_STATUS_TAG_TOO_LONG:
+            throw std::runtime_error("Tag too long");
+        default:
+            throw std::exception();
+    }
+}
+
+void Message::removeTag(std::string & tag)
+{
+    notmuch_database_t * database = openDatabase(NOTMUCH_DATABASE_MODE_READ_WRITE);
+    notmuch_message_t * message = notmuch_database_find_message(database, id.c_str());
+
+    switch (notmuch_message_remove_tag(message, tag.c_str()))
+    {
+        case NOTMUCH_STATUS_SUCCESS:
+            return;
+        case NOTMUCH_STATUS_TAG_TOO_LONG:
+            throw std::runtime_error("Tag too long");
+        default:
+            throw std::exception();
+    }
 }
 
 notmuch_database_t * NotMuch::openDatabase(notmuch_database_mode_t mode)
