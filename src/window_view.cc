@@ -39,8 +39,10 @@ void WindowView::refresh()
 
 void WindowView::resize(const View::Geometry & geometry)
 {
-    mvwin(_window, geometry.y, geometry.x);
+    View::resize(geometry);
+
     wresize(_window, geometry.height, geometry.width);
+    mvwin(_window, geometry.y, geometry.x);
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

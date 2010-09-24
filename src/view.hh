@@ -76,7 +76,7 @@ class View : public InputHandler
         /**
          * Resizes the screen to the given size and position.
          */
-        virtual void resize(const Geometry & geometry = Geometry()) = 0;
+        virtual void resize(const Geometry & geometry = Geometry());
 
         /**
          * Called when focus gets transfered to this view.
@@ -91,6 +91,9 @@ class View : public InputHandler
         virtual std::string name() const = 0;
         virtual Type type() const = 0;
         virtual std::vector<std::string> status() const;
+
+    protected:
+        Geometry _geometry;
 
     friend class ViewManager;
 };

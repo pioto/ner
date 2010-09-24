@@ -36,6 +36,11 @@ View::~View()
 {
 }
 
+void View::resize(const Geometry & geometry)
+{
+    _geometry = geometry;
+}
+
 void View::focus()
 {
     StatusBar::instance().update();
