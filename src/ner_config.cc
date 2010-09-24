@@ -29,16 +29,6 @@ const std::string nerConfigFile(".ner.yaml");
 
 struct Color
 {
-    Color()
-        : foreground(COLOR_BLACK), background(COLOR_BLACK)
-    {
-    }
-
-    Color(int foreground_, int background_)
-        : foreground(foreground_), background(background_)
-    {
-    }
-
     int foreground;
     int background;
 };
@@ -125,42 +115,42 @@ void NerConfig::load()
     /* Colors */
     std::map<ColorID, Color> colorMap = {
         /* General */
-        { ColorID::CutOffIndicator,         Color(COLOR_GREEN,  COLOR_BLACK) },
-        { ColorID::MoreLessIndicator,       Color(COLOR_BLACK,  COLOR_GREEN) },
-        { ColorID::EmptySpaceIndicator,     Color(COLOR_CYAN,   COLOR_BLACK) },
-        { ColorID::LineWrapIndicator,       Color(COLOR_GREEN,  COLOR_BLACK) },
+        { ColorID::CutOffIndicator,         Color{ COLOR_GREEN,  COLOR_BLACK } },
+        { ColorID::MoreLessIndicator,       Color{ COLOR_BLACK,  COLOR_GREEN } },
+        { ColorID::EmptySpaceIndicator,     Color{ COLOR_CYAN,   COLOR_BLACK } },
+        { ColorID::LineWrapIndicator,       Color{ COLOR_GREEN,  COLOR_BLACK } },
 
         /* Status Bar */
-        { ColorID::StatusBarStatus,         Color(COLOR_WHITE,  COLOR_BLUE) },
-        { ColorID::StatusBarStatusDivider,  Color(COLOR_WHITE,  COLOR_BLUE) },
-        { ColorID::StatusBarMessage,        Color(COLOR_BLACK,  COLOR_WHITE) },
-        { ColorID::StatusBarPrompt,         Color(COLOR_WHITE,  COLOR_BLACK) },
+        { ColorID::StatusBarStatus,         Color{ COLOR_WHITE,  COLOR_BLUE } },
+        { ColorID::StatusBarStatusDivider,  Color{ COLOR_WHITE,  COLOR_BLUE } },
+        { ColorID::StatusBarMessage,        Color{ COLOR_BLACK,  COLOR_WHITE } },
+        { ColorID::StatusBarPrompt,         Color{ COLOR_WHITE,  COLOR_BLACK } },
 
         /* Search View */
-        { ColorID::SearchViewDate,                  Color(COLOR_YELLOW,     COLOR_BLACK) },
-        { ColorID::SearchViewMessageCountComplete,  Color(COLOR_GREEN,      COLOR_BLACK) },
-        { ColorID::SearchViewMessageCountPartial,   Color(COLOR_MAGENTA,    COLOR_BLACK) },
-        { ColorID::SearchViewAuthors,               Color(COLOR_CYAN,       COLOR_BLACK) },
-        { ColorID::SearchViewSubject,               Color(COLOR_WHITE,      COLOR_BLACK) },
-        { ColorID::SearchViewTags,                  Color(COLOR_RED,        COLOR_BLACK) },
+        { ColorID::SearchViewDate,                  Color{ COLOR_YELLOW,     COLOR_BLACK } },
+        { ColorID::SearchViewMessageCountComplete,  Color{ COLOR_GREEN,      COLOR_BLACK } },
+        { ColorID::SearchViewMessageCountPartial,   Color{ COLOR_MAGENTA,    COLOR_BLACK } },
+        { ColorID::SearchViewAuthors,               Color{ COLOR_CYAN,       COLOR_BLACK } },
+        { ColorID::SearchViewSubject,               Color{ COLOR_WHITE,      COLOR_BLACK } },
+        { ColorID::SearchViewTags,                  Color{ COLOR_RED,        COLOR_BLACK } },
 
         /* ThreadView */
-        { ColorID::ThreadViewArrow, Color(COLOR_GREEN,  COLOR_BLACK) },
-        { ColorID::ThreadViewDate,  Color(COLOR_CYAN,   COLOR_BLACK) },
-        { ColorID::ThreadViewTags,  Color(COLOR_RED,    COLOR_BLACK) },
+        { ColorID::ThreadViewArrow, Color{ COLOR_GREEN,  COLOR_BLACK } },
+        { ColorID::ThreadViewDate,  Color{ COLOR_CYAN,   COLOR_BLACK } },
+        { ColorID::ThreadViewTags,  Color{ COLOR_RED,    COLOR_BLACK } },
 
         /* Email View */
-        { ColorID::EmailViewHeader, Color(COLOR_CYAN, COLOR_BLACK) },
+        { ColorID::EmailViewHeader, Color{ COLOR_CYAN, COLOR_BLACK } },
 
         /* View View */
-        { ColorID::ViewViewNumber,  Color(COLOR_CYAN,   COLOR_BLACK) },
-        { ColorID::ViewViewName,    Color(COLOR_GREEN,  COLOR_BLACK) },
-        { ColorID::ViewViewStatus,  Color(COLOR_WHITE,  COLOR_BLACK) },
+        { ColorID::ViewViewNumber,  Color{ COLOR_CYAN,   COLOR_BLACK } },
+        { ColorID::ViewViewName,    Color{ COLOR_GREEN,  COLOR_BLACK } },
+        { ColorID::ViewViewStatus,  Color{ COLOR_WHITE,  COLOR_BLACK } },
 
         /* Search List View */
-        { ColorID::SearchListViewName,      Color(COLOR_CYAN,   COLOR_BLACK) },
-        { ColorID::SearchListViewTerms,     Color(COLOR_YELLOW, COLOR_BLACK) },
-        { ColorID::SearchListViewResults,   Color(COLOR_GREEN,  COLOR_BLACK) }
+        { ColorID::SearchListViewName,      Color{ COLOR_CYAN,   COLOR_BLACK } },
+        { ColorID::SearchListViewTerms,     Color{ COLOR_YELLOW, COLOR_BLACK } },
+        { ColorID::SearchListViewResults,   Color{ COLOR_GREEN,  COLOR_BLACK } }
     };
 
     const YAML::Node * colors = document.FindValue("colors");
