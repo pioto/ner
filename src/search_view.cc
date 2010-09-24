@@ -49,6 +49,7 @@ SearchView::SearchView(const std::string & search, const View::Geometry & geomet
     /* Key Sequences */
     addHandledSequence("=", std::bind(&SearchView::refreshThreads, this));
     addHandledSequence("\n", std::bind(&SearchView::openSelectedThread, this));
+    addHandledSequence("a", std::bind(&SearchView::archiveSelectedThread, this));
 
     std::unique_lock<std::mutex> lock(_mutex);
     while (_threads.size() < getmaxy(_window) && _collecting)
@@ -251,6 +252,36 @@ void SearchView::refreshThreads()
 
     StatusBar::instance().update();
     makeSelectionVisible();
+}
+
+void SearchView::archiveSelectedThread()
+{
+    {
+        std::lock_guard<std::mutex> lock(_mutex);
+
+        if (_selectedIndex < _threads.size())
+        {
+            auto thread = _threads.at(_selectedIndex);
+            if (thread.tags.count("inbox"))
+            {
+                StatusBar::instance().displayMessage("Archiving thread:" + thread.id);
+                thread.removeTag("inbox");
+            }
+            else
+            {
+                StatusBar::instance().displayMessage("Unarchiving thread:" + thread.id);
+                thread.addTag("inbox");
+            }
+        }
+    }
+
+    /*
+     * We may want to avoid doing this full refresh if it proves to be
+     * too slow, and just add/remove the current thread from the list if
+     * ("thread:" + thread.id + " AND " + original_query) matches / no
+     * longer matches.
+     */
+    refreshThreads();
 }
 
 int SearchView::lineCount() const

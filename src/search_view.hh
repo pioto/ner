@@ -40,6 +40,7 @@ class SearchView : public LineBrowserView
 
         void openSelectedThread();
         void refreshThreads();
+        void archiveSelectedThread();
 
     protected:
         virtual int lineCount() const;
