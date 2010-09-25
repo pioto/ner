@@ -98,7 +98,11 @@ void ThreadMessageView::previousMessage()
 
 void ThreadMessageView::loadSelectedMessage()
 {
-    _messageView.setMessage(_threadView.selectedMessage().id);
+    NotMuch::Message message = _threadView.selectedMessage();
+    if (message.tags.count("unread")) {
+        message.removeTag(std::string("unread"));
+    }
+    _messageView.setMessage(message.id);
 }
 
 std::vector<std::string> ThreadMessageView::status() const
