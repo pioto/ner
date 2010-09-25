@@ -89,11 +89,20 @@ ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geome
         GMIME_RECIPIENT_TYPE_BCC
     };
 
+    const char * replyTo = g_mime_object_get_header(GMIME_OBJECT(originalMessage), "Reply-To");
+
+    if (replyTo)
+    {
+        InternetAddressList * toRecipients = internet_address_list_parse_string(replyTo);
+        internet_address_list_append(g_mime_message_get_recipients(replyMessage,
+            GMIME_RECIPIENT_TYPE_TO), toRecipients);
+    }
+
     /* Copy headers, while looking for the user's identity */
     const char * sender = g_mime_message_get_sender(originalMessage);
     InternetAddressList * senderAddressList = internet_address_list_parse_string(sender);
     InternetAddress * senderAddress = internet_address_list_get_address(senderAddressList, 0);
-    if (!(userIdentity = IdentityManager::instance().findIdentity(senderAddress)))
+    if (!(userIdentity = IdentityManager::instance().findIdentity(senderAddress)) && !replyTo)
         internet_address_list_add(g_mime_message_get_recipients(replyMessage,
             GMIME_RECIPIENT_TYPE_TO), senderAddress);
     g_object_unref(senderAddressList);
@@ -110,7 +119,7 @@ ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geome
 
             if (!userIdentity)
                 userIdentity = IdentityManager::instance().findIdentity(address);
-            else
+            else if (!replyTo)
                 internet_address_list_add(g_mime_message_get_recipients(replyMessage, *recipientType), address);
         }
     }
