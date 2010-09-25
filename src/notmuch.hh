@@ -57,6 +57,9 @@ namespace NotMuch
     {
         Thread(notmuch_thread_t * thread);
 
+        void addTag(const std::string & tag);
+        void removeTag(const std::string & tag);
+
         std::string id;
         std::string subject;
         std::string authors;
