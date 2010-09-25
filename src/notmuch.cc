@@ -111,7 +111,7 @@ Message::Message(notmuch_message_t * message)
     notmuch_messages_destroy(messages);
 }
 
-void Message::addTag(std::string & tag)
+void Message::addTag(const std::string & tag)
 {
     notmuch_database_t * database = openDatabase(NOTMUCH_DATABASE_MODE_READ_WRITE);
     notmuch_message_t * message = notmuch_database_find_message(database, id.c_str());
@@ -128,7 +128,7 @@ void Message::addTag(std::string & tag)
     }
 }
 
-void Message::removeTag(std::string & tag)
+void Message::removeTag(const std::string & tag)
 {
     notmuch_database_t * database = openDatabase(NOTMUCH_DATABASE_MODE_READ_WRITE);
     notmuch_message_t * message = notmuch_database_find_message(database, id.c_str());

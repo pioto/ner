@@ -71,8 +71,8 @@ namespace NotMuch
     {
         Message(notmuch_message_t * message);
 
-        void addTag(std::string & tag);
-        void removeTag(std::string & tag);
+        void addTag(const std::string & tag);
+        void removeTag(const std::string & tag);
 
         std::string id;
         std::string filename;
