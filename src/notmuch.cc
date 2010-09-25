@@ -119,6 +119,7 @@ void Message::addTag(std::string & tag)
     switch (notmuch_message_add_tag(message, tag.c_str()))
     {
         case NOTMUCH_STATUS_SUCCESS:
+            tags.insert(tag);
             return;
         case NOTMUCH_STATUS_TAG_TOO_LONG:
             throw std::runtime_error("Tag too long");
@@ -135,6 +136,7 @@ void Message::removeTag(std::string & tag)
     switch (notmuch_message_remove_tag(message, tag.c_str()))
     {
         case NOTMUCH_STATUS_SUCCESS:
+            tags.erase(tag);
             return;
         case NOTMUCH_STATUS_TAG_TOO_LONG:
             throw std::runtime_error("Tag too long");
