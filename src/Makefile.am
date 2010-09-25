@@ -25,7 +25,8 @@ ner_SOURCES += \
 	colors.hh \
 	util.cc util.hh \
 	ncurses.cc ncurses.hh \
-	gmime_iostream.cc gmime_iostream.hh
+	gmime_iostream.cc gmime_iostream.hh \
+	line_wrapper.cc line_wrapper.hh
 
 # Views
 ner_SOURCES += \
