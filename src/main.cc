@@ -94,16 +94,25 @@ int main(int argc, char * argv[])
 
     initialize();
 
-    NotMuch::setConfig(configPath);
-    NerConfig::instance().load();
-
     std::signal(SIGWINCH, &resize);
 
-    Ner ner;
+    try
+    {
+        NotMuch::setConfig(configPath);
+        NerConfig::instance().load();
 
-    std::shared_ptr<View> searchListView(new SearchListView());
-    ner.viewManager()->addView(searchListView);
-    ner.run();
+        Ner ner;
+
+        std::shared_ptr<View> searchListView(new SearchListView());
+        ner.viewManager()->addView(searchListView);
+
+        ner.run();
+    }
+    catch (const std::exception & e)
+    {
+        endwin();
+        throw;
+    }
 
     g_mime_shutdown();
 
