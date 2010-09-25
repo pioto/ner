@@ -7,10 +7,11 @@ TODO
 - Handle Xapian errors rather than crashing.
 - Message tagging support.
 - GPG support.
-- HTML support (use external command?).
 - Message color highlighting (signature, reply levels, etc).
 - Add the ability to reload configuration.
-- Better line editing for status bar prompt
 - Pipe message parts to command
-- Add mime part logic
+- Make EmailView more interactive, adding things like:
+    - The ability to fold quoted parts and signatures
+    - Saving attachments
+    - Maybe specifying which part of a multipart/alternative message to display
 
