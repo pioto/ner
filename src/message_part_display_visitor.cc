@@ -23,6 +23,7 @@
 #include "colors.hh"
 #include "message_part.hh"
 #include "line_wrapper.hh"
+#include "util.hh"
 
 const int wrapWidth(80);
 
@@ -101,10 +102,7 @@ void MessagePartDisplayVisitor::visit(const Attachment & part)
                 ColorID::AttachmentFilename);
             NCurses::checkMove(_window, ++x);
 
-            std::ostringstream filesize;
-            filesize << part.filesize << " B";
-
-            x += NCurses::addPlainString(_window, filesize.str(), attributes,
+            x += NCurses::addPlainString(_window, formatByteSize(part.filesize), attributes,
                 ColorID::AttachmentFilesize);
 
             NCurses::checkMove(_window, x - 1);

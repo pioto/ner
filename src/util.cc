@@ -1,6 +1,7 @@
 /* ner: src/util.cc
  *
  * Copyright (c) 2010 Michael Forney
+ * Copyright (c) 2010 Mike Kelly
  *
  * This file is a part of ner.
  *
@@ -18,6 +19,8 @@
  */
 
 #include <stdio.h>
+#include <sstream>
+#include <iomanip>
 
 #include "util.hh"
 
@@ -68,6 +71,26 @@ std::string relativeTime(time_t rawTime)
     }
 
     return std::string(timeString);
+}
+
+std::string formatByteSize(long size)
+{
+    int i(0);
+    std::string suffix[] = { "B", "KiB", "MiB", "GiB" };
+    std::ostringstream val;
+
+    while (size >= 1024.0 && i < 3)
+    {
+        size /= 1024.0;
+        i++;
+    }
+
+    if (i >= 1)
+        val << std::fixed << std::setprecision(2);
+
+    val << size << " " << suffix[i];
+
+    return val.str();
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

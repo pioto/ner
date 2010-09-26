@@ -31,6 +31,8 @@
 
 std::string relativeTime(time_t rawTime);
 
+std::string formatByteSize(long size);
+
 template <typename Type>
     struct addressOf : public std::unary_function<Type, Type *>
 {
