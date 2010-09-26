@@ -123,6 +123,8 @@ void TextPart::accept(MessagePartVisitor & visitor)
 Attachment::Attachment(GMimePart * part)
     : MessagePart(g_mime_part_get_content_id(part) ? : std::string()),
         filename(g_mime_part_get_filename(part) ? : std::string()),
+        contentType(g_mime_content_type_to_string(
+            g_mime_object_get_content_type(GMIME_OBJECT(part)))),
         data(g_mime_part_get_content_object(part))
 {
     filesize = g_mime_stream_length(g_mime_data_wrapper_get_stream(data));

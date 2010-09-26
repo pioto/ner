@@ -62,6 +62,7 @@ enum ColorID
 
     /* Message Parts */
     AttachmentFilename,
+    AttachmentMimeType,
     AttachmentFilesize
 };
 

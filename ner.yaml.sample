@@ -73,6 +73,7 @@ colors:
 
     # Message parts
     attachment_filename                 : { fg: yellow,  bg: black }
+    attachment_mimetype                 : { fg: magenta, bg: black }
     attachment_filesize                 : { fg: green,   bg: black }
 ...
 

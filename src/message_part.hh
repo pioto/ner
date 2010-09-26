@@ -54,6 +54,7 @@ struct Attachment : public MessagePart
     virtual void accept(MessagePartVisitor & visitor);
 
     std::string filename;
+    std::string contentType;
     int filesize;
     GMimeDataWrapper * data;
 };

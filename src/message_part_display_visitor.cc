@@ -102,6 +102,10 @@ void MessagePartDisplayVisitor::visit(const Attachment & part)
                 ColorID::AttachmentFilename);
             NCurses::checkMove(_window, ++x);
 
+            x += NCurses::addPlainString(_window, part.contentType, attributes,
+                ColorID::AttachmentMimeType);
+            NCurses::checkMove(_window, ++x);
+
             x += NCurses::addPlainString(_window, formatByteSize(part.filesize), attributes,
                 ColorID::AttachmentFilesize);
 

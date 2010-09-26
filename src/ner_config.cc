@@ -153,8 +153,9 @@ void NerConfig::load()
         { ColorID::SearchListViewResults,   Color{ COLOR_GREEN,  COLOR_BLACK } },
 
         /* Message Parts */
-        { ColorID::AttachmentFilename,      Color{ COLOR_YELLOW, COLOR_BLACK } },
-        { ColorID::AttachmentFilesize,      Color{ COLOR_GREEN,  COLOR_BLACK } }
+        { ColorID::AttachmentFilename,      Color{ COLOR_YELLOW,  COLOR_BLACK } },
+        { ColorID::AttachmentMimeType,      Color{ COLOR_MAGENTA, COLOR_BLACK } },
+        { ColorID::AttachmentFilesize,      Color{ COLOR_GREEN,   COLOR_BLACK } }
     };
 
     const YAML::Node * colors = document.FindValue("colors");
@@ -201,6 +202,7 @@ void NerConfig::load()
 
             /* Message Parts */
             { "attachment_filename",        ColorID::AttachmentFilename },
+            { "attachment_mimetype",        ColorID::AttachmentMimeType },
             { "attachment_filesize",        ColorID::AttachmentFilesize }
         };
 
