@@ -6,6 +6,10 @@
 commands:
     send: /usr/sbin/sendmail -t
     edit: vim +
+    html: elinks -dump
+    # Other examples:
+    # html: lynx -stdin -dump
+    # html: w3m -T text/html -dump
 
 default_identity: first_identity
 identities:

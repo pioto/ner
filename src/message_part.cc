@@ -34,6 +34,41 @@ TextPart::TextPart(GMimePart * part)
 
     GMimeStream * contentStream = NULL;
 
+    /* If this part is html text */
+    if (g_mime_content_type_is_type(contentType, "text", "html"))
+    {
+        int readPipes[2];
+        int writePipes[2];
+
+        pipe(readPipes);
+        pipe(writePipes);
+
+        GMimeDataWrapper * content = g_mime_part_get_content_object(part);
+        GMimeStream * pipeStream = g_mime_stream_fs_new(writePipes[1]);
+        g_mime_data_wrapper_write_to_stream(content, pipeStream);
+
+        close(writePipes[1]);
+
+        if (fork() == 0)
+        {
+            close(readPipes[0]);
+            close(writePipes[1]);
+
+            dup2(readPipes[1], 1);
+            dup2(writePipes[0], 0);
+
+            execlp("sh", "sh", "-c", NerConfig::instance().command("html").c_str(), NULL);
+            exit(0);
+        }
+        else
+        {
+            close(writePipes[0]);
+            close(readPipes[1]);
+
+            contentStream = g_mime_stream_fs_new(readPipes[0]);
+            g_mime_stream_fs_set_owner(GMIME_STREAM_FS(contentStream), true);
+        }
+    }
     /* If this part is text */
     else if (g_mime_content_type_is_type(contentType, "text", "*"))
     {

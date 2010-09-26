@@ -58,6 +58,7 @@ template <class OutputIterator>
     {
         std::map<int, std::pair<const char *, const char *>> contentTypePriorities{
             { 100,  std::make_pair("text", "plain") },
+            { 50,   std::make_pair("text", "html") },
             { 20,   std::make_pair("text", "*") },
             { 1,    std::make_pair("*", "*") }
         };
