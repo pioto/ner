@@ -58,7 +58,11 @@ enum ColorID
     /* Search List View */
     SearchListViewName,
     SearchListViewTerms,
-    SearchListViewResults
+    SearchListViewResults,
+
+    /* Message Parts */
+    AttachmentFilename,
+    AttachmentFilesize
 };
 
 #endif

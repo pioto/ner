@@ -150,7 +150,11 @@ void NerConfig::load()
         /* Search List View */
         { ColorID::SearchListViewName,      Color{ COLOR_CYAN,   COLOR_BLACK } },
         { ColorID::SearchListViewTerms,     Color{ COLOR_YELLOW, COLOR_BLACK } },
-        { ColorID::SearchListViewResults,   Color{ COLOR_GREEN,  COLOR_BLACK } }
+        { ColorID::SearchListViewResults,   Color{ COLOR_GREEN,  COLOR_BLACK } },
+
+        /* Message Parts */
+        { ColorID::AttachmentFilename,      Color{ COLOR_YELLOW, COLOR_BLACK } },
+        { ColorID::AttachmentFilesize,      Color{ COLOR_GREEN,  COLOR_BLACK } }
     };
 
     const YAML::Node * colors = document.FindValue("colors");
@@ -193,7 +197,11 @@ void NerConfig::load()
             /* Search List View */
             { "search_list_view_name",      ColorID::SearchListViewName },
             { "search_list_view_terms",     ColorID::SearchListViewTerms },
-            { "search_list_view_results",   ColorID::SearchListViewTerms }
+            { "search_list_view_results",   ColorID::SearchListViewTerms },
+
+            /* Message Parts */
+            { "attachment_filename",        ColorID::AttachmentFilename },
+            { "attachment_filesize",        ColorID::AttachmentFilesize }
         };
 
         for (auto name = colors->begin(), e = colors->end(); name != e; ++name)

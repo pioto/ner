@@ -66,6 +66,10 @@ colors:
     search_list_view_name               : { fg: cyan,    bg: black }
     search_list_view_terms              : { fg: yellow,  bg: black }
     search_list_view_results            : { fg: green,   bg: black }
+
+    # Message parts
+    attachment_filename                 : { fg: yellow,  bg: black }
+    attachment_filesize                 : { fg: green,   bg: black }
 ...
 
 # vim: ft=yaml

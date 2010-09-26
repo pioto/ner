@@ -26,6 +26,8 @@
 
 #include "gmime_iostream.hh"
 #include "ncurses.hh"
+#include "ner_config.hh"
+#include "message_part.hh"
 
 std::string relativeTime(time_t rawTime);
 
@@ -39,55 +41,56 @@ template <typename Type>
 };
 
 template <class OutputIterator>
-    void mimePartLines(GMimeObject * part, OutputIterator destination)
+    void processMimePart(GMimeObject * part, OutputIterator destination)
 {
     GMimeContentType * contentType = g_mime_object_get_content_type(part);
 
-    /* If this part is html */
-    if (g_mime_content_type_is_type(contentType, "text", "html"))
+    std::string disposition = g_mime_object_get_disposition(part) ? : std::string();
+
+    if (GMIME_IS_PART(part))
     {
-        /* TODO: Handle html email */
+        if (disposition == "attachment" || !g_mime_content_type_is_type(contentType, "text", "*"))
+            *destination++ = std::shared_ptr<MessagePart>(new Attachment(GMIME_PART(part)));
+        else
+            *destination++ = std::shared_ptr<MessagePart>(new TextPart(GMIME_PART(part)));
     }
-    /* If this part is plain text */
-    else if (g_mime_content_type_is_type(contentType, "text", "*"))
+    else if (g_mime_content_type_is_type(contentType, "multipart", "alternative"))
     {
-        GMimeDataWrapper * content = g_mime_part_get_content_object(GMIME_PART(part));
-        const char * charset = g_mime_object_get_content_type_parameter(part, "charset");
-        GMimeStream * contentStream = g_mime_data_wrapper_get_stream(content);
-        GMimeStream * filteredStream = g_mime_stream_filter_new(contentStream);
+        std::map<int, std::pair<const char *, const char *>> contentTypePriorities{
+            { 100,  std::make_pair("text", "plain") },
+            { 20,   std::make_pair("text", "*") },
+            { 1,    std::make_pair("*", "*") }
+        };
 
-        GMimeFilter * filter = g_mime_filter_basic_new(g_mime_data_wrapper_get_encoding(content), false);
-        g_mime_stream_filter_add(GMIME_STREAM_FILTER(filteredStream), filter);
-        g_object_unref(filter);
+        GMimeObject * bestPart = NULL;
+        int bestPriority = 0;
 
-        if (charset)
+        for (int index = 0, count = g_mime_multipart_get_count(GMIME_MULTIPART(part));
+            index < count; ++index)
         {
-            GMimeFilter * filter = g_mime_filter_charset_new(charset, "UTF-8");
-            g_mime_stream_filter_add(GMIME_STREAM_FILTER(filteredStream), filter);
-            g_object_unref(filter);
+            GMimeObject * currentPart = g_mime_multipart_get_part(GMIME_MULTIPART(part), index);
+            GMimeContentType * partContentType = g_mime_object_get_content_type(currentPart);
+
+            for (auto priority = contentTypePriorities.upper_bound(bestPriority),
+                e = contentTypePriorities.end(); priority != e; ++priority)
+            {
+                if (g_mime_content_type_is_type(partContentType, priority->second.first,
+                    priority->second.second))
+                {
+                    bestPart = currentPart;
+                    bestPriority = priority->first;
+                }
+            }
         }
 
-        g_mime_stream_reset(contentStream);
-
-        GMimeIOStream stream(filteredStream);
-        g_object_unref(filteredStream);
-
-        while (stream.good())
-        {
-            std::string line;
-            std::getline(stream, line);
-            for (std::size_t tab = 0; (tab = line.find('\t', tab)) != std::string::npos; ++tab)
-                line.replace(tab, 1, 8 - (tab % 8), ' ');
-            *destination++ = line;
-        }
+        processMimePart(bestPart, destination);
     }
     else if (g_mime_content_type_is_type(contentType, "multipart", "*"))
     {
         for (int index = 0, count = g_mime_multipart_get_count(GMIME_MULTIPART(part));
-            index < count;
-            ++index)
+            index < count; ++index)
         {
-            mimePartLines(g_mime_multipart_get_part(GMIME_MULTIPART(part), index), destination);
+            processMimePart(g_mime_multipart_get_part(GMIME_MULTIPART(part), index), destination);
         }
     }
 }

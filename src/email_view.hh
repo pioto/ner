@@ -20,9 +20,12 @@
 #ifndef NER_EMAIL_VIEW_H
 #define NER_EMAIL_VIEW_H 1
 
+#include <vector>
+#include <map>
 #include <gmime/gmime.h>
 
 #include "line_browser_view.hh"
+#include "message_part.hh"
 
 class EmailView : public LineBrowserView
 {
@@ -40,10 +43,12 @@ class EmailView : public LineBrowserView
         virtual int visibleLines() const;
         virtual int lineCount() const;
 
+        int _lineCount;
+
         std::map<std::string, std::string> _headers;
         std::vector<std::string> _visibleHeaders;
-        std::vector<std::string> _lines;
-        int _lineCount;
+
+        std::vector<std::shared_ptr<MessagePart>> _parts;
 };
 
 #endif

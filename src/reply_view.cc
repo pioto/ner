@@ -25,6 +25,7 @@
 #include "reply_view.hh"
 #include "notmuch.hh"
 #include "util.hh"
+#include "message_part_text_visitor.hh"
 
 ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geometry)
     : EmailEditView(geometry)
@@ -139,7 +140,16 @@ ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geome
     messageContentStream << g_mime_message_get_sender(originalMessage) << " wrote:" << std::endl << "> ";
 
     GMimeObject * part = g_mime_message_get_mime_part(originalMessage);
-    mimePartLines(part, std::ostream_iterator<std::string>(messageContentStream, "\n> "));
+
+    std::vector<std::shared_ptr<MessagePart>> parts;
+    processMimePart(part, std::back_inserter(parts));
+
+    MessagePartTextVisitor<std::ostream_iterator<std::string>> visitor(
+        std::ostream_iterator<std::string>(messageContentStream, "\n> "));
+
+    for (auto messagePart = parts.begin(), e = parts.end(); messagePart != e; ++messagePart)
+        (*messagePart)->accept(visitor);
+
     g_object_unref(part);
 
     /* Read user's signature */
