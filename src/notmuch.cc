@@ -120,12 +120,14 @@ void Message::addTag(const std::string & tag)
     {
         case NOTMUCH_STATUS_SUCCESS:
             tags.insert(tag);
-            return;
+            break;
         case NOTMUCH_STATUS_TAG_TOO_LONG:
             throw std::runtime_error("Tag too long");
         default:
             throw std::exception();
     }
+
+    notmuch_database_close(database);
 }
 
 void Message::removeTag(const std::string & tag)
@@ -137,12 +139,14 @@ void Message::removeTag(const std::string & tag)
     {
         case NOTMUCH_STATUS_SUCCESS:
             tags.erase(tag);
-            return;
+            break;
         case NOTMUCH_STATUS_TAG_TOO_LONG:
             throw std::runtime_error("Tag too long");
         default:
             throw std::exception();
     }
+
+    notmuch_database_close(database);
 }
 
 notmuch_database_t * NotMuch::openDatabase(notmuch_database_mode_t mode)
