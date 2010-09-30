@@ -40,7 +40,7 @@ bool Maildir::addMessage(GMimeMessage * message)
     gethostname(hostname, sizeof(hostname));
 
     std::ostringstream uniqueName;
-    uniqueName << time(NULL) << '.' << 'P' << getpid() << 'Q' << deliveries++ << '.' << hostname;
+    uniqueName << time(NULL) << '.' << 'P' << getpid() << 'Q' << deliveries++ << '.' << hostname << ":2,S";
 
     std::string tmpUniquePath(_path + "/tmp/" + uniqueName.str());
     std::string newUniquePath(_path + "/new/" + uniqueName.str());
