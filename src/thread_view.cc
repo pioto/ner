@@ -132,9 +132,9 @@ void ThreadView::openSelectedMessage()
     }
 }
 
-const NotMuch::Message & ThreadView::selectedMessage() const
+NotMuch::Message & ThreadView::selectedMessage()
 {
-    NotMuch::Message::const_iterator message(_topMessages.rbegin(), _topMessages.rend());
+    NotMuch::Message::iterator message(_topMessages.rbegin(), _topMessages.rend());
     std::advance(message, _selectedIndex);
     return *message;
 }
