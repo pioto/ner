@@ -116,7 +116,11 @@ void Message::addTag(const std::string & tag)
     notmuch_database_t * database = openDatabase(NOTMUCH_DATABASE_MODE_READ_WRITE);
     notmuch_message_t * message = notmuch_database_find_message(database, id.c_str());
 
-    switch (notmuch_message_add_tag(message, tag.c_str()))
+    auto status = notmuch_message_add_tag(message, tag.c_str());
+
+    notmuch_database_close(database);
+
+    switch (status)
     {
         case NOTMUCH_STATUS_SUCCESS:
             tags.insert(tag);
@@ -133,7 +137,11 @@ void Message::removeTag(const std::string & tag)
     notmuch_database_t * database = openDatabase(NOTMUCH_DATABASE_MODE_READ_WRITE);
     notmuch_message_t * message = notmuch_database_find_message(database, id.c_str());
 
-    switch (notmuch_message_remove_tag(message, tag.c_str()))
+    auto status = notmuch_message_remove_tag(message, tag.c_str());
+
+    notmuch_database_close(database);
+
+    switch (status)
     {
         case NOTMUCH_STATUS_SUCCESS:
             tags.erase(tag);
