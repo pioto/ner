@@ -30,7 +30,7 @@ ThreadMessageView::ThreadMessageView(const std::string & threadId, const View::G
             geometry.width, geometry.height - threadViewHeight - 1
         })
 {
-    _messageView.setMessage(_threadView.selectedMessage().id);
+    loadSelectedMessage();
 
     /* Key Sequences */
     addHandledSequence("j",          std::bind(&MessageView::next, &_messageView));
