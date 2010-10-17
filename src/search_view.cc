@@ -23,6 +23,7 @@
 #include <chrono>
 #include <iterator>
 #include <sched.h>
+#include <xapian.h>
 
 #include "search_view.hh"
 #include "thread_message_view.hh"
@@ -273,7 +274,21 @@ void SearchView::collectThreads()
     {
         lock.lock();
 
-        notmuch_thread_t * thread = notmuch_threads_get(threadIterator);
+        notmuch_thread_t * thread;
+
+        try
+        {
+            thread = notmuch_threads_get(threadIterator);
+        }
+        catch (Xapian::DatabaseModifiedError & e)
+        {
+            notmuch_database_close(database);
+            database = NotMuch::openDatabase();
+            query = notmuch_query_create(database, _searchTerms.c_str());
+            threadIterator = notmuch_query_search_threads(query);
+            thread = notmuch_threads_get(threadIterator);
+        }
+
         _threads.push_back(thread);
         notmuch_thread_destroy(thread);
 
