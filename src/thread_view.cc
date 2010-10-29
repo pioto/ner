@@ -143,7 +143,7 @@ void ThreadView::reply()
 {
     try
     {
-        ViewManager::instance().addView(std::shared_ptr<ReplyView>(new ReplyView(selectedMessage().id)));
+        ViewManager::instance().addView(std::make_shared<ReplyView>(selectedMessage().id));
     }
     catch (const NotMuch::InvalidMessageException & e)
     {

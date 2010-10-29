@@ -45,7 +45,7 @@ void operator>>(const YAML::Node & node, Identity & identity)
         if (sentMailNode->GetTag() == tagPrefix + "maildir")
         {
             std::string sentMailPath = *sentMailNode;
-            identity.sentMail = std::shared_ptr<MailStore>(new Maildir(sentMailPath));
+            identity.sentMail = std::make_shared<Maildir>(sentMailPath);
         }
     }
 }
