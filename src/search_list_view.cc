@@ -120,8 +120,8 @@ int SearchListView::lineCount() const
 
 void SearchListView::openSelectedSearch()
 {
-    ViewManager::instance().addView(std::shared_ptr<SearchView>(
-        new SearchView(_searches.at(_selectedIndex).query)));
+    ViewManager::instance().addView(std::make_shared<SearchView>(
+        _searches.at(_selectedIndex).query));
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

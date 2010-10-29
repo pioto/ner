@@ -119,12 +119,12 @@ void Ner::search()
     std::string searchTerms = StatusBar::instance().prompt("Search: ", "search");
 
     if (!searchTerms.empty())
-        _viewManager->addView(std::shared_ptr<SearchView>(new SearchView(searchTerms)));
+        _viewManager->addView(std::make_shared<SearchView>(searchTerms));
 }
 
 void Ner::compose()
 {
-    _viewManager->addView(std::shared_ptr<ComposeView>(new ComposeView()));
+    _viewManager->addView(std::make_shared<ComposeView>());
 }
 
 void Ner::openMessage()
@@ -157,7 +157,7 @@ void Ner::openThread()
     {
         try
         {
-            _viewManager->addView(std::shared_ptr<ThreadView>(new ThreadView(threadId)));
+            _viewManager->addView(std::make_shared<ThreadView>(threadId));
         }
         catch (const NotMuch::InvalidThreadException & e)
         {
@@ -168,7 +168,7 @@ void Ner::openThread()
 
 void Ner::openViewView()
 {
-    _viewManager->addView(std::shared_ptr<ViewView>(new ViewView()));
+    _viewManager->addView(std::make_shared<ViewView>());
 }
 
 void Ner::redraw()

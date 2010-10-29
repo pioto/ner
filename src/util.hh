@@ -52,9 +52,9 @@ template <class OutputIterator>
     if (GMIME_IS_PART(part))
     {
         if (disposition == "attachment" || !g_mime_content_type_is_type(contentType, "text", "*"))
-            *destination++ = std::shared_ptr<MessagePart>(new Attachment(GMIME_PART(part)));
+            *destination++ = std::make_shared<Attachment>(GMIME_PART(part));
         else
-            *destination++ = std::shared_ptr<MessagePart>(new TextPart(GMIME_PART(part)));
+            *destination++ = std::make_shared<TextPart>(GMIME_PART(part));
     }
     else if (g_mime_content_type_is_type(contentType, "multipart", "alternative"))
     {
