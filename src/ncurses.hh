@@ -20,11 +20,22 @@
 #ifndef NER_NCURSES_H
 #define NER_NCURSES_H 1
 
+#include "config.h"
+
 #include <limits>
 #include <algorithm>
 #include <locale>
 #include <cstring>
-#include <ncursesw/ncurses.h>
+
+#if HAVE_NCURSESW_NCURSES_H
+#   include <ncursesw/ncurses.h>
+#elif HAVE_NCURSES_NCURSES_H
+#   include <ncurses/ncurses.h>
+#elif HAVE_NCURSES_H
+#   include <ncurses.h>
+#else
+#   include <curses.h>
+#endif
 
 #include "colors.hh"
 

@@ -20,9 +20,9 @@
 #include <iostream>
 #include <sys/types.h>
 #include <signal.h>
-#include <ncursesw/ncurses.h>
 
 #include "ner.hh"
+#include "ncurses.h"
 #include "util.hh"
 #include "status_bar.hh"
 #include "view_manager.hh"

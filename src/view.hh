@@ -21,12 +21,12 @@
 #define NER_VIEW_H 1
 
 #include <stdint.h>
-#include <ncursesw/ncurses.h>
 #include <vector>
 #include <string>
 
 #include "input_handler.hh"
 #include "status_bar.hh"
+#include "ncurses.hh"
 
 /**
  * The base class for all types of views
