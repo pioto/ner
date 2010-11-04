@@ -34,18 +34,6 @@
 class View : public InputHandler
 {
     public:
-        enum class Type
-        {
-            SearchView,
-            ThreadView,
-            MessageView,
-            ThreadMessageView,
-            ViewView,
-            ComposeView,
-            ReplyView,
-            SearchListView
-        };
-
         struct Geometry
         {
             Geometry(int x_, int y_, int width_, int height_);
@@ -89,7 +77,6 @@ class View : public InputHandler
         virtual void unfocus();
 
         virtual std::string name() const = 0;
-        virtual Type type() const = 0;
         virtual std::vector<std::string> status() const;
 
     protected:

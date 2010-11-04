@@ -32,7 +32,6 @@ class ViewView : public LineBrowserView
         virtual void unfocus();
 
         virtual std::string name() const { return "view-view"; }
-        virtual Type type() const { return Type::ViewView; }
 
         virtual int lineCount() const;
 

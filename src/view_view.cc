@@ -52,7 +52,7 @@ void ViewView::update()
         view != e && row < getmaxy(_window); ++view, ++row)
     {
         /* Don't list the ViewView */
-        if ((*view)->type() == View::Type::ViewView)
+        if (view->get() == this)
             continue;
 
         bool selected = row + _offset == _selectedIndex;
