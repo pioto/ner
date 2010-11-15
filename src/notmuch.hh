@@ -67,8 +67,69 @@ namespace NotMuch
         std::set<std::string> tags;
     };
 
+    template <class T>
+        class MessageTreeIterator
+    {
+        public:
+            template <class InputIterator>
+                explicit MessageTreeIterator(InputIterator begin, InputIterator end)
+            {
+                for (; begin < end; ++begin)
+                    messages.push_back(&*begin);
+            }
+
+            MessageTreeIterator()
+            {
+            }
+
+            typedef T value_type;
+            typedef T & reference;
+            typedef T * pointer;
+            typedef std::ptrdiff_t difference_type;
+            typedef std::input_iterator_tag iterator_category;
+
+            reference operator*() const
+            {
+                return *messages.back();
+            }
+
+            pointer operator->() const
+            {
+                return messages.back();
+            }
+
+            reference operator++()
+            {
+                reference message = *messages.back();
+                messages.pop_back();
+
+                for (auto reply = message.replies.rbegin(), e = message.replies.rend();
+                    reply != e; ++reply)
+                {
+                    messages.push_back(&*reply);
+                }
+            }
+
+            bool operator==(const MessageTreeIterator & other) const
+            {
+                return messages.size() == other.messages.size() &&
+                    (messages.size() == 0 || messages.back()->id == other.messages.back()->id);
+            }
+
+            bool operator!=(const MessageTreeIterator & other) const
+            {
+                return !operator==(other);
+            }
+
+        private:
+            std::vector<T *> messages;
+    };
+
     struct Message
     {
+        typedef MessageTreeIterator<Message> iterator;
+        typedef MessageTreeIterator<const Message> const_iterator;
+
         Message(notmuch_message_t * message);
 
         std::string id;

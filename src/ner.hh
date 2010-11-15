@@ -24,9 +24,8 @@
 #include <vector>
 
 #include "input_handler.hh"
-
-class ViewManager;
-class StatusBar;
+#include "view_manager.hh"
+#include "status_bar.hh"
 
 class Ner : public InputHandler
 {
@@ -44,17 +43,15 @@ class Ner : public InputHandler
         void openViewView();
         void redraw();
 
-        inline ViewManager * viewManager() const
+        inline ViewManager & viewManager()
         {
             return _viewManager;
         }
 
     private:
-        void cleanupScreen();
-
         bool _running;
-        ViewManager * _viewManager;
-        StatusBar * _statusBar;
+        ViewManager _viewManager;
+        StatusBar _statusBar;
 };
 
 #endif

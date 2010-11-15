@@ -34,7 +34,6 @@ class MessageView : public EmailView
         void setMessage(const std::string & messageId);
 
         virtual std::string name() const { return "message-view"; }
-        virtual Type type() const { return Type::MessageView; }
 };
 
 #endif

@@ -23,9 +23,14 @@ PKG_CHECK_MODULES([yaml_cpp], [yaml-cpp >= 0.2.5],,
 AC_CHECK_LIB(notmuch, notmuch_database_open,,
     [AC_MSG_ERROR([ner requires libnotmuch])])
 AC_CHECK_LIB(ncursesw, initscr,,
-    [AC_MSG_ERROR([ner requires ncurses])])
+    [AC_MSG_ERROR([ner requires ncursesw])])
+
+AC_CHECK_HEADERS(ncursesw/ncurses.h,,
+    [AC_CHECK_HEADERS(ncurses/ncurses.h,,
+        [AC_CHECK_HEADERS(ncurses.h)])])
 dnl }}}
 
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT
 
