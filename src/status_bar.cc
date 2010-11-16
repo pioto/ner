@@ -23,6 +23,7 @@
 #include "view.hh"
 #include "view_manager.hh"
 #include "line_editor.hh"
+#include "util.hh"
 
 StatusBar * StatusBar::_instance = 0;
 
@@ -126,15 +127,17 @@ std::string StatusBar::prompt(const std::string & message, const std::string & f
     waddstr(_promptWindow, message.c_str());
     wrefresh(_promptWindow);
 
+    auto clearWindow = onScopeEnd([this] { 
+        wattroff(_promptWindow, COLOR_PAIR(ColorID::StatusBarPrompt));
+
+        /* Clear the prompt window after we're done */
+        werase(_promptWindow);
+        wrefresh(_promptWindow);
+    });
+
     LineEditor editor(_promptWindow, getcurx(_promptWindow), 0);
 
     std::string response = editor.line(field);
-
-    wattroff(_promptWindow, COLOR_PAIR(ColorID::StatusBarPrompt));
-
-    /* Clear the prompt window after we're done */
-    werase(_promptWindow);
-    wrefresh(_promptWindow);
 
     return response;
 }

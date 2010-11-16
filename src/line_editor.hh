@@ -25,6 +25,10 @@
 
 #include "ncurses.hh"
 
+class AbortInputException : public std::exception
+{
+};
+
 class LineEditor
 {
     public:
