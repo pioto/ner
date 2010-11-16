@@ -1,6 +1,7 @@
 /* ner: src/util.hh
  *
  * Copyright (c) 2010 Michael Forney
+ * Copyright (c) 2011 Maxime Coste
  *
  * This file is a part of ner.
  *
@@ -96,6 +97,28 @@ template <class OutputIterator>
             processMimePart(g_mime_multipart_get_part(GMIME_MULTIPART(part), index), destination);
         }
     }
+}
+
+template <typename Function>
+    class OnScopeEnd
+{
+    Function _function;
+
+public:
+    OnScopeEnd(Function function)
+        : _function(function)
+    {}
+
+    ~OnScopeEnd()
+    {
+        _function();
+    }
+};
+
+template<typename Function>
+    OnScopeEnd<Function> onScopeEnd(Function function)
+{
+    return OnScopeEnd<Function>(function);
 }
 
 #endif
