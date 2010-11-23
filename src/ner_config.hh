@@ -22,6 +22,7 @@
 
 #include <map>
 #include <string>
+#include <notmuch.h>
 
 #include "search_list_view.hh"
 
@@ -36,12 +37,15 @@ class NerConfig
 
         const std::vector<Search> & searches() const;
 
+        notmuch_sort_t sortMode() const;
+
     private:
         NerConfig();
         ~NerConfig();
 
         std::map<std::string, std::string> _commands;
         std::vector<Search> _searches;
+        notmuch_sort_t _sortMode;
 };
 
 #endif

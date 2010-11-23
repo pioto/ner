@@ -79,6 +79,7 @@ NerConfig::~NerConfig()
 
 void NerConfig::load()
 {
+    _sortMode = NOTMUCH_SORT_NEWEST_FIRST;
     _commands.clear();
 
     std::string configPath(std::string(getenv("HOME")) + "/" + nerConfigFile);
@@ -95,6 +96,29 @@ void NerConfig::load()
     const YAML::Node * defaultIdentity = document.FindValue("default_identity");
     if (defaultIdentity)
         IdentityManager::instance().setDefaultIdentity(*defaultIdentity);
+
+    /* General stuff */
+    auto general = document.FindValue("general");
+
+    if (general)
+    {
+        auto sortModeNode = general->FindValue("sort_mode");
+
+        if (sortModeNode)
+        {
+            std::string sortModeStr;
+            *sortModeNode >> sortModeStr;
+
+            if (sortModeStr == std::string("oldest_first"))
+                _sortMode = NOTMUCH_SORT_OLDEST_FIRST;
+            else if (sortModeStr == std::string("message_id"))
+                _sortMode = NOTMUCH_SORT_MESSAGE_ID;
+            else if (sortModeStr != std::string("newest_first"))
+            {
+                /* FIXME: throw? */
+            }
+        }
+    }
 
     /* Commands */
     const YAML::Node * commands = document.FindValue("commands");
@@ -235,6 +259,11 @@ std::string NerConfig::command(const std::string & name)
 const std::vector<Search> & NerConfig::searches() const
 {
     return _searches;
+}
+
+notmuch_sort_t NerConfig::sortMode() const
+{
+    return _sortMode;
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

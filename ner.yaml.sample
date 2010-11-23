@@ -3,6 +3,9 @@
 %YAML 1.2
 %TAG ! tag:the-ner.org,2010:
 ---
+general:
+    sort_mode: newest_first
+
 commands:
     send: /usr/sbin/sendmail -t
     edit: vim +
