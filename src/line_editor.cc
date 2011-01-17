@@ -31,7 +31,7 @@ LineEditor::LineEditor(WINDOW * window, int x, int y)
 {
 }
 
-std::string LineEditor::line(const std::string & field) const
+std::string LineEditor::line(const std::string & field, const std::string & initialValue) const
 {
     std::vector<std::string> history;
 
@@ -41,9 +41,14 @@ std::string LineEditor::line(const std::string & field) const
     history.push_back(std::string());
 
     auto response = history.rbegin();
-    auto position = response->begin();
+    *response = initialValue;
+    auto position = response->end();
 
     wmove(_window, _x, _y);
+    wclrtoeol(_window);
+    waddstr(_window, response->c_str());
+    wmove(_window, _y, _x + (position - response->begin()));
+    wrefresh(_window);
 
     curs_set(1);
     auto resetCursor = onScopeEnd([] { curs_set(0); });

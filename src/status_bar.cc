@@ -117,7 +117,8 @@ void StatusBar::displayMessage(const std::string & message)
     _messageClearThread = std::thread(std::bind(&StatusBar::delayedClearMessage, this, 1500));
 }
 
-std::string StatusBar::prompt(const std::string & message, const std::string & field)
+std::string StatusBar::prompt(const std::string & message, const std::string & field,
+                              const std::string & initialValue)
 {
     if (!_messageCleared)
         clearMessage();
@@ -137,7 +138,7 @@ std::string StatusBar::prompt(const std::string & message, const std::string & f
 
     LineEditor editor(_promptWindow, getcurx(_promptWindow), 0);
 
-    std::string response = editor.line(field);
+    std::string response = editor.line(field, initialValue);
 
     return response;
 }
