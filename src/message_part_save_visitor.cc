@@ -20,6 +20,7 @@
 #include "message_part_save_visitor.hh"
 #include "message_part.hh"
 #include "status_bar.hh"
+#include "line_editor.hh"
 
 #include <sys/stat.h>
 
@@ -33,23 +34,28 @@ void MessagePartSaveVisitor::visit(const TextPart & part)
 
 void MessagePartSaveVisitor::visit(const Attachment & part)
 {
-    std::string filename = StatusBar::instance().prompt("Save attachement to file: ", std::string(), part.filename);
-
-    struct stat dummy;
-    if (stat(filename.c_str(), &dummy) == 0)
+    try
     {
-        while (true)
-        {
-            std::string answer = StatusBar::instance().prompt("File exists, overwrite ? [y,n]: ");
-            if (answer == "n")
-                return;
-            if (answer == "y")
-                break;
-        }
-    }
+        std::string filename = StatusBar::instance().prompt("Save attachement to file: ", std::string(), part.filename);
 
-    FILE * file = fopen(filename.c_str(), "w");
-    GMimeStream * stream = g_mime_stream_file_new(file);
-    g_mime_data_wrapper_write_to_stream(part.data, stream);
-    g_object_unref(stream);
+        struct stat dummy;
+        if (stat(filename.c_str(), &dummy) == 0)
+        {
+            while (true)
+            {
+                std::string answer = StatusBar::instance().prompt("File exists, overwrite ? [y,n]: ");
+                if (answer == "n")
+                    return;
+                if (answer == "y")
+                    break;
+            }
+        }
+
+        FILE * file = fopen(filename.c_str(), "w");
+        GMimeStream * stream = g_mime_stream_file_new(file);
+        g_mime_data_wrapper_write_to_stream(part.data, stream);
+        g_object_unref(stream);
+    }
+    catch (AbortInputException&)
+    { }
 }
