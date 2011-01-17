@@ -127,7 +127,13 @@ Attachment::Attachment(GMimePart * part)
             g_mime_object_get_content_type(GMIME_OBJECT(part)))),
         data(g_mime_part_get_content_object(part))
 {
+    g_object_ref(data);
     filesize = g_mime_stream_length(g_mime_data_wrapper_get_stream(data));
+}
+
+Attachment::~Attachment()
+{
+    g_object_unref(data);
 }
 
 void Attachment::accept(MessagePartVisitor & visitor)

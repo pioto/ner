@@ -50,6 +50,7 @@ struct TextPart : public MessagePart
 struct Attachment : public MessagePart
 {
     Attachment(GMimePart * part);
+    ~Attachment();
 
     virtual void accept(MessagePartVisitor & visitor);
 
