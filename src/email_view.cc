@@ -1,6 +1,7 @@
 /* ner: src/email_view.cc
  *
  * Copyright (c) 2010 Michael Forney
+ * Copyright (c) 2011 Maxime Coste
  *
  * This file is a part of ner.
  *
@@ -22,6 +23,7 @@
 #include "ncurses.hh"
 #include "util.hh"
 #include "message_part_display_visitor.hh"
+#include "message_part_save_visitor.hh"
 
 const std::string lessMessage("[less]");
 const std::string moreMessage("[more]");
@@ -83,6 +85,7 @@ void EmailView::update()
 {
     int row = 0;
 
+    _partsLastLine.clear();
     werase(_window);
 
     for (auto header = _visibleHeaders.begin(), e = _visibleHeaders.end(); header != e; ++header, ++row)
@@ -115,8 +118,12 @@ void EmailView::update()
     MessagePartDisplayVisitor displayVisitor(_window, View::Geometry{ 0, row,
         _geometry.width, visibleLines() }, _offset, _selectedIndex);
 
+
     for (auto part = _parts.begin(), e = _parts.end(); part != e; ++part)
+    {
         (*part)->accept(displayVisitor);
+        _partsLastLine.push_back(displayVisitor.lines());
+    }
 
     row = displayVisitor.row();
     _lineCount = displayVisitor.lines();
@@ -133,6 +140,20 @@ void EmailView::update()
         mvwaddstr(_window, getmaxy(_window) - 1, _geometry.width - moreMessage.size(), moreMessage.c_str());
 
     wattroff(_window, COLOR_PAIR(ColorID::MoreLessIndicator));
+}
+
+void EmailView::saveSelectedPart() const
+{
+    for (size_t index; index < _partsLastLine.size(); ++index)
+    {
+        if (_selectedIndex < _partsLastLine[index])
+        {
+            MessagePart& part = *_parts[index];
+            MessagePartSaveVisitor saver;
+            part.accept(saver);
+            break;
+        }
+    }
 }
 
 int EmailView::visibleLines() const

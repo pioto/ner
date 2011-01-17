@@ -37,6 +37,7 @@ class EmailView : public LineBrowserView
         void setVisibleHeaders(const std::vector<std::string> & headers);
 
         virtual void update();
+        void saveSelectedPart() const;
 
     protected:
         void calculateLines();
@@ -49,6 +50,7 @@ class EmailView : public LineBrowserView
         std::vector<std::string> _visibleHeaders;
 
         std::vector<std::shared_ptr<MessagePart>> _parts;
+        std::vector<int> _partsLastLine;
 };
 
 #endif

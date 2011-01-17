@@ -22,6 +22,7 @@ ner_SOURCES = \
 	message_part.cc message_part.hh \
 	message_part_visitor.hh \
 	message_part_display_visitor.cc message_part_display_visitor.hh \
+	message_part_save_visitor.cc message_part_save_visitor.hh \
 	message_part_text_visitor.hh
 
 # Utility
