@@ -191,7 +191,13 @@ void NerConfig::load()
         /* Message Parts */
         { ColorID::AttachmentFilename,      Color{ COLOR_YELLOW,  COLOR_BLACK } },
         { ColorID::AttachmentMimeType,      Color{ COLOR_MAGENTA, COLOR_BLACK } },
-        { ColorID::AttachmentFilesize,      Color{ COLOR_GREEN,   COLOR_BLACK } }
+        { ColorID::AttachmentFilesize,      Color{ COLOR_GREEN,   COLOR_BLACK } },
+
+        /* Citation levels */
+        { ColorID::CitationLevel1, Color{ COLOR_GREEN,   COLOR_BLACK } },
+        { ColorID::CitationLevel2, Color{ COLOR_YELLOW,  COLOR_BLACK } },
+        { ColorID::CitationLevel3, Color{ COLOR_CYAN,    COLOR_BLACK } },
+        { ColorID::CitationLevel4, Color{ COLOR_MAGENTA, COLOR_BLACK } }
     };
 
     const YAML::Node * colors = document.FindValue("colors");
@@ -239,7 +245,13 @@ void NerConfig::load()
             /* Message Parts */
             { "attachment_filename",        ColorID::AttachmentFilename },
             { "attachment_mimetype",        ColorID::AttachmentMimeType },
-            { "attachment_filesize",        ColorID::AttachmentFilesize }
+            { "attachment_filesize",        ColorID::AttachmentFilesize },
+
+            /* Citation levels */
+            { "citation_level_1",           ColorID::CitationLevel1 },
+            { "citation_level_2",           ColorID::CitationLevel2 },
+            { "citation_level_3",           ColorID::CitationLevel3 },
+            { "citation_level_4",           ColorID::CitationLevel4 }
         };
 
         for (auto name = colors->begin(), e = colors->end(); name != e; ++name)

@@ -63,7 +63,13 @@ enum ColorID
     /* Message Parts */
     AttachmentFilename,
     AttachmentMimeType,
-    AttachmentFilesize
+    AttachmentFilesize,
+
+    /* Citation levels */
+    CitationLevel1,
+    CitationLevel2,
+    CitationLevel3,
+    CitationLevel4
 };
 
 #endif

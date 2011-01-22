@@ -38,6 +38,27 @@ void MessagePartDisplayVisitor::visit(const TextPart & part)
 {
     for (auto line = part.lines.begin(), e = part.lines.end(); line != e; ++line)
     {
+        unsigned citationLevel = 0;
+        for (auto character = line->begin(); character != line->end(); ++character)
+        {
+            if (*character == '>')
+                ++citationLevel;
+            else if (*character != ' ')
+                break;
+        }
+
+        short color = 0;
+        if (citationLevel)
+        {
+            switch (citationLevel % 4)
+            {
+                case 1: color = ColorID::CitationLevel1; break;
+                case 2: color = ColorID::CitationLevel2; break;
+                case 3: color = ColorID::CitationLevel3; break;
+                case 0: color = ColorID::CitationLevel4; break;
+            }
+        }
+
         for (auto lineWrapper = LineWrapper(*line); !lineWrapper.done(); ++_messageRow)
         {
             bool selected = _messageRow == _selection;
@@ -61,7 +82,7 @@ void MessagePartDisplayVisitor::visit(const TextPart & part)
                 wchgat(_window, _area.width - 2, A_REVERSE, 0, NULL);
             }
 
-            if (NCurses::addUtf8String(_window, wrappedLine.c_str(), attributes) >
+            if (NCurses::addUtf8String(_window, wrappedLine.c_str(), attributes, color) >
                 _area.width - _area.y - 2)
             {
                 NCurses::addCutOffIndicator(_window, attributes);

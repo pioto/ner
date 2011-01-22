@@ -80,6 +80,12 @@ colors:
     attachment_filename                 : { fg: yellow,  bg: black }
     attachment_mimetype                 : { fg: magenta, bg: black }
     attachment_filesize                 : { fg: green,   bg: black }
+
+    # Citation levels
+    citation_level_1                    : { fg: green,   bg: black }
+    citation_level_2                    : { fg: yellow,  bg: black }
+    citation_level_3                    : { fg: cyan,    bg: black }
+    citation_level_4                    : { fg: magenta, bg: black }
 ...
 
 # vim: ft=yaml
