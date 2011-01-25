@@ -5,6 +5,7 @@
 ---
 general:
     sort_mode: newest_first
+    refresh_view: true
 
 commands:
     send: /usr/sbin/sendmail -t

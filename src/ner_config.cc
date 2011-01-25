@@ -80,6 +80,7 @@ NerConfig::~NerConfig()
 void NerConfig::load()
 {
     _sortMode = NOTMUCH_SORT_NEWEST_FIRST;
+    _refreshView = true;
     _commands.clear();
 
     std::string configPath(std::string(getenv("HOME")) + "/" + nerConfigFile);
@@ -118,6 +119,11 @@ void NerConfig::load()
                 /* FIXME: throw? */
             }
         }
+
+        auto refreshViewNode = general->FindValue("refresh_view");
+
+        if (refreshViewNode)
+            *refreshViewNode >> _refreshView;
     }
 
     /* Commands */
@@ -264,6 +270,11 @@ const std::vector<Search> & NerConfig::searches() const
 notmuch_sort_t NerConfig::sortMode() const
 {
     return _sortMode;
+}
+
+bool NerConfig::refreshView() const
+{
+    return _refreshView;
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

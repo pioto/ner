@@ -55,6 +55,9 @@ std::string LineEditor::line(const std::string & field) const
     {
         switch (c)
         {
+            case ERR:
+                /* Timeout. */
+                continue;
             case KEY_LEFT:
                 if (position > response->begin())
                     --position;

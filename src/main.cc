@@ -106,6 +106,10 @@ int main(int argc, char * argv[])
         NotMuch::setConfig(configPath);
         NerConfig::instance().load();
 
+        if (NerConfig::instance().refreshView())
+            /* Refresh the view every minute (or when the user presses a key). */
+            timeout(60000);
+
         Ner ner;
 
         std::shared_ptr<View> searchListView(new SearchListView());

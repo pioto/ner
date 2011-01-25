@@ -39,6 +39,8 @@ class NerConfig
 
         notmuch_sort_t sortMode() const;
 
+        bool refreshView() const;
+
     private:
         NerConfig();
         ~NerConfig();
@@ -46,6 +48,7 @@ class NerConfig
         std::map<std::string, std::string> _commands;
         std::vector<Search> _searches;
         notmuch_sort_t _sortMode;
+        bool _refreshView;
 };
 
 #endif
