@@ -6,6 +6,7 @@
 general:
     sort_mode: newest_first
     refresh_view: true
+    add_sig_dashes: true
 
 commands:
     send: /usr/sbin/sendmail -t

@@ -24,6 +24,7 @@
 
 #include "compose_view.hh"
 #include "notmuch.hh"
+#include "ner_config.hh"
 
 ComposeView::ComposeView(const View::Geometry & geometry)
     : EmailEditView(geometry)
@@ -48,7 +49,11 @@ ComposeView::ComposeView(const View::Geometry & geometry)
     /* Read the user's signature */
     if (!_identity->signaturePath.empty())
     {
-        messageContentStream << std::endl << "-- " << std::endl;
+        if (NerConfig::instance().addSigDashes())
+            messageContentStream << std::endl << "-- ";
+
+        messageContentStream << std::endl;
+
         std::ifstream signatureFile(_identity->signaturePath.c_str());
         messageContentStream << signatureFile.rdbuf();
     }

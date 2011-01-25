@@ -81,6 +81,7 @@ void NerConfig::load()
 {
     _sortMode = NOTMUCH_SORT_NEWEST_FIRST;
     _refreshView = true;
+    _addSigDashes = true;
     _commands.clear();
 
     std::string configPath(std::string(getenv("HOME")) + "/" + nerConfigFile);
@@ -124,6 +125,11 @@ void NerConfig::load()
 
         if (refreshViewNode)
             *refreshViewNode >> _refreshView;
+
+        auto addSigDashesNode = general->FindValue("add_sig_dashes");
+
+        if (addSigDashesNode)
+            *addSigDashesNode >> _addSigDashes;
     }
 
     /* Commands */
@@ -275,6 +281,11 @@ notmuch_sort_t NerConfig::sortMode() const
 bool NerConfig::refreshView() const
 {
     return _refreshView;
+}
+
+bool NerConfig::addSigDashes() const
+{
+    return _addSigDashes;
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

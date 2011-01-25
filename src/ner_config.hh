@@ -41,6 +41,8 @@ class NerConfig
 
         bool refreshView() const;
 
+        bool addSigDashes() const;
+
     private:
         NerConfig();
         ~NerConfig();
@@ -49,6 +51,7 @@ class NerConfig
         std::vector<Search> _searches;
         notmuch_sort_t _sortMode;
         bool _refreshView;
+        bool _addSigDashes;
 };
 
 #endif
