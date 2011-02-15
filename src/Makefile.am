@@ -2,9 +2,9 @@
 
 bin_PROGRAMS = ner
 
-AM_CXXFLAGS = $(yaml_cpp_CFLAGS) $(gmime_CFLAGS) -D_XOPEN_SOURCE_EXTENDED
+AM_CXXFLAGS = $(yaml_cpp_CFLAGS) $(gmime_CFLAGS) $(gio_CFLAGS) -D_XOPEN_SOURCE_EXTENDED
 
-ner_LDADD = $(yaml_cpp_LIBS) $(gmime_LIBS)
+ner_LDADD = $(yaml_cpp_LIBS) $(gmime_LIBS) $(gio_LIBS)
 
 # Core
 ner_SOURCES = \
