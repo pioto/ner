@@ -1,6 +1,7 @@
 /* ner: src/email_edit_view.hh
  *
  * Copyright (c) 2010 Michael Forney
+ * Copyright (c) 2011 Maxime Coste
  *
  * This file is a part of ner.
  *
@@ -42,6 +43,16 @@ class EmailEditView : public EmailView
          * Sends the message with the configured MTA
          */
         virtual void send();
+
+        /**
+         * Prompt for a filename and add it to attached files
+         */
+        void attach();
+
+        /**
+         * Remove currently selected attachment
+         */
+        void removeSelectedAttachment();
 
         std::string _messageFile;
         const Identity * _identity;
