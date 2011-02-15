@@ -142,18 +142,20 @@ void EmailView::update()
     wattroff(_window, COLOR_PAIR(ColorID::MoreLessIndicator));
 }
 
-void EmailView::saveSelectedPart() const
+EmailView::PartList::iterator EmailView::selectedPart()
 {
     for (size_t index; index < _partsLastLine.size(); ++index)
     {
         if (_selectedIndex < _partsLastLine[index])
-        {
-            MessagePart& part = *_parts[index];
-            MessagePartSaveVisitor saver;
-            part.accept(saver);
-            break;
-        }
+            return _parts.begin() + index;
     }
+    return _parts.begin();
+}
+
+void EmailView::saveSelectedPart()
+{
+    MessagePartSaveVisitor saver;
+    (*selectedPart())->accept(saver);
 }
 
 int EmailView::visibleLines() const
