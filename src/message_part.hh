@@ -50,6 +50,8 @@ struct TextPart : public MessagePart
 struct Attachment : public MessagePart
 {
     Attachment(GMimePart * part);
+    Attachment(GMimeDataWrapper * data, const std::string & filename,
+               const std::string& contentType, int filesize);
     ~Attachment();
 
     virtual void accept(MessagePartVisitor & visitor);
