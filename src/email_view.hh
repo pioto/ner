@@ -30,6 +30,8 @@
 class EmailView : public LineBrowserView
 {
     public:
+        typedef std::vector<std::shared_ptr<MessagePart>> PartList;
+
         EmailView(const View::Geometry & geometry = View::Geometry());
         virtual ~EmailView();
 
@@ -37,19 +39,21 @@ class EmailView : public LineBrowserView
         void setVisibleHeaders(const std::vector<std::string> & headers);
 
         virtual void update();
-        void saveSelectedPart() const;
+        void saveSelectedPart();
 
     protected:
         void calculateLines();
         virtual int visibleLines() const;
         virtual int lineCount() const;
 
+        PartList::iterator selectedPart();
+
         int _lineCount;
 
         std::map<std::string, std::string> _headers;
         std::vector<std::string> _visibleHeaders;
 
-        std::vector<std::shared_ptr<MessagePart>> _parts;
+        PartList _parts;
         std::vector<int> _partsLastLine;
 };
 
