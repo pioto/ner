@@ -131,6 +131,14 @@ Attachment::Attachment(GMimePart * part)
     filesize = g_mime_stream_length(g_mime_data_wrapper_get_stream(data));
 }
 
+Attachment::Attachment(GMimeDataWrapper * data, const std::string & filename,
+                       const std::string& contentType, int filesize)
+    : MessagePart(std::string()), filename(filename), contentType(contentType),
+      filesize(filesize), data(data)
+{
+    g_object_ref(data);
+}
+
 Attachment::~Attachment()
 {
     g_object_unref(data);
