@@ -121,6 +121,24 @@ template<typename Function>
     return OnScopeEnd<Function>(function);
 }
 
+template<typename T>
+class AutoUnref
+{
+    T* _g_object;
+
+public:
+    AutoUnref(T* g_object) : _g_object(g_object) {}
+    ~AutoUnref() { if (_g_object) g_object_unref(_g_object); }
+
+    operator T*() { return _g_object; }
+};
+
+template<typename T>
+AutoUnref<T> autoUnref(T* g_object)
+{
+    return AutoUnref<T>(g_object);
+}
+
 #endif
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
