@@ -23,7 +23,7 @@
 #include "message_part_visitor.hh"
 
 MessagePart::MessagePart(const std::string & id_)
-    : id(id_)
+    : id(id_), folded(true)
 {
 }
 
