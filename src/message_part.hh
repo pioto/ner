@@ -35,6 +35,7 @@ struct MessagePart
 
     virtual void accept(MessagePartVisitor & visitor) = 0;
 
+    bool folded;
     std::string id;
 };
 
