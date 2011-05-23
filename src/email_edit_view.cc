@@ -49,6 +49,7 @@ EmailEditView::EmailEditView(const View::Geometry & geometry)
     addHandledSequence("a", std::bind(&EmailEditView::attach, this));
     addHandledSequence("d", std::bind(&EmailEditView::removeSelectedAttachment, this));
     addHandledSequence("y", std::bind(&EmailEditView::send, this));
+    addHandledSequence("f", std::bind(&EmailEditView::toggleSelectedPartFolding, this));
 }
 
 EmailEditView::~EmailEditView()
