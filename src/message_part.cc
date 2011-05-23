@@ -30,12 +30,13 @@ MessagePart::MessagePart(const std::string & id_)
 TextPart::TextPart(GMimePart * part)
     : MessagePart(g_mime_part_get_content_id(part) ? : std::string())
 {
-    GMimeContentType * contentType = g_mime_object_get_content_type(GMIME_OBJECT(part));
+    GMimeContentType * mimeContentType = g_mime_object_get_content_type(GMIME_OBJECT(part));
+    contentType = g_mime_content_type_to_string(mimeContentType);
 
     GMimeStream * contentStream = NULL;
 
     /* If this part is html text */
-    if (g_mime_content_type_is_type(contentType, "text", "html"))
+    if (g_mime_content_type_is_type(mimeContentType, "text", "html"))
     {
         int readPipes[2];
         int writePipes[2];
@@ -70,7 +71,7 @@ TextPart::TextPart(GMimePart * part)
         }
     }
     /* If this part is text */
-    else if (g_mime_content_type_is_type(contentType, "text", "*"))
+    else if (g_mime_content_type_is_type(mimeContentType, "text", "*"))
     {
         GMimeDataWrapper * content = g_mime_part_get_content_object(part);
         const char * charset = g_mime_object_get_content_type_parameter(GMIME_OBJECT(part), "charset");
@@ -100,7 +101,7 @@ TextPart::TextPart(GMimePart * part)
 
     if (contentStream == NULL)
         throw std::runtime_error(std::string("Cannot handle content type: ") +
-            g_mime_content_type_to_string(contentType));
+            contentType);
 
     GMimeIOStream stream(contentStream);
     g_object_unref(contentStream);
