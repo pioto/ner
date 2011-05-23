@@ -40,6 +40,7 @@ class EmailView : public LineBrowserView
 
         virtual void update();
         void saveSelectedPart();
+        void toggleSelectedPartFolding();
 
     protected:
         void calculateLines();
