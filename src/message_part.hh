@@ -46,6 +46,7 @@ struct TextPart : public MessagePart
     virtual void accept(MessagePartVisitor & visitor);
 
     std::vector<std::string> lines;
+    std::string contentType;
 };
 
 struct Attachment : public MessagePart
