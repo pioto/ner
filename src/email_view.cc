@@ -71,6 +71,8 @@ void EmailView::setEmail(const std::string & filename)
 
         /* Locate plain text parts */
         processMimePart(mimePart, std::back_inserter(_parts));
+        if (not _parts.empty())
+            _parts[0]->folded = false;
 
         g_object_unref(mimePart);
     }
@@ -156,6 +158,11 @@ void EmailView::saveSelectedPart()
 {
     MessagePartSaveVisitor saver;
     (*selectedPart())->accept(saver);
+}
+
+void EmailView::toggleSelectedPartFolding()
+{
+    (*selectedPart())->folded = not (*selectedPart())->folded;
 }
 
 int EmailView::visibleLines() const
