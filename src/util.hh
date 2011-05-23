@@ -59,35 +59,40 @@ template <class OutputIterator>
     }
     else if (g_mime_content_type_is_type(contentType, "multipart", "alternative"))
     {
-        std::map<int, std::pair<const char *, const char *>> contentTypePriorities{
-            { 100,  std::make_pair("text", "plain") },
-            { 50,   std::make_pair("text", "html") },
-            { 20,   std::make_pair("text", "*") },
-            { 1,    std::make_pair("*", "*") }
+        static std::vector<std::tuple<int, const char *, const char *>> contentTypePriorities{
+            std::make_tuple( 100,  "text", "plain" ),
+            std::make_tuple( 50,   "text", "html" ),
+            std::make_tuple( 20,   "text", "*" ),
+            std::make_tuple( 1,    "*", "*" )
         };
 
-        GMimeObject * bestPart = NULL;
-        int bestPriority = 0;
-
-        for (int index = 0, count = g_mime_multipart_get_count(GMIME_MULTIPART(part));
-            index < count; ++index)
+        int count = g_mime_multipart_get_count(GMIME_MULTIPART(part));
+        std::vector<std::pair<GMimeObject*, int>> subpartsWithPriority;
+        subpartsWithPriority.reserve(count);
+        for (int index = 0; index < count; ++index)
         {
-            GMimeObject * currentPart = g_mime_multipart_get_part(GMIME_MULTIPART(part), index);
-            GMimeContentType * partContentType = g_mime_object_get_content_type(currentPart);
+            GMimeObject * subpart = g_mime_multipart_get_part(GMIME_MULTIPART(part), index);
+            GMimeContentType * subpartContentType = g_mime_object_get_content_type(subpart);
+            int subpartPriority = 0;
 
-            for (auto priority = contentTypePriorities.upper_bound(bestPriority),
-                e = contentTypePriorities.end(); priority != e; ++priority)
+            for (auto priority = contentTypePriorities.begin();
+                 priority != contentTypePriorities.end(); ++priority)
             {
-                if (g_mime_content_type_is_type(partContentType, priority->second.first,
-                    priority->second.second))
-                {
-                    bestPart = currentPart;
-                    bestPriority = priority->first;
-                }
+                if (subpartPriority < std::get<0>(*priority)
+                    and g_mime_content_type_is_type(subpartContentType, std::get<1>(*priority), std::get<2>(*priority)))
+                    subpartPriority = std::get<0>(*priority);
             }
-        }
 
-        processMimePart(bestPart, destination);
+            subpartsWithPriority.push_back(std::make_pair(subpart, subpartPriority));
+        }
+        std::sort(subpartsWithPriority.begin(), subpartsWithPriority.end(),
+                  [] (const std::pair<GMimeObject*, int>& lhs,
+                      const std::pair<GMimeObject*, int>& rhs)
+                  { return lhs.second > rhs.second; });
+
+        for (auto subpart = subpartsWithPriority.begin();
+             subpart != subpartsWithPriority.end(); ++subpart)
+            processMimePart(subpart->first, destination);
     }
     else if (g_mime_content_type_is_type(contentType, "multipart", "*"))
     {
