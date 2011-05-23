@@ -36,6 +36,35 @@ MessagePartDisplayVisitor::MessagePartDisplayVisitor(WINDOW * window,
 
 void MessagePartDisplayVisitor::visit(const TextPart & part)
 {
+    if (_messageRow >= _offset && _row < _area.y + _area.height)
+    {
+        bool selected = _messageRow == _selection;
+
+        int x = _area.x;
+        wmove(_window, _row++, _area.x);
+
+        attr_t attributes = 0;
+        x += NCurses::addChar(_window, part.folded ? '+' : '-',
+                              A_BOLD | attributes, ColorID::AttachmentFilename);
+        NCurses::checkMove(_window, ++x);
+
+        if (selected)
+        {
+            attributes |= A_REVERSE;
+            wchgat(_window, -1, A_REVERSE, 0, NULL);
+        }
+
+        x += NCurses::addPlainString(_window, "Text Part: ", attributes);
+        NCurses::checkMove(_window, x);
+
+        x += NCurses::addPlainString(_window, part.contentType, attributes,
+                                     ColorID::AttachmentMimeType);
+        NCurses::checkMove(_window, x - 1);
+        ++_messageRow;
+    }
+    if (part.folded)
+        return;
+
     for (auto line = part.lines.begin(), e = part.lines.end(); line != e; ++line)
     {
         unsigned citationLevel = 0;
