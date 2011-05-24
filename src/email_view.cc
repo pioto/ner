@@ -87,7 +87,7 @@ void EmailView::update()
 {
     int row = 0;
 
-    _partsLastLine.clear();
+    _partsEndLine.clear();
     werase(_window);
 
     for (auto header = _visibleHeaders.begin(), e = _visibleHeaders.end(); header != e; ++header, ++row)
@@ -124,7 +124,7 @@ void EmailView::update()
     for (auto part = _parts.begin(), e = _parts.end(); part != e; ++part)
     {
         (*part)->accept(displayVisitor);
-        _partsLastLine.push_back(displayVisitor.lines());
+        _partsEndLine.push_back(displayVisitor.lines());
     }
 
     row = displayVisitor.row();
@@ -146,9 +146,9 @@ void EmailView::update()
 
 EmailView::PartList::iterator EmailView::selectedPart()
 {
-    for (size_t index; index < _partsLastLine.size(); ++index)
+    for (size_t index = 0; index < _partsEndLine.size(); ++index)
     {
-        if (_selectedIndex < _partsLastLine[index])
+        if (_selectedIndex < _partsEndLine[index])
             return _parts.begin() + index;
     }
     return _parts.begin();
