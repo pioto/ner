@@ -55,7 +55,7 @@ class EmailView : public LineBrowserView
         std::vector<std::string> _visibleHeaders;
 
         PartList _parts;
-        std::vector<int> _partsLastLine;
+        std::vector<int> _partsEndLine;
 };
 
 #endif
