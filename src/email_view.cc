@@ -22,6 +22,7 @@
 #include "colors.hh"
 #include "ncurses.hh"
 #include "util.hh"
+#include "status_bar.hh"
 #include "message_part_display_visitor.hh"
 #include "message_part_save_visitor.hh"
 
@@ -162,7 +163,18 @@ void EmailView::saveSelectedPart()
 
 void EmailView::toggleSelectedPartFolding()
 {
-    (*selectedPart())->folded = not (*selectedPart())->folded;
+    PartList::iterator part = selectedPart();
+    (*part)->folded = not (*part)->folded;
+
+    if (part != _parts.begin())
+        _selectedIndex = _partsEndLine[std::distance(_parts.begin(), part) - 1];
+    else
+        _selectedIndex = 0;
+
+    makeSelectionVisible();
+
+    StatusBar::instance().update();
+    StatusBar::instance().refresh();
 }
 
 int EmailView::visibleLines() const
