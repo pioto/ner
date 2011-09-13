@@ -118,8 +118,12 @@ ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geome
         {
             InternetAddress * address = internet_address_list_get_address(addresses, index);
 
-            if (!userIdentity)
-                userIdentity = IdentityManager::instance().findIdentity(address);
+            const Identity* identityOfAddress = IdentityManager::instance().findIdentity(address);
+            if (identityOfAddress)
+            {
+                if (!userIdentity)
+                    userIdentity = identityOfAddress;
+            }
             else if (!replyTo)
                 internet_address_list_add(g_mime_message_get_recipients(replyMessage, *recipientType), address);
         }
