@@ -34,6 +34,7 @@ EmailView::EmailView(const View::Geometry & geometry)
         _visibleHeaders{
             "From",
             "To",
+            "Cc",
             "Subject",
         },
         _lineCount(0)
