@@ -146,7 +146,7 @@ ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geome
     GMimeObject * part = g_mime_message_get_mime_part(originalMessage);
 
     std::vector<std::shared_ptr<MessagePart>> parts;
-    processMimePart(part, std::back_inserter(parts));
+    processMimePart(part, std::back_inserter(parts), true);
 
     MessagePartTextVisitor<std::ostream_iterator<std::string>> visitor(
         std::ostream_iterator<std::string>(messageContentStream, "\n> "));

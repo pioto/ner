@@ -44,7 +44,8 @@ template <typename Type>
 };
 
 template <class OutputIterator>
-    void processMimePart(GMimeObject * part, OutputIterator destination)
+    void processMimePart(GMimeObject * part, OutputIterator destination,
+                         bool onlyFirstForAlternative = false)
 {
     GMimeContentType * contentType = g_mime_object_get_content_type(part);
 
@@ -92,7 +93,11 @@ template <class OutputIterator>
 
         for (auto subpart = subpartsWithPriority.begin();
              subpart != subpartsWithPriority.end(); ++subpart)
+        {
             processMimePart(subpart->first, destination);
+            if (onlyFirstForAlternative)
+                break;
+        }
     }
     else if (g_mime_content_type_is_type(contentType, "multipart", "*"))
     {
