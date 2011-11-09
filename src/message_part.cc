@@ -45,10 +45,6 @@ TextPart::TextPart(GMimePart * part)
         pipe(writePipes);
 
         GMimeDataWrapper * content = g_mime_part_get_content_object(part);
-        GMimeStream * pipeStream = g_mime_stream_fs_new(writePipes[1]);
-        g_mime_data_wrapper_write_to_stream(content, pipeStream);
-
-        close(writePipes[1]);
 
         if (fork() == 0)
         {
@@ -65,6 +61,10 @@ TextPart::TextPart(GMimePart * part)
         {
             close(writePipes[0]);
             close(readPipes[1]);
+
+            GMimeStream * pipeStream = g_mime_stream_fs_new(writePipes[1]);
+            g_mime_data_wrapper_write_to_stream(content, pipeStream);
+            close(writePipes[1]);
 
             contentStream = g_mime_stream_fs_new(readPipes[0]);
             g_mime_stream_fs_set_owner(GMIME_STREAM_FS(contentStream), true);
