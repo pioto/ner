@@ -22,6 +22,9 @@
 #include "gmime_iostream.hh"
 #include "message_part_visitor.hh"
 
+#include <sys/types.h>
+#include <sys/wait.h>
+
 MessagePart::MessagePart(const std::string & id_)
     : id(id_), folded(true)
 {
@@ -46,18 +49,7 @@ TextPart::TextPart(GMimePart * part)
 
         GMimeDataWrapper * content = g_mime_part_get_content_object(part);
 
-        if (fork() == 0)
-        {
-            close(readPipes[0]);
-            close(writePipes[1]);
-
-            dup2(readPipes[1], 1);
-            dup2(writePipes[0], 0);
-
-            execlp("sh", "sh", "-c", NerConfig::instance().command("html").c_str(), NULL);
-            exit(0);
-        }
-        else
+        if (pid_t pid = fork())
         {
             close(writePipes[0]);
             close(readPipes[1]);
@@ -68,6 +60,20 @@ TextPart::TextPart(GMimePart * part)
 
             contentStream = g_mime_stream_fs_new(readPipes[0]);
             g_mime_stream_fs_set_owner(GMIME_STREAM_FS(contentStream), true);
+
+            int status;
+            waitpid(pid, &status, 0);
+        }
+        else
+        {
+            close(readPipes[0]);
+            close(writePipes[1]);
+
+            dup2(readPipes[1], 1);
+            dup2(writePipes[0], 0);
+
+            execlp("sh", "sh", "-c", NerConfig::instance().command("html").c_str(), NULL);
+            exit(0);
         }
     }
     /* If this part is text */
