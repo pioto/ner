@@ -133,6 +133,13 @@ ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geome
 
     if (userIdentity)
         _identity = userIdentity;
+    else
+    {
+        std::string identityName = StatusBar::instance().prompt("Identity: ", "identity");
+
+        if (!identityName.empty())
+            setIdentity(identityName);
+    }
 
     /* Create a internet address for the user */
     InternetAddress * userAddress = internet_address_mailbox_new(_identity->name.c_str(),

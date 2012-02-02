@@ -45,6 +45,7 @@ class IdentityManager
 
         const Identity * defaultIdentity() const;
         const Identity * findIdentity(InternetAddress * address);
+        const Identity * findIdentity(const std::string & name);
 
     private:
         IdentityManager();

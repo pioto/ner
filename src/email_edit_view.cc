@@ -206,5 +206,13 @@ void EmailEditView::removeSelectedAttachment()
         _parts.erase(selection);
 }
 
+void EmailEditView::setIdentity(const std::string & name)
+{
+    const Identity * identity = IdentityManager::instance().findIdentity(name);
+
+    if (identity)
+        _identity = identity;
+}
+
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
 

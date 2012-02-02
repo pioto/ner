@@ -35,6 +35,10 @@ ComposeView::ComposeView(const View::Geometry & geometry)
     std::string cc = StatusBar::instance().prompt("Cc: ", "compose-cc");
     std::string bcc = StatusBar::instance().prompt("Bcc: ", "compose-bcc");
     std::string subject = StatusBar::instance().prompt("Subject: ", "compose-subject");
+    std::string identityName = StatusBar::instance().prompt("Identity: ", "identity");
+
+    if (!identityName.empty())
+        setIdentity(identityName);
 
     InternetAddress * from = internet_address_mailbox_new(_identity->name.c_str(),
         _identity->email.c_str());

@@ -54,6 +54,12 @@ class EmailEditView : public EmailView
          */
         void removeSelectedAttachment();
 
+        /**
+         * Sets the identity used for sending the message. If the specified
+         * identity cannot be found, the identity will not be changed.
+         */
+        void setIdentity(const std::string & name);
+
         std::string _messageFile;
         const Identity * _identity;
 };

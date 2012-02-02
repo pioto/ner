@@ -128,5 +128,15 @@ const Identity * IdentityManager::findIdentity(InternetAddress * address)
     return 0;
 }
 
+const Identity * IdentityManager::findIdentity(const std::string & name)
+{
+    auto identity = _identities.find(name);
+
+    if (identity != _identities.end())
+        return &identity->second;
+
+    return 0;
+}
+
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
 
