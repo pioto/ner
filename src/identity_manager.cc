@@ -29,12 +29,16 @@ void operator>>(const YAML::Node & node, Identity & identity)
 
     /* Optional entries */
     const YAML::Node * signatureNode = node.FindValue("signature");
+    const YAML::Node * sendNode = node.FindValue("send");
     const YAML::Node * sentMailNode = node.FindValue("sent_mail");
 
     if (signatureNode)
         *signatureNode >> identity.signaturePath;
     else
         identity.signaturePath.clear();
+
+    if (sendNode)
+        *sendNode >> identity.sendCommand;
 
     std::string tagPrefix = "tag:the-ner.org,2010:";
 

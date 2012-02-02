@@ -27,6 +27,7 @@ identities:
         name: Batman
         email: batman@domain.tld
         signature: /home/user/.signature
+        send: msmtp -a batman -t
         sent_mail: !maildir /home/user/mail/sent
 
 searches:

@@ -144,7 +144,9 @@ void EmailEditView::send()
     }
 
     /* Send the message */
-    FILE * sendMailPipe = popen(NerConfig::instance().command("send").c_str(), "w");
+    std::string sendCommand = _identity->sendCommand.empty() ?
+        NerConfig::instance().command("send") : _identity->sendCommand;
+    FILE * sendMailPipe = popen(sendCommand.c_str(), "w");
     GMimeStream * sendMailStream = g_mime_stream_file_new(sendMailPipe);
     g_mime_stream_file_set_owner(GMIME_STREAM_FILE(sendMailStream), false);
     g_mime_object_write_to_stream(GMIME_OBJECT(message), sendMailStream);
