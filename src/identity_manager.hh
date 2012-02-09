@@ -22,7 +22,7 @@
 
 #include <string>
 #include <memory>
-#include <yaml.h>
+#include <yaml-cpp/yaml.h>
 
 #include "mail_store.hh"
 

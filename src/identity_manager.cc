@@ -46,9 +46,9 @@ void operator>>(const YAML::Node & node, Identity & identity)
 
     if (sentMailNode)
     {
-        if (sentMailNode->GetTag() == tagPrefix + "maildir")
+        if (sentMailNode->Tag() == tagPrefix + "maildir")
         {
-            std::string sentMailPath = *sentMailNode;
+            std::string sentMailPath = sentMailNode->to<std::string>();
             identity.sentMail = std::make_shared<Maildir>(sentMailPath);
         }
     }

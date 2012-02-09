@@ -18,7 +18,7 @@
  */
 
 #include <fstream>
-#include <yaml.h>
+#include <yaml-cpp/yaml.h>
 
 #include "ner_config.hh"
 #include "identity_manager.hh"
@@ -46,8 +46,8 @@ void operator>>(const YAML::Node & node, Color & color)
         { "white",      COLOR_WHITE }
     };
 
-    std::string foreground = *node.FindValue("fg");
-    std::string background = *node.FindValue("bg");
+    std::string foreground = node.FindValue("fg")->to<std::string>();
+    std::string background = node.FindValue("bg")->to<std::string>();
 
     color.foreground = ncursesColors.at(foreground);
     color.background = ncursesColors.at(background);
@@ -97,7 +97,7 @@ void NerConfig::load()
 
     const YAML::Node * defaultIdentity = document.FindValue("default_identity");
     if (defaultIdentity)
-        IdentityManager::instance().setDefaultIdentity(*defaultIdentity);
+        IdentityManager::instance().setDefaultIdentity(defaultIdentity->to<std::string>());
 
     /* General stuff */
     auto general = document.FindValue("general");
@@ -255,7 +255,7 @@ void NerConfig::load()
         };
 
         for (auto name = colors->begin(), e = colors->end(); name != e; ++name)
-            colorMap[colorNames.at(name.first())] = name.second();
+            colorMap[colorNames.at(name.first().to<std::string>())] = name.second().to<Color>();
     }
 
     for (auto color = colorMap.begin(), e = colorMap.end(); color != e; ++color)
