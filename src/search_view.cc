@@ -293,7 +293,7 @@ void SearchView::collectThreads()
     std::unique_lock<std::mutex> lock(_mutex);
     lock.unlock();
 
-    notmuch_database_t * database = Notmuch::openDatabase();
+    notmuch_database_t * database = Notmuch::readonlyDatabase();
     notmuch_query_t * query = notmuch_query_create(database, _searchTerms.c_str());
     notmuch_query_set_sort(query, NerConfig::instance().sortMode());
     notmuch_threads_t * threadIterator;
@@ -316,6 +316,7 @@ void SearchView::collectThreads()
 
     _collecting = false;
     notmuch_query_destroy(query);
+    notmuch_database_close(database);
 
     /* For cases when there are no matching threads */
     _condition.notify_one();

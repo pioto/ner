@@ -31,6 +31,7 @@
 namespace Notmuch
 {
     void initializeDatabase(const std::string & path);
+    notmuch_database_t * readonlyDatabase();
     void closeDatabase();
 
     notmuch_database_t * openDatabase(notmuch_database_mode_t mode = NOTMUCH_DATABASE_MODE_READ_ONLY);

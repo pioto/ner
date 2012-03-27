@@ -48,6 +48,12 @@ void Notmuch::initializeDatabase(const std::string & path)
     }
 }
 
+notmuch_database_t * Notmuch::readonlyDatabase()
+{
+    char * db = g_key_file_get_string(_config, "database", "path", NULL);
+    return notmuch_database_open(db, NOTMUCH_DATABASE_MODE_READ_ONLY);
+}
+
 void Notmuch::closeDatabase()
 {
     notmuch_database_close(_notmuchDatabase);
