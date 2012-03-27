@@ -25,6 +25,7 @@
 
 #include "line_browser_view.hh"
 #include "notmuch.hh"
+#include "thread.hh"
 
 class SearchView : public LineBrowserView
 {
@@ -37,8 +38,13 @@ class SearchView : public LineBrowserView
         virtual std::string name() const { return "search-view"; }
         virtual std::vector<std::string> status() const;
 
-        void openSelectedThread();
         void refreshThreads();
+
+        void openSelectedThread();
+        void archiveSelectedThread();
+
+        void addTags();
+        void removeTags();
 
     protected:
         virtual int lineCount() const;
@@ -53,7 +59,7 @@ class SearchView : public LineBrowserView
         std::condition_variable _condition;
         bool _collecting;
 
-        std::vector<NotMuch::Thread> _threads;
+        std::vector<Thread> _threads;
 };
 
 #endif

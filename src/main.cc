@@ -103,7 +103,7 @@ int main(int argc, char * argv[])
 
     try
     {
-        NotMuch::setConfig(configPath);
+        Notmuch::initializeDatabase(configPath);
         NerConfig::instance().load();
 
         if (NerConfig::instance().refreshView())
@@ -120,11 +120,14 @@ int main(int argc, char * argv[])
     catch (const std::exception & e)
     {
         endwin();
+        Notmuch::closeDatabase();
+
         throw;
     }
 
-    cleanup();
+    Notmuch::closeDatabase();
 
+    cleanup();
     g_mime_shutdown();
 
     return EXIT_SUCCESS;

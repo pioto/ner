@@ -17,9 +17,13 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <sstream>
+#include <cstring>
+
 #include "thread_message_view.hh"
 #include "notmuch.hh"
 #include "colors.hh"
+#include "line_editor.hh"
 
 const int threadViewHeight = 8;
 
@@ -30,7 +34,7 @@ ThreadMessageView::ThreadMessageView(const std::string & threadId, const View::G
             geometry.width, geometry.height - threadViewHeight - 1
         })
 {
-    _messageView.setMessage(_threadView.selectedMessage().id);
+    loadSelectedMessage();
 
     /* Key Sequences */
     addHandledSequence("j",          std::bind(&MessageView::next, &_messageView));
@@ -49,6 +53,9 @@ ThreadMessageView::ThreadMessageView(const std::string & threadId, const View::G
     addHandledSequence("<End>",      std::bind(&MessageView::moveToBottom, &_messageView));
     addHandledSequence("<C-s>",      std::bind(&MessageView::saveSelectedPart, &_messageView));
     addHandledSequence("f",          std::bind(&MessageView::toggleSelectedPartFolding, &_messageView));
+
+    addHandledSequence("+",          std::bind(&ThreadMessageView::addTags, this));
+    addHandledSequence("-",          std::bind(&ThreadMessageView::removeTags, this));
 
     addHandledSequence("r",          std::bind(&ThreadView::reply, &_threadView));
 
@@ -101,6 +108,9 @@ void ThreadMessageView::previousMessage()
 void ThreadMessageView::loadSelectedMessage()
 {
     _messageView.setMessage(_threadView.selectedMessage().id);
+
+    Message message = Notmuch::getMessage(_threadView.selectedMessage().id);
+    message.removeTag("unread");
 }
 
 std::vector<std::string> ThreadMessageView::status() const
@@ -110,6 +120,56 @@ std::vector<std::string> ThreadMessageView::status() const
     std::copy(messageViewStatus.begin(), messageViewStatus.end(), std::back_inserter(mergedStatus));
 
     return mergedStatus;
+}
+
+void ThreadMessageView::addTags()
+{
+    std::string _messageId = _threadView.selectedMessage().id;
+    Message message = Notmuch::getMessage(_messageId);
+
+    try
+    {
+        std::string tags = StatusBar::instance().prompt("Tags: ", "tags");
+
+        if (!tags.empty()) {
+            std::stringstream ss(tags);
+            std::string s;
+
+            while (std::getline(ss, s, ' ')) {
+                message.addTag(s);
+            }
+
+            update();
+        }
+    }
+    catch (const AbortInputException&)
+    {
+    }
+}
+
+void ThreadMessageView::removeTags()
+{
+    std::string _messageId = _threadView.selectedMessage().id;
+    Message message = Notmuch::getMessage(_messageId);
+
+    try
+    {
+        std::string tags = StatusBar::instance().prompt("Tags: ", "tags");
+
+        if (!tags.empty()) {
+            std::stringstream ss(tags);
+            std::string s;
+
+            while (std::getline(ss, s, ' ')) {
+                message.removeTag(s);
+            }
+
+            update();
+        }
+    }
+    catch (const AbortInputException&)
+    {
+    }
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

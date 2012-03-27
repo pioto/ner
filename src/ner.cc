@@ -34,6 +34,7 @@
 #include "colors.hh"
 #include "notmuch.hh"
 #include "line_editor.hh"
+#include "message.hh"
 
 Ner::Ner()
 {
@@ -142,7 +143,7 @@ void Ner::openMessage()
             messageView->setMessage(messageId);
             _viewManager.addView(std::move(messageView));
         }
-        catch (const NotMuch::InvalidMessageException & e)
+        catch (const InvalidMessageException & e)
         {
             StatusBar::instance().displayMessage(e.what());
         }
@@ -159,7 +160,7 @@ void Ner::openThread()
         {
             _viewManager.addView(std::make_shared<ThreadView>(threadId));
         }
-        catch (const NotMuch::InvalidThreadException & e)
+        catch (const InvalidThreadException & e)
         {
             _statusBar.displayMessage(e.what());
         }

@@ -21,133 +21,30 @@
 #define NER_NOTMUCH_H 1
 
 #include <string>
-#include <set>
-#include <map>
 #include <vector>
+
+#include "thread.hh"
+
 #include <notmuch.h>
 #include <glib.h>
 
-namespace NotMuch
+namespace Notmuch
 {
-    class InvalidThreadException : public std::exception
-    {
-        public:
-            InvalidThreadException(const std::string & threadId);
-            ~InvalidThreadException() throw();
-
-            virtual const char * what() const throw();
-
-        private:
-            std::string _id;
-    };
-
-    class InvalidMessageException : public std::exception
-    {
-        public:
-            InvalidMessageException(const std::string & messageId);
-            ~InvalidMessageException() throw();
-
-            virtual const char * what() const throw();
-
-        private:
-            std::string _id;
-    };
-
-    struct Thread
-    {
-        Thread(notmuch_thread_t * thread);
-
-        std::string id;
-        std::string subject;
-        std::string authors;
-        uint32_t totalMessages;
-        uint32_t matchedMessages;
-        time_t newestDate;
-        time_t oldestDate;
-        std::set<std::string> tags;
-    };
-
-    template <class T>
-        class MessageTreeIterator
-    {
-        public:
-            template <class InputIterator>
-                explicit MessageTreeIterator(InputIterator begin, InputIterator end)
-            {
-                for (; begin < end; ++begin)
-                    messages.push_back(&*begin);
-            }
-
-            MessageTreeIterator()
-            {
-            }
-
-            typedef T value_type;
-            typedef T & reference;
-            typedef T * pointer;
-            typedef std::ptrdiff_t difference_type;
-            typedef std::input_iterator_tag iterator_category;
-
-            reference operator*() const
-            {
-                return *messages.back();
-            }
-
-            pointer operator->() const
-            {
-                return messages.back();
-            }
-
-            reference operator++()
-            {
-                reference message = *messages.back();
-                messages.pop_back();
-
-                for (auto reply = message.replies.rbegin(), e = message.replies.rend();
-                    reply != e; ++reply)
-                {
-                    messages.push_back(&*reply);
-                }
-            }
-
-            bool operator==(const MessageTreeIterator & other) const
-            {
-                return messages.size() == other.messages.size() &&
-                    (messages.size() == 0 || messages.back()->id == other.messages.back()->id);
-            }
-
-            bool operator!=(const MessageTreeIterator & other) const
-            {
-                return !operator==(other);
-            }
-
-        private:
-            std::vector<T *> messages;
-    };
-
-    struct Message
-    {
-        typedef MessageTreeIterator<Message> iterator;
-        typedef MessageTreeIterator<const Message> const_iterator;
-
-        Message(notmuch_message_t * message);
-
-        std::string id;
-        std::string filename;
-        time_t date;
-        bool matched;
-        std::map<std::string, std::string> headers;
-        std::set<std::string> tags;
-        std::vector<Message> replies;
-    };
+    void initializeDatabase(const std::string & path);
+    void closeDatabase();
 
     notmuch_database_t * openDatabase(notmuch_database_mode_t mode = NOTMUCH_DATABASE_MODE_READ_ONLY);
 
+    unsigned countMessages(std::string query);
+    std::vector<Thread> & searchThreads(std::string query);
+
+    notmuch_thread_t * thread(std::string id, notmuch_query_t ** queryp);
+    Thread & getThread(std::string id);
+
+    notmuch_message_t * message(std::string id);
+    Message & getMessage(std::string id);
+
     GKeyFile * config();
-    void setConfig(const std::string & path);
 };
 
 #endif
-
-// vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
-

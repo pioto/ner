@@ -32,6 +32,7 @@
 #include "ncurses.hh"
 #include "notmuch.hh"
 #include "status_bar.hh"
+#include "line_editor.hh"
 
 const int newestDateWidth = 13;
 const int messageCountWidth = 8;
@@ -49,6 +50,11 @@ SearchView::SearchView(const std::string & search, const View::Geometry & geomet
     /* Key Sequences */
     addHandledSequence("=", std::bind(&SearchView::refreshThreads, this));
     addHandledSequence("\n", std::bind(&SearchView::openSelectedThread, this));
+
+    addHandledSequence("a", std::bind(&SearchView::archiveSelectedThread, this));
+
+    addHandledSequence("+", std::bind(&SearchView::addTags, this));
+    addHandledSequence("-", std::bind(&SearchView::removeTags, this));
 
     std::unique_lock<std::mutex> lock(_mutex);
     while (_threads.size() < getmaxy(_window) && _collecting)
@@ -179,11 +185,35 @@ void SearchView::openSelectedThread()
             ViewManager::instance().addView(std::make_shared<ThreadMessageView>(
                 _threads.at(_selectedIndex).id));
         }
-        catch (const NotMuch::InvalidThreadException & e)
+        catch (const InvalidThreadException & e)
         {
             StatusBar::instance().displayMessage(e.what());
         }
-        catch (const NotMuch::InvalidMessageException & e)
+        catch (const InvalidMessageException & e)
+        {
+            StatusBar::instance().displayMessage(e.what());
+        }
+    }
+}
+
+void SearchView::archiveSelectedThread()
+{
+    std::lock_guard<std::mutex> lock(_mutex);
+
+    if (_selectedIndex < _threads.size())
+    {
+        try
+        {
+            _threads.at(_selectedIndex).removeTag("inbox");
+
+            next();
+            update();
+        }
+        catch (const InvalidThreadException & e)
+        {
+            StatusBar::instance().displayMessage(e.what());
+        }
+        catch (const InvalidMessageException & e)
         {
             StatusBar::instance().displayMessage(e.what());
         }
@@ -263,7 +293,7 @@ void SearchView::collectThreads()
     std::unique_lock<std::mutex> lock(_mutex);
     lock.unlock();
 
-    notmuch_database_t * database = NotMuch::openDatabase();
+    notmuch_database_t * database = Notmuch::openDatabase();
     notmuch_query_t * query = notmuch_query_create(database, _searchTerms.c_str());
     notmuch_query_set_sort(query, NerConfig::instance().sortMode());
     notmuch_threads_t * threadIterator;
@@ -275,8 +305,7 @@ void SearchView::collectThreads()
         lock.lock();
 
         notmuch_thread_t * thread = notmuch_threads_get(threadIterator);
-        _threads.push_back(thread);
-        notmuch_thread_destroy(thread);
+        _threads.push_back(Thread(thread));
 
         _condition.notify_one();
 
@@ -286,12 +315,70 @@ void SearchView::collectThreads()
     }
 
     _collecting = false;
-    notmuch_threads_destroy(threadIterator);
     notmuch_query_destroy(query);
-    notmuch_database_close(database);
 
     /* For cases when there are no matching threads */
     _condition.notify_one();
+}
+
+void SearchView::addTags()
+{
+    std::lock_guard<std::mutex> lock(_mutex);
+
+    if (_selectedIndex < _threads.size())
+    {
+        Thread & thread = _threads.at(_selectedIndex);
+
+        try
+        {
+            std::string tags = StatusBar::instance().prompt("Tags: ", "tags");
+
+            if (!tags.empty()) {
+                std::stringstream ss(tags);
+                std::string s;
+
+                while (std::getline(ss, s, ' ')) {
+                    thread.addTag(s);
+                }
+
+                next();
+                update();
+            }
+        }
+        catch (const AbortInputException&)
+        {
+        }
+    }
+}
+
+void SearchView::removeTags()
+{
+    std::lock_guard<std::mutex> lock(_mutex);
+
+    if (_selectedIndex < _threads.size())
+    {
+        Thread & thread = _threads.at(_selectedIndex);
+
+        try
+        {
+            std::string tags = StatusBar::instance().prompt("Tags: ", "tags");
+
+            if (!tags.empty()) {
+                std::stringstream ss(tags);
+                std::string s;
+
+                while (std::getline(ss, s, ' ')) {
+                    thread.removeTag(s);
+                }
+
+                next();
+                update();
+            }
+        }
+        catch (const AbortInputException&)
+        {
+        }
+    }
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

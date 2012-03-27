@@ -82,13 +82,13 @@ void IdentityManager::load(const YAML::Node * node)
     else
     {
         Identity identity;
-        identity.name = g_key_file_get_string(NotMuch::config(), "user", "name", NULL);
+        identity.name = g_key_file_get_string(Notmuch::config(), "user", "name", NULL);
 
-        identity.email = g_key_file_get_string(NotMuch::config(), "user", "primary_email", NULL);
+        identity.email = g_key_file_get_string(Notmuch::config(), "user", "primary_email", NULL);
         _identities.insert(std::make_pair(identity.email, identity));
 
         size_t addressesLength;
-        char ** addresses = g_key_file_get_string_list(NotMuch::config(), "user", "other_email",
+        char ** addresses = g_key_file_get_string_list(Notmuch::config(), "user", "other_email",
             &addressesLength, NULL);
 
         for (int index = 0; index < addressesLength; ++index)

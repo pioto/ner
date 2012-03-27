@@ -40,6 +40,9 @@ class ThreadMessageView : public View
         void nextMessage();
         void previousMessage();
 
+        void addTags();
+        void removeTags();
+
     protected:
         void loadSelectedMessage();
 
