@@ -28,7 +28,7 @@ class MessagePartDisplayVisitor : public MessagePartVisitor
 {
     public:
         MessagePartDisplayVisitor(WINDOW * window, const View::Geometry & area,
-            int offset, int selection);
+            int offset, int selection, bool displayPartName);
 
         virtual void visit(const TextPart & part);
         virtual void visit(const Attachment & part);
@@ -43,6 +43,8 @@ class MessagePartDisplayVisitor : public MessagePartVisitor
         int _messageRow;
         int _offset;
         int _selection;
+
+        bool _displayPartName;
 };
 
 #endif

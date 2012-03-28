@@ -120,7 +120,7 @@ void EmailView::update()
     ++row;
 
     MessagePartDisplayVisitor displayVisitor(_window, View::Geometry{ 0, row,
-        _geometry.width, visibleLines() }, _offset, _selectedIndex);
+        _geometry.width, visibleLines() }, _offset, _selectedIndex, _parts.size() > 1);
 
 
     for (auto part = _parts.begin(), e = _parts.end(); part != e; ++part)
@@ -165,6 +165,9 @@ void EmailView::saveSelectedPart()
 void EmailView::toggleSelectedPartFolding()
 {
     PartList::iterator part = selectedPart();
+    if (_parts.size() == 1)
+        return;
+
     (*part)->folded = not (*part)->folded;
 
     if (part != _parts.begin())

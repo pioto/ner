@@ -28,15 +28,15 @@
 const int wrapWidth(80);
 
 MessagePartDisplayVisitor::MessagePartDisplayVisitor(WINDOW * window,
-    const View::Geometry & area, int offset, int selection)
+    const View::Geometry & area, int offset, int selection, bool displayPartName)
     : _window(window), _area(area), _offset(offset), _row(area.y), _messageRow(0),
-        _selection(selection)
+        _selection(selection), _displayPartName(displayPartName)
 {
 }
 
 void MessagePartDisplayVisitor::visit(const TextPart & part)
 {
-    if (_messageRow >= _offset && _row < _area.y + _area.height)
+    if (_messageRow >= _offset && _row < _area.y + _area.height && _displayPartName)
     {
         bool selected = _messageRow == _selection;
 
