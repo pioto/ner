@@ -143,6 +143,13 @@ void EmailEditView::send()
         g_object_unref(multipart);
     }
 
+    if (_identity->sendCopyToSelf) {
+        InternetAddress * userAddress = internet_address_mailbox_new(_identity->name.c_str(), _identity->email.c_str());
+        InternetAddressList * bcc = g_mime_message_get_recipients(message, GMIME_RECIPIENT_TYPE_BCC);
+        internet_address_list_add(bcc, userAddress);
+        g_object_unref(userAddress);
+    }
+
     /* Send the message */
     std::string sendCommand = _identity->sendCommand.empty() ?
         NerConfig::instance().command("send") : _identity->sendCommand;

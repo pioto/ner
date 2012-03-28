@@ -31,7 +31,10 @@ struct Identity
     std::string name;
     std::string email;
     std::string signaturePath;
+
+    bool sendCopyToSelf;
     std::string sendCommand;
+
     std::shared_ptr<MailStore> sentMail;
 };
 

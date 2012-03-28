@@ -29,6 +29,7 @@ void operator>>(const YAML::Node & node, Identity & identity)
 
     /* Optional entries */
     const YAML::Node * signatureNode = node.FindValue("signature");
+    const YAML::Node * sendCopyToSelfNode = node.FindValue("bcc");
     const YAML::Node * sendNode = node.FindValue("send");
     const YAML::Node * sentMailNode = node.FindValue("sent_mail");
 
@@ -36,6 +37,9 @@ void operator>>(const YAML::Node & node, Identity & identity)
         *signatureNode >> identity.signaturePath;
     else
         identity.signaturePath.clear();
+
+    if (sendCopyToSelfNode)
+        *sendCopyToSelfNode >> identity.sendCopyToSelf;
 
     if (sendNode)
         *sendNode >> identity.sendCommand;
