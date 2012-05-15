@@ -17,6 +17,7 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdexcept>
 #include <glib-object.h>
 
 #include "notmuch.hh"
@@ -112,7 +113,12 @@ Message::Message(notmuch_message_t * message)
 
 notmuch_database_t * NotMuch::openDatabase(notmuch_database_mode_t mode)
 {
-    return notmuch_database_open(g_key_file_get_string(_config, "database", "path", NULL), mode);
+    notmuch_database_t *db;
+    notmuch_status_t s = notmuch_database_open(g_key_file_get_string(_config, "database", "path", NULL), mode, &db);
+    if (s != NOTMUCH_STATUS_SUCCESS) {
+        throw std::runtime_error("Open database failed: "+std::string(notmuch_status_to_string(s)));
+    }
+    return db;
 }
 
 GKeyFile * NotMuch::config()
