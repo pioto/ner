@@ -18,6 +18,8 @@ decltype(a) b;
 typedef check<int> check_type;
 check_type c;
 check_type& cr = c;
+
+auto lambda = @<:@@:>@(int x) { return x + x; };
           ])
 
 dnl AX_PROG_CXX_CXX0X(ACTION-IF-FOUND, ACTION-IF-NOT-FOUND)

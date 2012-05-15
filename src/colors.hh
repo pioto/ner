@@ -20,6 +20,8 @@
 #ifndef NER_COLORS_H
 #define NER_COLORS_H 1
 
+#include <map>
+
 enum ColorID
 {
     /* General */
@@ -63,8 +65,22 @@ enum ColorID
     /* Message Parts */
     AttachmentFilename,
     AttachmentMimeType,
-    AttachmentFilesize
+    AttachmentFilesize,
+
+    /* Citation levels */
+    CitationLevel1,
+    CitationLevel2,
+    CitationLevel3,
+    CitationLevel4
 };
+
+struct Color
+{
+    int foreground;
+    int background;
+};
+
+extern std::map<ColorID, Color> defaultColorMap;
 
 #endif
 

@@ -36,9 +36,59 @@ MessagePartDisplayVisitor::MessagePartDisplayVisitor(WINDOW * window,
 
 void MessagePartDisplayVisitor::visit(const TextPart & part)
 {
+    if (_messageRow >= _offset && _row < _area.y + _area.height)
+    {
+        bool selected = _messageRow == _selection;
+
+        int x = _area.x;
+        wmove(_window, _row++, _area.x);
+
+        attr_t attributes = 0;
+        x += NCurses::addChar(_window, part.folded ? '+' : '-',
+                              A_BOLD | attributes, ColorID::AttachmentFilename);
+        NCurses::checkMove(_window, ++x);
+
+        if (selected)
+        {
+            attributes |= A_REVERSE;
+            wchgat(_window, -1, A_REVERSE, 0, NULL);
+        }
+
+        x += NCurses::addPlainString(_window, "Text Part: ", attributes);
+        NCurses::checkMove(_window, x);
+
+        x += NCurses::addPlainString(_window, part.contentType, attributes,
+                                     ColorID::AttachmentMimeType);
+        NCurses::checkMove(_window, x - 1);
+        ++_messageRow;
+    }
+    if (part.folded)
+        return;
+
     for (auto line = part.lines.begin(), e = part.lines.end(); line != e; ++line)
     {
-        for (auto lineWrapper = LineWrapper(*line); !lineWrapper.done(); ++_messageRow)
+        unsigned citationLevel = 0;
+        for (auto character = line->begin(); character != line->end(); ++character)
+        {
+            if (*character == '>')
+                ++citationLevel;
+            else if (*character != ' ')
+                break;
+        }
+
+        short color = 0;
+        if (citationLevel)
+        {
+            switch (citationLevel % 4)
+            {
+                case 1: color = ColorID::CitationLevel1; break;
+                case 2: color = ColorID::CitationLevel2; break;
+                case 3: color = ColorID::CitationLevel3; break;
+                case 0: color = ColorID::CitationLevel4; break;
+            }
+        }
+
+        for (auto lineWrapper = LineWrapper(*line, _area.width-1); !lineWrapper.done(); ++_messageRow)
         {
             bool selected = _messageRow == _selection;
             bool wrapped = lineWrapper.wrapped();
@@ -61,7 +111,7 @@ void MessagePartDisplayVisitor::visit(const TextPart & part)
                 wchgat(_window, _area.width - 2, A_REVERSE, 0, NULL);
             }
 
-            if (NCurses::addUtf8String(_window, wrappedLine.c_str(), attributes) >
+            if (NCurses::addUtf8String(_window, wrappedLine.c_str(), attributes, color) >
                 _area.width - _area.y - 2)
             {
                 NCurses::addCutOffIndicator(_window, attributes);

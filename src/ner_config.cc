@@ -1,6 +1,6 @@
 /* ner: src/ner_config.cc
  *
- * Copyright (c) 2010 Michael Forney
+ * Copyright (c) 2010, 2012 Michael Forney
  *
  * This file is a part of ner.
  *
@@ -18,7 +18,7 @@
  */
 
 #include <fstream>
-#include <yaml.h>
+#include <yaml-cpp/yaml.h>
 
 #include "ner_config.hh"
 #include "identity_manager.hh"
@@ -26,12 +26,6 @@
 #include "ncurses.hh"
 
 const std::string nerConfigFile(".ner.yaml");
-
-struct Color
-{
-    int foreground;
-    int background;
-};
 
 void operator>>(const YAML::Node & node, Color & color)
 {
@@ -46,8 +40,8 @@ void operator>>(const YAML::Node & node, Color & color)
         { "white",      COLOR_WHITE }
     };
 
-    std::string foreground = *node.FindValue("fg");
-    std::string background = *node.FindValue("bg");
+    std::string foreground = node.FindValue("fg")->to<std::string>();
+    std::string background = node.FindValue("bg")->to<std::string>();
 
     color.foreground = ncursesColors.at(foreground);
     color.background = ncursesColors.at(background);
@@ -79,7 +73,12 @@ NerConfig::~NerConfig()
 
 void NerConfig::load()
 {
+    _sortMode = NOTMUCH_SORT_NEWEST_FIRST;
+    _refreshView = true;
+    _addSigDashes = true;
     _commands.clear();
+
+    std::map<ColorID, Color> colorMap = defaultColorMap;
 
     std::string configPath(std::string(getenv("HOME")) + "/" + nerConfigFile);
     std::ifstream configFile(configPath.c_str());
@@ -89,127 +88,125 @@ void NerConfig::load()
     YAML::Node document;
     parser.GetNextDocument(document);
 
-    /* Identities */
-    IdentityManager::instance().load(document.FindValue("identities"));
-
-    const YAML::Node * defaultIdentity = document.FindValue("default_identity");
-    if (defaultIdentity)
-        IdentityManager::instance().setDefaultIdentity(*defaultIdentity);
-
-    /* Commands */
-    const YAML::Node * commands = document.FindValue("commands");
-    if (commands)
-        commands->Read(_commands);
-
-    /* Saved Searches */
-    const YAML::Node * searches = document.FindValue("searches");
-    if (searches)
-        searches->Read(_searches);
-    else
-        _searches = {
-            { "New", "tag:inbox and tag:unread" },
-            { "Unread", "tag:unread" },
-            { "Inbox", "tag:inbox" }
-        };
-
-    /* Colors */
-    std::map<ColorID, Color> colorMap = {
-        /* General */
-        { ColorID::CutOffIndicator,         Color{ COLOR_GREEN,  COLOR_BLACK } },
-        { ColorID::MoreLessIndicator,       Color{ COLOR_BLACK,  COLOR_GREEN } },
-        { ColorID::EmptySpaceIndicator,     Color{ COLOR_CYAN,   COLOR_BLACK } },
-        { ColorID::LineWrapIndicator,       Color{ COLOR_GREEN,  COLOR_BLACK } },
-
-        /* Status Bar */
-        { ColorID::StatusBarStatus,         Color{ COLOR_WHITE,  COLOR_BLUE } },
-        { ColorID::StatusBarStatusDivider,  Color{ COLOR_WHITE,  COLOR_BLUE } },
-        { ColorID::StatusBarMessage,        Color{ COLOR_BLACK,  COLOR_WHITE } },
-        { ColorID::StatusBarPrompt,         Color{ COLOR_WHITE,  COLOR_BLACK } },
-
-        /* Search View */
-        { ColorID::SearchViewDate,                  Color{ COLOR_YELLOW,     COLOR_BLACK } },
-        { ColorID::SearchViewMessageCountComplete,  Color{ COLOR_GREEN,      COLOR_BLACK } },
-        { ColorID::SearchViewMessageCountPartial,   Color{ COLOR_MAGENTA,    COLOR_BLACK } },
-        { ColorID::SearchViewAuthors,               Color{ COLOR_CYAN,       COLOR_BLACK } },
-        { ColorID::SearchViewSubject,               Color{ COLOR_WHITE,      COLOR_BLACK } },
-        { ColorID::SearchViewTags,                  Color{ COLOR_RED,        COLOR_BLACK } },
-
-        /* ThreadView */
-        { ColorID::ThreadViewArrow, Color{ COLOR_GREEN,  COLOR_BLACK } },
-        { ColorID::ThreadViewDate,  Color{ COLOR_CYAN,   COLOR_BLACK } },
-        { ColorID::ThreadViewTags,  Color{ COLOR_RED,    COLOR_BLACK } },
-
-        /* Email View */
-        { ColorID::EmailViewHeader, Color{ COLOR_CYAN, COLOR_BLACK } },
-
-        /* View View */
-        { ColorID::ViewViewNumber,  Color{ COLOR_CYAN,   COLOR_BLACK } },
-        { ColorID::ViewViewName,    Color{ COLOR_GREEN,  COLOR_BLACK } },
-        { ColorID::ViewViewStatus,  Color{ COLOR_WHITE,  COLOR_BLACK } },
-
-        /* Search List View */
-        { ColorID::SearchListViewName,      Color{ COLOR_CYAN,   COLOR_BLACK } },
-        { ColorID::SearchListViewTerms,     Color{ COLOR_YELLOW, COLOR_BLACK } },
-        { ColorID::SearchListViewResults,   Color{ COLOR_GREEN,  COLOR_BLACK } },
-
-        /* Message Parts */
-        { ColorID::AttachmentFilename,      Color{ COLOR_YELLOW,  COLOR_BLACK } },
-        { ColorID::AttachmentMimeType,      Color{ COLOR_MAGENTA, COLOR_BLACK } },
-        { ColorID::AttachmentFilesize,      Color{ COLOR_GREEN,   COLOR_BLACK } }
-    };
-
-    const YAML::Node * colors = document.FindValue("colors");
-    if (colors)
+    if (document.Type() != YAML::NodeType::Null)
     {
-        std::map<std::string, ColorID> colorNames = {
-            /* General */
-            { "cut_off_indicator",      ColorID::CutOffIndicator },
-            { "more_less_indicator",    ColorID::MoreLessIndicator },
-            { "empty_space_indicator",  ColorID::EmptySpaceIndicator },
-            { "line_wrap_indicator",    ColorID::LineWrapIndicator },
+        /* Identities */
+        IdentityManager::instance().load(document.FindValue("identities"));
 
-            /* Status Bar */
-            { "status_bar_status",          ColorID::StatusBarStatus },
-            { "status_bar_status_divider",  ColorID::StatusBarStatusDivider },
-            { "status_bar_message",         ColorID::StatusBarMessage },
-            { "status_bar_prompt",          ColorID::StatusBarPrompt },
+        const YAML::Node * defaultIdentity = document.FindValue("default_identity");
+        if (defaultIdentity)
+            IdentityManager::instance().setDefaultIdentity(defaultIdentity->to<std::string>());
 
-            /* Search View */
-            { "search_view_date",                   ColorID::SearchViewDate },
-            { "search_view_message_count_complete", ColorID::SearchViewMessageCountComplete },
-            { "search_view_message_count_partial",  ColorID::SearchViewMessageCountPartial },
-            { "search_view_authors",                ColorID::SearchViewAuthors },
-            { "search_view_subject",                ColorID::SearchViewSubject },
-            { "search_view_tags",                   ColorID::SearchViewTags },
+        /* General stuff */
+        auto general = document.FindValue("general");
 
-            /* Thread View */
-            { "thread_view_arrow",  ColorID::ThreadViewArrow },
-            { "thread_view_date",   ColorID::ThreadViewDate },
-            { "thread_view_tags",   ColorID::ThreadViewTags },
+        if (general)
+        {
+            auto sortModeNode = general->FindValue("sort_mode");
 
-            /* Email View */
-            { "email_view_header",  ColorID::EmailViewHeader },
+            if (sortModeNode)
+            {
+                std::string sortModeStr;
+                *sortModeNode >> sortModeStr;
 
-            /* View View */
-            { "view_view_number",   ColorID::ViewViewNumber },
-            { "view_view_name",     ColorID::ViewViewName },
-            { "view_view_status",   ColorID::ViewViewStatus },
+                if (sortModeStr == std::string("oldest_first"))
+                    _sortMode = NOTMUCH_SORT_OLDEST_FIRST;
+                else if (sortModeStr == std::string("message_id"))
+                    _sortMode = NOTMUCH_SORT_MESSAGE_ID;
+                else if (sortModeStr != std::string("newest_first"))
+                {
+                    /* FIXME: throw? */
+                }
+            }
 
-            /* Search List View */
-            { "search_list_view_name",      ColorID::SearchListViewName },
-            { "search_list_view_terms",     ColorID::SearchListViewTerms },
-            { "search_list_view_results",   ColorID::SearchListViewTerms },
+            auto refreshViewNode = general->FindValue("refresh_view");
 
-            /* Message Parts */
-            { "attachment_filename",        ColorID::AttachmentFilename },
-            { "attachment_mimetype",        ColorID::AttachmentMimeType },
-            { "attachment_filesize",        ColorID::AttachmentFilesize }
-        };
+            if (refreshViewNode)
+                *refreshViewNode >> _refreshView;
 
-        for (auto name = colors->begin(), e = colors->end(); name != e; ++name)
-            colorMap[colorNames.at(name.first())] = name.second();
+            auto addSigDashesNode = general->FindValue("add_sig_dashes");
+
+            if (addSigDashesNode)
+                *addSigDashesNode >> _addSigDashes;
+        }
+
+        /* Commands */
+        const YAML::Node * commands = document.FindValue("commands");
+        if (commands)
+            commands->Read(_commands);
+
+        /* Saved Searches */
+        const YAML::Node * searches = document.FindValue("searches");
+        if (searches)
+            searches->Read(_searches);
+        else
+            _searches = {
+                { "New", "tag:inbox and tag:unread" },
+                { "Unread", "tag:unread" },
+                { "Inbox", "tag:inbox" }
+            };
+
+        /* Colors */
+        const YAML::Node * colors = document.FindValue("colors");
+        if (colors)
+        {
+            std::map<std::string, ColorID> colorNames = {
+                /* General */
+                { "cut_off_indicator",      ColorID::CutOffIndicator },
+                { "more_less_indicator",    ColorID::MoreLessIndicator },
+                { "empty_space_indicator",  ColorID::EmptySpaceIndicator },
+                { "line_wrap_indicator",    ColorID::LineWrapIndicator },
+
+                /* Status Bar */
+                { "status_bar_status",          ColorID::StatusBarStatus },
+                { "status_bar_status_divider",  ColorID::StatusBarStatusDivider },
+                { "status_bar_message",         ColorID::StatusBarMessage },
+                { "status_bar_prompt",          ColorID::StatusBarPrompt },
+
+                /* Search View */
+                { "search_view_date",                   ColorID::SearchViewDate },
+                { "search_view_message_count_complete", ColorID::SearchViewMessageCountComplete },
+                { "search_view_message_count_partial",  ColorID::SearchViewMessageCountPartial },
+                { "search_view_authors",                ColorID::SearchViewAuthors },
+                { "search_view_subject",                ColorID::SearchViewSubject },
+                { "search_view_tags",                   ColorID::SearchViewTags },
+
+                /* Thread View */
+                { "thread_view_arrow",  ColorID::ThreadViewArrow },
+                { "thread_view_date",   ColorID::ThreadViewDate },
+                { "thread_view_tags",   ColorID::ThreadViewTags },
+
+                /* Email View */
+                { "email_view_header",  ColorID::EmailViewHeader },
+
+                /* View View */
+                { "view_view_number",   ColorID::ViewViewNumber },
+                { "view_view_name",     ColorID::ViewViewName },
+                { "view_view_status",   ColorID::ViewViewStatus },
+
+                /* Search List View */
+                { "search_list_view_name",      ColorID::SearchListViewName },
+                { "search_list_view_terms",     ColorID::SearchListViewTerms },
+                { "search_list_view_results",   ColorID::SearchListViewTerms },
+
+                /* Message Parts */
+                { "attachment_filename",        ColorID::AttachmentFilename },
+                { "attachment_mimetype",        ColorID::AttachmentMimeType },
+                { "attachment_filesize",        ColorID::AttachmentFilesize },
+
+                /* Citation levels */
+                { "citation_level_1",           ColorID::CitationLevel1 },
+                { "citation_level_2",           ColorID::CitationLevel2 },
+                { "citation_level_3",           ColorID::CitationLevel3 },
+                { "citation_level_4",           ColorID::CitationLevel4 }
+            };
+
+            for (auto name = colors->begin(), e = colors->end(); name != e; ++name)
+                colorMap[colorNames.at(name.first().to<std::string>())] = name.second().to<Color>();
+        }
     }
 
+    /* Initialize colors from color map. */
     for (auto color = colorMap.begin(), e = colorMap.end(); color != e; ++color)
         init_pair(color->first, color->second.foreground, color->second.background);
 }
@@ -235,6 +232,21 @@ std::string NerConfig::command(const std::string & name)
 const std::vector<Search> & NerConfig::searches() const
 {
     return _searches;
+}
+
+notmuch_sort_t NerConfig::sortMode() const
+{
+    return _sortMode;
+}
+
+bool NerConfig::refreshView() const
+{
+    return _refreshView;
+}
+
+bool NerConfig::addSigDashes() const
+{
+    return _addSigDashes;
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
