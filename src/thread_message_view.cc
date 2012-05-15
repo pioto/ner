@@ -47,6 +47,8 @@ ThreadMessageView::ThreadMessageView(const std::string & threadId, const View::G
     addHandledSequence("<Home>",     std::bind(&MessageView::moveToTop, &_messageView));
     addHandledSequence("G",          std::bind(&MessageView::moveToBottom, &_messageView));
     addHandledSequence("<End>",      std::bind(&MessageView::moveToBottom, &_messageView));
+    addHandledSequence("<C-s>",      std::bind(&MessageView::saveSelectedPart, &_messageView));
+    addHandledSequence("f",          std::bind(&MessageView::toggleSelectedPartFolding, &_messageView));
 
     addHandledSequence("r",          std::bind(&ThreadView::reply, &_threadView));
 

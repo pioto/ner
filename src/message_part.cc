@@ -22,20 +22,24 @@
 #include "gmime_iostream.hh"
 #include "message_part_visitor.hh"
 
+#include <sys/types.h>
+#include <sys/wait.h>
+
 MessagePart::MessagePart(const std::string & id_)
-    : id(id_)
+    : id(id_), folded(true)
 {
 }
 
 TextPart::TextPart(GMimePart * part)
     : MessagePart(g_mime_part_get_content_id(part) ? : std::string())
 {
-    GMimeContentType * contentType = g_mime_object_get_content_type(GMIME_OBJECT(part));
+    GMimeContentType * mimeContentType = g_mime_object_get_content_type(GMIME_OBJECT(part));
+    contentType = g_mime_content_type_to_string(mimeContentType);
 
     GMimeStream * contentStream = NULL;
 
     /* If this part is html text */
-    if (g_mime_content_type_is_type(contentType, "text", "html"))
+    if (g_mime_content_type_is_type(mimeContentType, "text", "html"))
     {
         int readPipes[2];
         int writePipes[2];
@@ -44,12 +48,23 @@ TextPart::TextPart(GMimePart * part)
         pipe(writePipes);
 
         GMimeDataWrapper * content = g_mime_part_get_content_object(part);
-        GMimeStream * pipeStream = g_mime_stream_fs_new(writePipes[1]);
-        g_mime_data_wrapper_write_to_stream(content, pipeStream);
 
-        close(writePipes[1]);
+        if (pid_t pid = fork())
+        {
+            close(writePipes[0]);
+            close(readPipes[1]);
 
-        if (fork() == 0)
+            GMimeStream * pipeStream = g_mime_stream_fs_new(writePipes[1]);
+            g_mime_data_wrapper_write_to_stream(content, pipeStream);
+            close(writePipes[1]);
+
+            contentStream = g_mime_stream_fs_new(readPipes[0]);
+            g_mime_stream_fs_set_owner(GMIME_STREAM_FS(contentStream), true);
+
+            int status;
+            waitpid(pid, &status, 0);
+        }
+        else
         {
             close(readPipes[0]);
             close(writePipes[1]);
@@ -60,17 +75,9 @@ TextPart::TextPart(GMimePart * part)
             execlp("sh", "sh", "-c", NerConfig::instance().command("html").c_str(), NULL);
             exit(0);
         }
-        else
-        {
-            close(writePipes[0]);
-            close(readPipes[1]);
-
-            contentStream = g_mime_stream_fs_new(readPipes[0]);
-            g_mime_stream_fs_set_owner(GMIME_STREAM_FS(contentStream), true);
-        }
     }
     /* If this part is text */
-    else if (g_mime_content_type_is_type(contentType, "text", "*"))
+    else if (g_mime_content_type_is_type(mimeContentType, "text", "*"))
     {
         GMimeDataWrapper * content = g_mime_part_get_content_object(part);
         const char * charset = g_mime_object_get_content_type_parameter(GMIME_OBJECT(part), "charset");
@@ -100,7 +107,7 @@ TextPart::TextPart(GMimePart * part)
 
     if (contentStream == NULL)
         throw std::runtime_error(std::string("Cannot handle content type: ") +
-            g_mime_content_type_to_string(contentType));
+            contentType);
 
     GMimeIOStream stream(contentStream);
     g_object_unref(contentStream);
@@ -127,7 +134,21 @@ Attachment::Attachment(GMimePart * part)
             g_mime_object_get_content_type(GMIME_OBJECT(part)))),
         data(g_mime_part_get_content_object(part))
 {
+    g_object_ref(data);
     filesize = g_mime_stream_length(g_mime_data_wrapper_get_stream(data));
+}
+
+Attachment::Attachment(GMimeDataWrapper * data, const std::string & filename,
+                       const std::string& contentType, int filesize)
+    : MessagePart(std::string()), filename(filename), contentType(contentType),
+      filesize(filesize), data(data)
+{
+    g_object_ref(data);
+}
+
+Attachment::~Attachment()
+{
+    g_object_unref(data);
 }
 
 void Attachment::accept(MessagePartVisitor & visitor)

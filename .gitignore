@@ -26,6 +26,7 @@ Makefile.in
 /missing
 /m4
 !/m4/ax_prog_cxx_cxx0x.m4
+/stamp-h1
 /tags
 
 /src/ner

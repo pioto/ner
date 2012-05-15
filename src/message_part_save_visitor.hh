@@ -1,6 +1,6 @@
-/* ner: src/line_editor.hh
+/* ner: src/message_part_save_visitor.hh
  *
- * Copyright (c) 2010 Michael Forney
+ * Copyright (c) 2010 Maxime Coste
  *
  * This file is a part of ner.
  *
@@ -17,35 +17,22 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NER_LINE_EDITOR_H
-#define NER_LINE_EDITOR_H 1
+#ifndef NER_MESSAGE_PART_SAVE_VISITOR_H
+#define NER_MESSAGE_PART_SAVE_VISITOR_H 1
 
-#include <map>
-#include <vector>
+#include "message_part_visitor.hh"
 
-#include "ncurses.hh"
-
-class AbortInputException : public std::exception
-{
-};
-
-class LineEditor
+class MessagePartSaveVisitor : public MessagePartVisitor
 {
     public:
-        LineEditor(WINDOW * window, int x, int y);
+        MessagePartSaveVisitor();
 
-        std::string line(const std::string & field = std::string(),
-                         const std::string & initialValue = std::string()) const;
-
-    private:
-        WINDOW * _window;
-        int _x;
-        int _y;
-
-        static std::map<std::string, std::vector<std::string>> _history;
+        virtual void visit(const TextPart & part);
+        virtual void visit(const Attachment & part);
 };
 
 #endif
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
+
 

@@ -33,6 +33,7 @@
 #include "compose_view.hh"
 #include "colors.hh"
 #include "notmuch.hh"
+#include "line_editor.hh"
 
 Ner::Ner()
 {
@@ -105,15 +106,25 @@ void Ner::quit()
 
 void Ner::search()
 {
-    std::string searchTerms = StatusBar::instance().prompt("Search: ", "search");
+    try
+    {
+        std::string searchTerms = StatusBar::instance().prompt("Search: ", "search");
 
-    if (!searchTerms.empty())
-        _viewManager.addView(std::make_shared<SearchView>(searchTerms));
+        if (!searchTerms.empty())
+            _viewManager.addView(std::make_shared<SearchView>(searchTerms));
+    }
+    catch (const AbortInputException&)
+    { }
 }
 
 void Ner::compose()
 {
-    _viewManager.addView(std::make_shared<ComposeView>());
+    try
+    {
+        _viewManager.addView(std::make_shared<ComposeView>());
+    }
+    catch (const AbortInputException&)
+    { }
 }
 
 void Ner::openMessage()

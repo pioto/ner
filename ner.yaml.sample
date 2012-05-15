@@ -3,6 +3,11 @@
 %YAML 1.2
 %TAG ! tag:the-ner.org,2010:
 ---
+general:
+    sort_mode: newest_first
+    refresh_view: true
+    add_sig_dashes: true
+
 commands:
     send: /usr/sbin/sendmail -t
     edit: vim +
@@ -22,6 +27,7 @@ identities:
         name: Batman
         email: batman@domain.tld
         signature: /home/user/.signature
+        send: msmtp -a batman -t
         sent_mail: !maildir /home/user/mail/sent
 
 searches:
@@ -75,6 +81,12 @@ colors:
     attachment_filename                 : { fg: yellow,  bg: black }
     attachment_mimetype                 : { fg: magenta, bg: black }
     attachment_filesize                 : { fg: green,   bg: black }
+
+    # Citation levels
+    citation_level_1                    : { fg: green,   bg: black }
+    citation_level_2                    : { fg: yellow,  bg: black }
+    citation_level_3                    : { fg: cyan,    bg: black }
+    citation_level_4                    : { fg: magenta, bg: black }
 ...
 
 # vim: ft=yaml

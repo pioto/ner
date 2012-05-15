@@ -22,7 +22,7 @@
 
 #include <string>
 #include <memory>
-#include <yaml.h>
+#include <yaml-cpp/yaml.h>
 
 #include "mail_store.hh"
 
@@ -31,6 +31,7 @@ struct Identity
     std::string name;
     std::string email;
     std::string signaturePath;
+    std::string sendCommand;
     std::shared_ptr<MailStore> sentMail;
 };
 
@@ -44,6 +45,7 @@ class IdentityManager
 
         const Identity * defaultIdentity() const;
         const Identity * findIdentity(InternetAddress * address);
+        const Identity * findIdentity(const std::string & name);
 
     private:
         IdentityManager();
