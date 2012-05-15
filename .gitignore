@@ -14,6 +14,8 @@ Makefile.in
 /aclocal.m4
 /configure
 /config.guess
+/config.h
+/config.h.in
 /config.log
 /config.status
 /config.sub
@@ -24,6 +26,7 @@ Makefile.in
 /missing
 /m4
 !/m4/ax_prog_cxx_cxx0x.m4
+/stamp-h1
 /tags
 
 /src/ner

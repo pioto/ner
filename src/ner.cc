@@ -20,9 +20,9 @@
 #include <iostream>
 #include <sys/types.h>
 #include <signal.h>
-#include <ncursesw/ncurses.h>
 
 #include "ner.hh"
+#include "ncurses.h"
 #include "util.hh"
 #include "status_bar.hh"
 #include "view_manager.hh"
@@ -33,12 +33,10 @@
 #include "compose_view.hh"
 #include "colors.hh"
 #include "notmuch.hh"
+#include "line_editor.hh"
 
 Ner::Ner()
-    : _viewManager(new ViewManager)
 {
-    _statusBar = new StatusBar;
-
     /* Key Sequences */
     addHandledSequence("Q",     std::bind(&Ner::quit, this));
     addHandledSequence("s",     std::bind(&Ner::search, this));
@@ -52,14 +50,6 @@ Ner::Ner()
 
 Ner::~Ner()
 {
-    delete _viewManager;
-    delete _statusBar;
-    cleanupScreen();
-}
-
-void Ner::cleanupScreen()
-{
-    endwin();
 }
 
 void Ner::run()
@@ -68,7 +58,7 @@ void Ner::run()
 
     _running = true;
 
-    _viewManager->refresh();
+    _viewManager.refresh();
 
     while (_running)
     {
@@ -89,7 +79,7 @@ void Ner::run()
                 sequence.clear();
             else
             {
-                auto viewManagerHandleResult = _viewManager->handleKeySequence(sequence);
+                auto viewManagerHandleResult = _viewManager.handleKeySequence(sequence);
 
                 /* If the ViewManager handled the input sequence, or neither
                  * Ner nor the ViewManager had a partial match with the input
@@ -104,8 +94,8 @@ void Ner::run()
         if (!_running)
             break;
 
-        _viewManager->update();
-        _viewManager->refresh();
+        _viewManager.update();
+        _viewManager.refresh();
     }
 }
 
@@ -116,15 +106,25 @@ void Ner::quit()
 
 void Ner::search()
 {
-    std::string searchTerms = StatusBar::instance().prompt("Search: ", "search");
+    try
+    {
+        std::string searchTerms = StatusBar::instance().prompt("Search: ", "search");
 
-    if (!searchTerms.empty())
-        _viewManager->addView(std::shared_ptr<SearchView>(new SearchView(searchTerms)));
+        if (!searchTerms.empty())
+            _viewManager.addView(std::make_shared<SearchView>(searchTerms));
+    }
+    catch (const AbortInputException&)
+    { }
 }
 
 void Ner::compose()
 {
-    _viewManager->addView(std::shared_ptr<ComposeView>(new ComposeView()));
+    try
+    {
+        _viewManager.addView(std::make_shared<ComposeView>());
+    }
+    catch (const AbortInputException&)
+    { }
 }
 
 void Ner::openMessage()
@@ -140,7 +140,7 @@ void Ner::openMessage()
         {
             std::shared_ptr<MessageView> messageView(new MessageView());
             messageView->setMessage(messageId);
-            _viewManager->addView(std::move(messageView));
+            _viewManager.addView(std::move(messageView));
         }
         catch (const NotMuch::InvalidMessageException & e)
         {
@@ -157,18 +157,18 @@ void Ner::openThread()
     {
         try
         {
-            _viewManager->addView(std::shared_ptr<ThreadView>(new ThreadView(threadId)));
+            _viewManager.addView(std::make_shared<ThreadView>(threadId));
         }
         catch (const NotMuch::InvalidThreadException & e)
         {
-            _statusBar->displayMessage(e.what());
+            _statusBar.displayMessage(e.what());
         }
     }
 }
 
 void Ner::openViewView()
 {
-    _viewManager->addView(std::shared_ptr<ViewView>(new ViewView()));
+    _viewManager.addView(std::make_shared<ViewView>());
 }
 
 void Ner::redraw()
@@ -176,8 +176,8 @@ void Ner::redraw()
     clear();
     refresh();
 
-    _statusBar->update();
-    _statusBar->refresh();
+    _statusBar.update();
+    _statusBar.refresh();
 }
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8

@@ -29,6 +29,7 @@ void operator>>(const YAML::Node & node, Identity & identity)
 
     /* Optional entries */
     const YAML::Node * signatureNode = node.FindValue("signature");
+    const YAML::Node * sendNode = node.FindValue("send");
     const YAML::Node * sentMailNode = node.FindValue("sent_mail");
 
     if (signatureNode)
@@ -36,16 +37,19 @@ void operator>>(const YAML::Node & node, Identity & identity)
     else
         identity.signaturePath.clear();
 
+    if (sendNode)
+        *sendNode >> identity.sendCommand;
+
     std::string tagPrefix = "tag:the-ner.org,2010:";
 
     identity.sentMail.reset();
 
     if (sentMailNode)
     {
-        if (sentMailNode->GetTag() == tagPrefix + "maildir")
+        if (sentMailNode->Tag() == tagPrefix + "maildir")
         {
-            std::string sentMailPath = *sentMailNode;
-            identity.sentMail = std::shared_ptr<MailStore>(new Maildir(sentMailPath));
+            std::string sentMailPath = sentMailNode->to<std::string>();
+            identity.sentMail = std::make_shared<Maildir>(sentMailPath);
         }
     }
 }
@@ -120,6 +124,16 @@ const Identity * IdentityManager::findIdentity(InternetAddress * address)
         if (identity->second.email == email)
             return &identity->second;
     }
+
+    return 0;
+}
+
+const Identity * IdentityManager::findIdentity(const std::string & name)
+{
+    auto identity = _identities.find(name);
+
+    if (identity != _identities.end())
+        return &identity->second;
 
     return 0;
 }

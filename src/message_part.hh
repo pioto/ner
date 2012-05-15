@@ -35,6 +35,7 @@ struct MessagePart
 
     virtual void accept(MessagePartVisitor & visitor) = 0;
 
+    bool folded;
     std::string id;
 };
 
@@ -45,11 +46,15 @@ struct TextPart : public MessagePart
     virtual void accept(MessagePartVisitor & visitor);
 
     std::vector<std::string> lines;
+    std::string contentType;
 };
 
 struct Attachment : public MessagePart
 {
     Attachment(GMimePart * part);
+    Attachment(GMimeDataWrapper * data, const std::string & filename,
+               const std::string& contentType, int filesize);
+    ~Attachment();
 
     virtual void accept(MessagePartVisitor & visitor);
 

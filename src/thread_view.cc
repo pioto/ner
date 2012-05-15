@@ -64,37 +64,20 @@ ThreadView::ThreadView(const std::string & threadId, const View::Geometry & geom
 
     _messageCount = notmuch_thread_get_total_messages(thread);
 
+    _selectedIndex = 0;
+
     /* Find first unread message */
-    std::vector<const NotMuch::Message *> messageList;
+    int messageIndex = 0;
 
-    std::transform(_topMessages.rbegin(), _topMessages.rend(),
-        std::back_inserter(messageList), addressOf<NotMuch::Message>());
-
-    const NotMuch::Message * message = messageList.back();
-
-    for (_selectedIndex = 0; !messageList.empty(); ++_selectedIndex)
+    for (NotMuch::Message::const_iterator message(_topMessages.rbegin(), _topMessages.rend()), e;
+        message != e; ++message, ++messageIndex)
     {
         if (message->tags.find("unread") != message->tags.end())
-            break;
-
-        messageList.pop_back();
-
-        if (!message->replies.empty())
         {
-            for (auto reply = message->replies.rbegin(), e = message->replies.rend();
-                reply != e;
-                ++reply)
-            {
-                messageList.push_back(&(*reply));
-            }
+            _selectedIndex = messageIndex;
+            break;
         }
-
-        message = messageList.back();
     }
-
-    /* If no messages are unread */
-    if (messageList.empty())
-        _selectedIndex = 0;
 
     makeSelectionVisible();
 
@@ -152,30 +135,8 @@ void ThreadView::openSelectedMessage()
 
 const NotMuch::Message & ThreadView::selectedMessage() const
 {
-    std::vector<const NotMuch::Message *> messages;
-
-    std::transform(_topMessages.rbegin(), _topMessages.rend(),
-        std::back_inserter(messages), addressOf<NotMuch::Message>());
-
-    const NotMuch::Message * message = messages.back();
-
-    for (int index = 0; index < _selectedIndex; ++index)
-    {
-        messages.pop_back();
-
-        if (!message->replies.empty())
-        {
-            for (auto reply = message->replies.rbegin(), e = message->replies.rend();
-                reply != e;
-                ++reply)
-            {
-                messages.push_back(&(*reply));
-            }
-        }
-
-        message = messages.back();
-    }
-
+    NotMuch::Message::const_iterator message(_topMessages.rbegin(), _topMessages.rend());
+    std::advance(message, _selectedIndex);
     return *message;
 }
 
@@ -183,7 +144,7 @@ void ThreadView::reply()
 {
     try
     {
-        ViewManager::instance().addView(std::shared_ptr<ReplyView>(new ReplyView(selectedMessage().id)));
+        ViewManager::instance().addView(std::make_shared<ReplyView>(selectedMessage().id));
     }
     catch (const NotMuch::InvalidMessageException & e)
     {

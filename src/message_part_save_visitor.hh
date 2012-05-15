@@ -1,6 +1,6 @@
-/* ner: src/message_view.hh
+/* ner: src/message_part_save_visitor.hh
  *
- * Copyright (c) 2010 Michael Forney
+ * Copyright (c) 2010 Maxime Coste
  *
  * This file is a part of ner.
  *
@@ -17,26 +17,22 @@
  * ner.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NER_MESSAGE_VIEW_H
-#define NER_MESSAGE_VIEW_H 1
+#ifndef NER_MESSAGE_PART_SAVE_VISITOR_H
+#define NER_MESSAGE_PART_SAVE_VISITOR_H 1
 
-#include <string>
-#include <vector>
+#include "message_part_visitor.hh"
 
-#include "email_view.hh"
-
-class MessageView : public EmailView
+class MessagePartSaveVisitor : public MessagePartVisitor
 {
     public:
-        MessageView(const View::Geometry & geometry = View::Geometry());
-        virtual ~MessageView();
+        MessagePartSaveVisitor();
 
-        void setMessage(const std::string & messageId);
-
-        virtual std::string name() const { return "message-view"; }
+        virtual void visit(const TextPart & part);
+        virtual void visit(const Attachment & part);
 };
 
 #endif
 
 // vim: fdm=syntax fo=croql et sw=4 sts=4 ts=8
+
 

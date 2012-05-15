@@ -38,7 +38,6 @@ class SearchListView : public LineBrowserView
 
         virtual void update();
         virtual std::string name() const { return "search-list-view"; }
-        virtual Type type() const { return Type::SearchListView; }
         virtual std::vector<std::string> status() const;
 
         void openSelectedSearch();

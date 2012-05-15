@@ -2,9 +2,9 @@
 
 bin_PROGRAMS = ner
 
-AM_CXXFLAGS = $(yaml_cpp_CFLAGS) $(gmime_CFLAGS) -D_XOPEN_SOURCE_EXTENDED
+AM_CXXFLAGS = $(yaml_cpp_CFLAGS) $(gmime_CFLAGS) $(gio_CFLAGS) -D_XOPEN_SOURCE_EXTENDED
 
-ner_LDADD = $(yaml_cpp_LIBS) $(gmime_LIBS)
+ner_LDADD = $(yaml_cpp_LIBS) $(gmime_LIBS) $(gio_LIBS)
 
 # Core
 ner_SOURCES = \
@@ -22,11 +22,12 @@ ner_SOURCES = \
 	message_part.cc message_part.hh \
 	message_part_visitor.hh \
 	message_part_display_visitor.cc message_part_display_visitor.hh \
+	message_part_save_visitor.cc message_part_save_visitor.hh \
 	message_part_text_visitor.hh
 
 # Utility
 ner_SOURCES += \
-	colors.hh \
+	colors.cc colors.hh \
 	util.cc util.hh \
 	ncurses.cc ncurses.hh \
 	gmime_iostream.cc gmime_iostream.hh \

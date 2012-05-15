@@ -24,6 +24,7 @@
 
 #include "compose_view.hh"
 #include "notmuch.hh"
+#include "ner_config.hh"
 
 ComposeView::ComposeView(const View::Geometry & geometry)
     : EmailEditView(geometry)
@@ -34,6 +35,10 @@ ComposeView::ComposeView(const View::Geometry & geometry)
     std::string cc = StatusBar::instance().prompt("Cc: ", "compose-cc");
     std::string bcc = StatusBar::instance().prompt("Bcc: ", "compose-bcc");
     std::string subject = StatusBar::instance().prompt("Subject: ", "compose-subject");
+    std::string identityName = StatusBar::instance().prompt("Identity: ", "identity");
+
+    if (!identityName.empty())
+        setIdentity(identityName);
 
     InternetAddress * from = internet_address_mailbox_new(_identity->name.c_str(),
         _identity->email.c_str());
@@ -48,7 +53,11 @@ ComposeView::ComposeView(const View::Geometry & geometry)
     /* Read the user's signature */
     if (!_identity->signaturePath.empty())
     {
-        messageContentStream << std::endl << "-- " << std::endl;
+        if (NerConfig::instance().addSigDashes())
+            messageContentStream << std::endl << "-- ";
+
+        messageContentStream << std::endl;
+
         std::ifstream signatureFile(_identity->signaturePath.c_str());
         messageContentStream << signatureFile.rdbuf();
     }

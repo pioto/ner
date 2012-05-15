@@ -29,7 +29,6 @@ class ComposeView : public EmailEditView
         virtual ~ComposeView();
 
         virtual std::string name() const { return "compose-view"; }
-        virtual Type type() const { return Type::ComposeView; }
 
     protected:
         std::string _to;
