@@ -18,14 +18,21 @@ PKG_PROG_PKG_CONFIG([0.9.0])
 dnl Check for libraries {{{
 PKG_CHECK_MODULES([gmime], [gmime-2.4],,
     [AC_MSG_ERROR([ner requires gmime])])
-PKG_CHECK_MODULES([yaml_cpp], [yaml-cpp >= 0.2.5],,
-    [AC_MSG_ERROR([ner requires yaml-cpp>=0.2.5])])
+PKG_CHECK_MODULES([gio], [gio-2.0],,
+    [AC_MSG_ERROR([ner requires gio])])
+PKG_CHECK_MODULES([yaml_cpp], [yaml-cpp >= 0.3.0],,
+    [AC_MSG_ERROR([ner requires yaml-cpp>=0.3.0])])
 AC_CHECK_LIB(notmuch, notmuch_database_open,,
     [AC_MSG_ERROR([ner requires libnotmuch])])
 AC_CHECK_LIB(ncursesw, initscr,,
-    [AC_MSG_ERROR([ner requires ncurses])])
+    [AC_MSG_ERROR([ner requires ncursesw])])
+
+AC_CHECK_HEADERS(ncursesw/ncurses.h,,
+    [AC_CHECK_HEADERS(ncurses/ncurses.h,,
+        [AC_CHECK_HEADERS(ncurses.h)])])
 dnl }}}
 
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT
 

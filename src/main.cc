@@ -79,6 +79,11 @@ void initialize()
     refresh();
 }
 
+void cleanup()
+{
+    endwin();
+}
+
 int main(int argc, char * argv[])
 {
     std::setlocale(LC_ALL, "");
@@ -101,10 +106,14 @@ int main(int argc, char * argv[])
         NotMuch::setConfig(configPath);
         NerConfig::instance().load();
 
+        if (NerConfig::instance().refreshView())
+            /* Refresh the view every minute (or when the user presses a key). */
+            timeout(60000);
+
         Ner ner;
 
         std::shared_ptr<View> searchListView(new SearchListView());
-        ner.viewManager()->addView(searchListView);
+        ner.viewManager().addView(searchListView);
 
         ner.run();
     }
@@ -113,6 +122,8 @@ int main(int argc, char * argv[])
         endwin();
         throw;
     }
+
+    cleanup();
 
     g_mime_shutdown();
 

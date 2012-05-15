@@ -52,7 +52,7 @@ std::string relativeTime(time_t rawTime)
     }
     else if (difference < 7 * DAY)
     {
-        if (localTime.tm_wday == currentLocalTime.tm_wday)
+        if (localTime.tm_wday == currentLocalTime.tm_wday && difference < DAY)
         {
             strftime(timeString, sizeof(timeString), "Today %R", &localTime);
         }

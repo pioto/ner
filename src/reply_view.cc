@@ -31,7 +31,9 @@ ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geome
     : EmailEditView(geometry)
 {
     notmuch_database_t * database = NotMuch::openDatabase();
-    notmuch_message_t * message = notmuch_database_find_message(database, messageId.c_str());
+    notmuch_message_t * message;
+
+    notmuch_database_find_message(database, messageId.c_str(), &message);
 
     if (!message)
     {
@@ -118,8 +120,12 @@ ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geome
         {
             InternetAddress * address = internet_address_list_get_address(addresses, index);
 
-            if (!userIdentity)
-                userIdentity = IdentityManager::instance().findIdentity(address);
+            const Identity* identityOfAddress = IdentityManager::instance().findIdentity(address);
+            if (identityOfAddress)
+            {
+                if (!userIdentity)
+                    userIdentity = identityOfAddress;
+            }
             else if (!replyTo)
                 internet_address_list_add(g_mime_message_get_recipients(replyMessage, *recipientType), address);
         }
@@ -127,6 +133,13 @@ ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geome
 
     if (userIdentity)
         _identity = userIdentity;
+    else
+    {
+        std::string identityName = StatusBar::instance().prompt("Identity: ", "identity");
+
+        if (!identityName.empty())
+            setIdentity(identityName);
+    }
 
     /* Create a internet address for the user */
     InternetAddress * userAddress = internet_address_mailbox_new(_identity->name.c_str(),
@@ -142,7 +155,7 @@ ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geome
     GMimeObject * part = g_mime_message_get_mime_part(originalMessage);
 
     std::vector<std::shared_ptr<MessagePart>> parts;
-    processMimePart(part, std::back_inserter(parts));
+    processMimePart(part, std::back_inserter(parts), true);
 
     MessagePartTextVisitor<std::ostream_iterator<std::string>> visitor(
         std::ostream_iterator<std::string>(messageContentStream, "\n> "));
@@ -155,7 +168,11 @@ ReplyView::ReplyView(const std::string & messageId, const View::Geometry & geome
     /* Read user's signature */
     if (!_identity->signaturePath.empty())
     {
-        messageContentStream << std::endl << "-- " << std::endl;
+        if (NerConfig::instance().addSigDashes())
+            messageContentStream << std::endl << "-- ";
+
+        messageContentStream << std::endl;
+
         std::ifstream signatureFile(_identity->signaturePath.c_str());
         messageContentStream << signatureFile.rdbuf();
     }

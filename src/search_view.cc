@@ -177,8 +177,8 @@ void SearchView::openSelectedThread()
     {
         try
         {
-            ViewManager::instance().addView(std::shared_ptr<ThreadMessageView>(
-                new ThreadMessageView(_threads.at(_selectedIndex).id)));
+            ViewManager::instance().addView(std::make_shared<ThreadMessageView>(
+                _threads.at(_selectedIndex).id));
         }
         catch (const NotMuch::InvalidThreadException & e)
         {
@@ -296,6 +296,7 @@ void SearchView::collectThreads()
 
     notmuch_database_t * database = NotMuch::openDatabase();
     notmuch_query_t * query = notmuch_query_create(database, _searchTerms.c_str());
+    notmuch_query_set_sort(query, NerConfig::instance().sortMode());
     notmuch_threads_t * threadIterator;
 
     for (threadIterator = notmuch_query_search_threads(query);

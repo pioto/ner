@@ -29,7 +29,6 @@ class ReplyView : public EmailEditView
         virtual ~ReplyView();
 
         virtual std::string name() const { return "reply-view"; }
-        virtual View::Type type() const { return View::Type::ReplyView; }
 
     protected:
         std::string _subject;

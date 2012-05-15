@@ -22,6 +22,7 @@
 
 #include "line_editor.hh"
 #include "ncurses.hh"
+#include "util.hh"
 
 std::map<std::string, std::vector<std::string>> LineEditor::_history;
 
@@ -30,7 +31,7 @@ LineEditor::LineEditor(WINDOW * window, int x, int y)
 {
 }
 
-std::string LineEditor::line(const std::string & field) const
+std::string LineEditor::line(const std::string & field, const std::string & initialValue) const
 {
     std::vector<std::string> history;
 
@@ -40,11 +41,17 @@ std::string LineEditor::line(const std::string & field) const
     history.push_back(std::string());
 
     auto response = history.rbegin();
-    auto position = response->begin();
+    *response = initialValue;
+    auto position = response->end();
 
     wmove(_window, _x, _y);
+    wclrtoeol(_window);
+    waddstr(_window, response->c_str());
+    wmove(_window, _y, _x + (position - response->begin()));
+    wrefresh(_window);
 
     curs_set(1);
+    auto resetCursor = onScopeEnd([] { curs_set(0); });
 
     int c;
 
@@ -55,6 +62,9 @@ std::string LineEditor::line(const std::string & field) const
     {
         switch (c)
         {
+            case ERR:
+                /* Timeout. */
+                continue;
             case KEY_LEFT:
                 if (position > response->begin())
                     --position;
@@ -123,6 +133,9 @@ std::string LineEditor::line(const std::string & field) const
                     std::string::reverse_iterator(position), response->rend(), notSpace),
                     response->rend(), ' ').base(), position);
                 break;
+            case 3:
+                throw AbortInputException();
+                break;
             default:
                 position = response->insert(position, c) + 1;
         }
@@ -133,8 +146,6 @@ std::string LineEditor::line(const std::string & field) const
         wmove(_window, _y, _x + (position - response->begin()));
         wrefresh(_window);
     }
-
-    curs_set(0);
 
     if (!field.empty() && !response->empty())
         _history[field].push_back(*response);

@@ -13,10 +13,11 @@ key bindings:
 - **M**:        Open a message by its ID
 - **T**:        Open a thread by its ID
 - **;**:        Open the current list of views
+- **m**:        Compose a new message
 - **Ctrl-C**:   Clear the current input sequence
 - **Ctrl-L**:   Redraw the screen
 
-### Search, Thread, Message, and ThreadMessage
+### All Views
 - **j** or **Down**:            Move to the next line
 - **k** or **Up**:              Move to the previous line
 - **Ctrl-D** or **Page Down**:  Move to the next page
@@ -28,10 +29,17 @@ key bindings:
 - **=**:                        Refresh the search
 - **Enter**:                    Open the selected thread
 
+### Thread and ThreadMessage
+- **r**:    Reply to the selected message
+
 ### Thread
 - **Enter**:    Open the selected message
 
 ### ThreadMessage
 - **Ctrl-N**:   Open the next message
 - **Ctrl-P**:   Open the previous message
+
+### Compose, Reply
+- **e**:    Edit the message
+- **y**:    Send the message
 

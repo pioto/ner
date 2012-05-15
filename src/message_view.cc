@@ -38,7 +38,9 @@ MessageView::~MessageView()
 void MessageView::setMessage(const std::string & messageId)
 {
     notmuch_database_t * database = NotMuch::openDatabase();
-    notmuch_message_t * message = notmuch_database_find_message(database, messageId.c_str());
+    notmuch_message_t * message;
+
+    notmuch_database_find_message(database, messageId.c_str(), &message);
 
     if (!message)
     {
