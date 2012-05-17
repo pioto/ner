@@ -42,7 +42,7 @@ void Notmuch::initializeDatabase(const std::string & path)
         throw new std::string("Couldn't load config file");
 
     char * db = g_key_file_get_string(_config, "database", "path", NULL);
-    notmuch_status_t s = notmuch_database_open(db, mode, &_notmuchDatabase);
+    notmuch_status_t s = notmuch_database_open(db, NOTMUCH_DATABASE_MODE_READ_WRITE, &_notmuchDatabase);
     if (s != NOTMUCH_STATUS_SUCCESS) {
         throw std::runtime_error("Open database failed: "+std::string(notmuch_status_to_string(s)));
     }
@@ -51,7 +51,14 @@ void Notmuch::initializeDatabase(const std::string & path)
 notmuch_database_t * Notmuch::readonlyDatabase()
 {
     char * db = g_key_file_get_string(_config, "database", "path", NULL);
-    return notmuch_database_open(db, NOTMUCH_DATABASE_MODE_READ_ONLY);
+
+    notmuch_database_t * ret;
+    notmuch_status_t s = notmuch_database_open(db, NOTMUCH_DATABASE_MODE_READ_ONLY, &ret);
+    if (s != NOTMUCH_STATUS_SUCCESS) {
+        throw std::runtime_error("Open database failed: "+std::string(notmuch_status_to_string(s)));
+    }
+
+    return ret;
 }
 
 void Notmuch::closeDatabase()

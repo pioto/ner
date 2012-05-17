@@ -22,6 +22,7 @@
 
 #include <string>
 #include <vector>
+#include <stdexcept>
 #include <gmime/gmime.h>
 
 #include "ncurses.hh"

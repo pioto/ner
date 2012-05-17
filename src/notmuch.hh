@@ -22,6 +22,8 @@
 
 #include <string>
 #include <vector>
+#include <stdexcept>
+#include <future>
 
 #include "thread.hh"
 
