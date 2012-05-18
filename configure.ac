@@ -16,8 +16,11 @@ AX_PROG_CXX_CXX0X(, AC_MSG_ERROR(No C++0x compiler found))
 PKG_PROG_PKG_CONFIG([0.9.0])
 
 dnl Check for libraries {{{
-PKG_CHECK_MODULES([gmime], [gmime-2.6],,
-    [AC_MSG_ERROR([ner requires gmime])])
+PKG_CHECK_MODULES([gmime], [gmime-2.6],
+    [AC_DEFINE([HAVE_GMIME_26], [1], [Use GMime 2.6])],
+    [PKG_CHECK_MODULES([gmime], [gmime-2.4],
+        [AC_DEFINE([HAVE_GMIME_24], [1], [Use GMime 2.4])],
+        [AC_MSG_ERROR([ner requires gmime])])])
 PKG_CHECK_MODULES([gio], [gio-2.0],,
     [AC_MSG_ERROR([ner requires gio])])
 PKG_CHECK_MODULES([yaml_cpp], [yaml-cpp >= 0.3.0],,
