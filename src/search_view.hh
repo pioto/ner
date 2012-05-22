@@ -42,6 +42,7 @@ class SearchView : public LineBrowserView
 
         void openSelectedThread();
         void archiveSelectedThread();
+        void toggleUnreadSelectedThread();
 
         void addTags();
         void removeTags();

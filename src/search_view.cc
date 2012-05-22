@@ -52,6 +52,7 @@ SearchView::SearchView(const std::string & search, const View::Geometry & geomet
     addHandledSequence("\n", std::bind(&SearchView::openSelectedThread, this));
 
     addHandledSequence("a", std::bind(&SearchView::archiveSelectedThread, this));
+    addHandledSequence("N", std::bind(&SearchView::toggleUnreadSelectedThread, this));
 
     addHandledSequence("+", std::bind(&SearchView::addTags, this));
     addHandledSequence("-", std::bind(&SearchView::removeTags, this));
@@ -205,6 +206,35 @@ void SearchView::archiveSelectedThread()
         try
         {
             _threads.at(_selectedIndex).removeTag("inbox");
+
+            next();
+            update();
+        }
+        catch (const InvalidThreadException & e)
+        {
+            StatusBar::instance().displayMessage(e.what());
+        }
+        catch (const InvalidMessageException & e)
+        {
+            StatusBar::instance().displayMessage(e.what());
+        }
+    }
+}
+
+void SearchView::toggleUnreadSelectedThread()
+{
+    std::lock_guard<std::mutex> lock(_mutex);
+
+    if (_selectedIndex < _threads.size())
+    {
+        try
+        {
+            auto thread = _threads.at(_selectedIndex);
+            bool unread = thread.tags.find("unread") != thread.tags.end();
+            if (unread)
+                thread.removeTag("unread");
+            else
+                thread.addTag("unread");
 
             next();
             update();
