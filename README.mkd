@@ -30,7 +30,7 @@ key bindings:
 - **Enter**:                    Open the selected thread
 - **a**:                        Archive the selected thread
 - **+**:                        Add tags to the selected thread
-- **-**:                        Remvoe tags from the selected thread
+- **-**:                        Remove tags from the selected thread
 
 ### Thread and ThreadMessage
 - **r**:    Reply to the selected message
@@ -42,7 +42,7 @@ key bindings:
 - **Ctrl-N**:   Open the next message
 - **Ctrl-P**:   Open the previous message
 - **+**:        Add tags to the selected message
-- **-**:        Remvoe tags from the selected message
+- **-**:        Remove tags from the selected message
 
 ### Compose, Reply
 - **e**:    Edit the message
