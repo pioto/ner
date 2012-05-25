@@ -31,6 +31,7 @@ key bindings:
 - **a**:                        Archive the selected thread
 - **+**:                        Add tags to the selected thread
 - **-**:                        Remove tags from the selected thread
+- **N**:                        Toggle read/unread the selected thread
 
 ### Thread and ThreadMessage
 - **r**:    Reply to the selected message
