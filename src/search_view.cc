@@ -241,8 +241,8 @@ void SearchView::toggleTagSelectedThread(const std::string & tag)
         try
         {
             auto thread = _threads.at(_selectedIndex);
-            bool unread = thread.tags.find(tag) != thread.tags.end();
-            if (unread)
+            bool tagged = thread.tags.find(tag) != thread.tags.end();
+            if (tagged)
                 thread.removeTag(tag);
             else
                 thread.addTag(tag);
