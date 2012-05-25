@@ -43,6 +43,7 @@ class SearchView : public LineBrowserView
         void openSelectedThread();
         void archiveSelectedThread();
         void toggleUnreadSelectedThread();
+        void toggleFlaggedSelectedThread();
 
         void addTags();
         void removeTags();
@@ -52,6 +53,7 @@ class SearchView : public LineBrowserView
 
     private:
         void collectThreads();
+        void toggleTagSelectedThread(const std::string & tag);
 
         std::string _searchTerms;
 

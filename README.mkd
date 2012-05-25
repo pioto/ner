@@ -32,6 +32,7 @@ key bindings:
 - **+**:                        Add tags to the selected thread
 - **-**:                        Remove tags from the selected thread
 - **N**:                        Toggle read/unread the selected thread
+- **F**:                        Flag/unflag the selected thread
 
 ### Thread and ThreadMessage
 - **r**:    Reply to the selected message
